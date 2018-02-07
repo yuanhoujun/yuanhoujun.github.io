@@ -3,11 +3,11 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
-subtitle:
-description:
-author: John Doe
-language:
+title: 欧阳锋工作室
+subtitle: 编程，我们是认真的！
+description: 关注欧阳锋工作室，你想知道的都在这里~
+author: 欧阳锋工作室
+language: zh-Hans
 timezone:
 
 # URL

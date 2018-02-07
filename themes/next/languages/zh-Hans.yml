@@ -1,5 +1,5 @@
 title:
-  archive: 归档
+  archive: 时间旅行
   category: 分类
   tag: 标签
   schedule: 日程表
@@ -8,9 +8,9 @@ author: 博主
 
 menu:
   home: 首页
-  archives: 归档
+  archives: 时间旅行
   categories: 分类
-  tags: 标签
+  tags: 关键词
   about: 关于
   search: 搜索
   schedule: 日程表
