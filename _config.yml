@@ -12,7 +12,7 @@ timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://yoursite.com
+url: http://youngfeng.com
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -72,12 +72,14 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landscape
+theme: next
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: git@github.com:yuanhoujun/yuanhoujun.github.io.git
-  branch: master
   message: "Blog updated: {{ now('YYYY/MM/DD HH:mm:ss') }}"
+  repo: 
+    github: git@github.com:yuanhoujun/yuanhoujun.github.io.git,master
+    coding: git@git.coding.net:ouyangfeng2016/ouyangfeng2016.coding.net.git,master
+
