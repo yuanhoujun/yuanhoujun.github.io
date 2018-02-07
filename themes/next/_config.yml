@@ -808,3 +808,20 @@ images: images
 
 # Theme version
 version: 5.1.4
+
+
+
+
+
+
+# 以下为自定义配置内容
+#################################################
+search:
+  path: search.xml
+  field: post
+  format: html
+  limit: 10000
+#################################################
+
+
+
