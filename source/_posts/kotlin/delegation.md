@@ -1,8 +1,15 @@
 title: Kotlin 代理模式
 date: 2016/08/22 00:25
 comments: true
-tags: Android, Kotlin, 代理模式, 代理属性, 延迟加载
-categories: Kotlin
+tags:
+- Android
+- Kotlin
+- 代理模式
+- 代理属性
+- 延迟加载
+categories:
+- Kotlin
+- 基础知识
 ---
 
 代理模式是23种经典设计模式之一，代理模式被认为是继承的更好替代解决方案；因为代理比继承更加灵活，在Java语言中，通过反射可以实现动态代理，动态代理可以实现**AOP**编程，即：可以动态地往已有类中添加逻辑；比如：实现事务的自动提交，异常的自动捕获，热修复等等; 

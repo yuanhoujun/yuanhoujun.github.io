@@ -51,19 +51,19 @@ footer:
 
 counter:
   tag_cloud:
-    zero: 暂无标签
-    one: 目前仅有 1 个标签
-    other: "%d 个标签"
+    zero: "总数：0"
+    one: "总数：1"
+    other: "总数：%d"
 
   categories:
-    zero: 暂无分类
-    one: 目前仅有 1 个分类
-    other: "%d 个分类"
+    zero: "总数：0"
+    one: "总数：1"
+    other: "总数：%d"
 
   archive_posts:
-    zero: 暂无文章。
-    one: 目前仅有 1 篇文章。
-    other: "目前仅有 %d 篇文章。"
+    zero: ”总数：0"
+    one: "总数：1"
+    other: "总数：%d"
 
 state:
   posts: 文章
