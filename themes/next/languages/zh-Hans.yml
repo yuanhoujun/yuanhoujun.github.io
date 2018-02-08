@@ -10,7 +10,7 @@ menu:
   home: 首页
   archives: 时间旅行
   categories: 分类
-  tags: 关键词
+  tags: 标签
   about: 关于
   search: 搜索
   schedule: 日程表
@@ -52,21 +52,21 @@ footer:
 counter:
   tag_cloud:
     zero: 暂无标签
-    one: 目前共计 1 个标签
-    other: "目前共计 %d 个标签"
+    one: 目前仅有 1 个标签
+    other: "%d 个标签"
 
   categories:
     zero: 暂无分类
-    one: 目前共计 1 个分类
-    other: "目前共计 %d 个分类"
+    one: 目前仅有 1 个分类
+    other: "%d 个分类"
 
   archive_posts:
-    zero: 暂无日志。
-    one: 目前共计 1 篇日志。
-    other: "目前共计 %d 篇日志。"
+    zero: 暂无文章。
+    one: 目前仅有 1 篇文章。
+    other: "目前仅有 %d 篇文章。"
 
 state:
-  posts: 日志
+  posts: 文章
   pages: 页面
   tags: 标签
   categories: 分类
