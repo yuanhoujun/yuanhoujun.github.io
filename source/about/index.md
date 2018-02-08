@@ -21,7 +21,7 @@ comments: false
 
 我相信，只要坚持做一件事情，就一定可以成功。我也相信，机会总是留给有准备的人。我还相信，只有苦过、折腾过、哭过的人生才算完美。
 
-奋斗的路上总是形单影只的，别怕孤单，我始终偏爱那些无畏困难、不问前程、坚持不懈的人们。关注欧阳锋工作室，让[欧阳锋工作室](https://upload-images.jianshu.io/upload_images/703764-d8085a19fb8f5408.jpg)陪伴你一起成长！
+奋斗的路上难免会形单影只，别怕孤单！我始终偏爱那些无畏困难、不问前程、坚持不懈的人们。关注欧阳锋工作室，让[欧阳锋工作室](https://upload-images.jianshu.io/upload_images/703764-d8085a19fb8f5408.jpg)陪伴你一起成长！
 
 ## 关注渠道
 * 微信公众号：[欧阳锋工作室](https://upload-images.jianshu.io/upload_images/703764-d8085a19fb8f5408.jpg)
