@@ -361,8 +361,8 @@ han: false
 
 # Disqus
 disqus:
-  enable: false
-  shortname: Scott Smith
+  enable: true
+  shortname: ouyangfeng
   count: true
 
 # Hypercomments
@@ -379,14 +379,14 @@ changyan:
 # You can get your appid and appkey from https://leancloud.cn
 # more info please open https://valine.js.org
 valine:
-  enable: true
-  appid:  # your leancloud application appid
-  appkey:  # your leancloud application appkey
-  notify: false # mail notifier , https://github.com/xCss/Valine/wiki
+  enable: false
+  app_id: AbkJGSF9And2uUvLixX27nTR-gzGzoHsz
+  app_key: 7KCYMEQsOEWCPNNqS923QDkM
+  notify: true # mail notifier , https://github.com/xCss/Valine/wiki
   verify: false # Verification code
-  placeholder: Just go go # comment box placeholder
+  placeholder: 有什么想告诉我的吗？ # comment box placeholder
   avatar: mm # gravatar style
-  guest_info: nick,mail,link # custom comment header
+  guest_info: nick # custom comment header
   pageSize: 10 # pagination size
 
 
@@ -408,10 +408,10 @@ gitment:
   lazy: false # Comments lazy loading with a button
   cleanly: false # Hide 'Powered by ...' on footer, and more
   language: # Force language, or auto switch by theme
-  github_user: # MUST HAVE, Your Github ID
-  github_repo: # MUST HAVE, The repo you use to store Gitment comments
-  client_id: # MUST HAVE, Github client id for the Gitment
-  client_secret: # EITHER this or proxy_gateway, Github access secret token for the Gitment
+  github_user: yuanhoujun # MUST HAVE, Your Github ID
+  github_repo: for-blog-comments-only # MUST HAVE, The repo you use to store Gitment comments
+  client_id: 58a13e7625e419973224 # MUST HAVE, Github client id for the Gitment
+  client_secret: 97388e086792a2a7c55623e45ceaef4c7928ce42 # EITHER this or proxy_gateway, Github access secret token for the Gitment
   proxy_gateway: # Address of api proxy, See: https://github.com/aimingoo/intersect
   redirect_protocol: # Protocol of redirect_uri with force_redirect_protocol when mint enabled
 
