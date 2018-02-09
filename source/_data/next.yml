@@ -281,7 +281,7 @@ custom_logo:
 # Available value:
 #    normal | night | night eighties | night blue | night bright
 # https://github.com/chriskempson/tomorrow-theme
-highlight_theme: night bright
+highlight_theme: night
 
 
 # ---------------------------------------------------------------
@@ -364,7 +364,7 @@ han: false
 
 # Disqus
 disqus:
-  enable: true
+  enable: false
   shortname: ouyangfeng
   count: true
 
@@ -399,7 +399,7 @@ valine:
 
 # Support for LiveRe comments system.
 # You can get your uid from https://livere.com/insight/myCode (General web site)
-#livere_uid: your uid
+livere_uid: MTAyMC8zNDA1MS8xMDU4OQ==
 
 # Gitment
 # Introduction: https://imsun.net/posts/gitment-introduction/
