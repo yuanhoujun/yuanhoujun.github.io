@@ -74,12 +74,29 @@ pagination_dir: page
 ## Themes: https://hexo.io/themes/
 theme: next
 
+# 自动生成sitemap
+sitemap:
+  path: sitemap.xml
+baidusitemap:
+  path: baidusitemap.xml
+
+baidu_url_submit: 
+  count: 5 ## 提交最新的五个链接
+  host: www.youngfeng.com ## 百度站长平台中注册的域名
+  token: 1tyZgHsicqCHkk21 ## 准入秘钥
+  path: baidu_urls.txt ## 文本文档的地址， 新链接会保存在此文本文档里
+
+
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
-  type: git
+- type: git
   message: "Blog updated: {{ now('YYYY/MM/DD HH:mm:ss') }}"
   repo: 
     github: git@github.com:yuanhoujun/yuanhoujun.github.io.git,master
     coding: git@git.coding.net:ouyangfeng2016/ouyangfeng2016.coding.me.git,master
+- type: baidu_url_submitter   
+
+
+
 
