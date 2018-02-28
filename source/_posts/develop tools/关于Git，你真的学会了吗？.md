@@ -1,3 +1,16 @@
+title: 关于Git，你真的学会了吗？
+date: 2018/02/01 22:13
+comments: true
+tags:
+- Git
+- 版本控制工具
+- 开发工具
+- 命令行
+categories:
+- 开发工具
+- Git
+---
+
 “锋哥，Git有什么可说的，不就是`git add`添加，`git commit`提交嘛”  听说我要写一篇Git教程，小明不屑一顾地说。
 “..."。
 
