@@ -238,7 +238,7 @@ _   底线
 ### 如何给文字上色
 使用Markdown的同学最郁闷的地方恐怕就是不能给文字添加颜色了。事实上，Markdown的最初目标就是为纯写作而生的。因此，它并没有考虑文字颜色这一点。所以，单纯使用Markdown设置文字颜色已经做不到了。但你可以这样做：
 1. 先用Markdown编辑完成
-2. 导出为html，在需要上色的部分手动添加标签<font color='\#ff0000'\></font\>保存即可。
+2. 导出为html，在需要上色的部分手动添加标签`<font color='#ff0000'></font>`保存即可。
 
 ### Markdown软件推荐
 如果你是一个Mac用户，我推荐你使用开源的 [MacDown](http://macdown.uranusjr.com/)：
