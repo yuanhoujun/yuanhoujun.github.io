@@ -1,5 +1,5 @@
 title: 测测你的Kotlin基础
-date: 2016/04/27 15:09
+date: 2018/04/27 15:09
 comments: true
 tags:
 - Kotlin
@@ -12,7 +12,7 @@ categories:
 
 ![文 | 欧阳锋](https://user-gold-cdn.xitu.io/2018/4/25/162fabff1c2028ae?w=2250&h=500&f=png&s=60530)
 
-> 本次测试满分160分，测测看，你能拿几分 \<\<\<
+> 本次测试满分160分，测测看，你能拿几分 <<<
 
 #### 1）Kotlin语言有基本数据类型吗？（5分）
 
