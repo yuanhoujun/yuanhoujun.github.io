@@ -1,5 +1,0 @@
-http://youngfeng.com/2019/01/12/写在十分简历发布前夕/
-http://youngfeng.com/2018/07/09/kotlin/2018最新Kotlin基础视频教程上线了/
-http://youngfeng.com/2018/04/27/kotlin/那些年，我们看不懂的那些Kotlin标准函数/
-http://youngfeng.com/2018/04/27/kotlin/测测你的Kotlin基础/
-http://youngfeng.com/2018/04/27/kotlin/关于Kotlin抛弃可检测的异常处理，你怎么看？/
