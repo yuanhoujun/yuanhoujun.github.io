@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8">
+<title>标签: 设计模式 - 欧阳锋工作室</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+
+
+    <meta name="description" content="关注欧阳锋工作室，你想知道的都在这里~">
+<meta property="og:type" content="website">
+<meta property="og:title" content="欧阳锋工作室">
+<meta property="og:url" content="http://youngfeng.com/tags/设计模式/index.html">
+<meta property="og:site_name" content="欧阳锋工作室">
+<meta property="og:description" content="关注欧阳锋工作室，你想知道的都在这里~">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://youngfeng.com/images/og_image.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="欧阳锋工作室">
+<meta name="twitter:description" content="关注欧阳锋工作室，你想知道的都在这里~">
+<meta name="twitter:image" content="http://youngfeng.com/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.svg">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+    
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.svg" alt="欧阳锋工作室" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">首页</a>
+                
+                <a class="navbar-item"
+                href="/archives">时间旅行</a>
+                
+                <a class="navbar-item"
+                href="/categories">分类</a>
+                
+                <a class="navbar-item"
+                href="/tags">标签</a>
+                
+                <a class="navbar-item"
+                href="/about">关于</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/yuanhoujun">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main"><div class="card">
+    <div class="card-content">
+        <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+            <li><a href="/tags">标签</a></li>
+            <li class="is-active"><a href="#" aria-current="page">设计模式</a></li>
+        </ul>
+        </nav>
+    </div>
+</div>
+
+    <div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2018-03-02T07:46:00.000Z">2018-03-02</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/设计模式/">设计模式</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    41 分钟 读完 (大约 6201 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2018/03/02/design pattern/10分钟看懂动态代理设计模式/">10分钟看懂动态代理设计模式</a>
+            
+        </h1>
+        <div class="content">
+            <blockquote>
+<p>动态代理是Java语言中非常经典的一种设计模式，也是所有设计模式中最难理解的一种。本文将通过一个简单的例子模拟JDK动态代理实现，让你彻底明白动态代理设计模式的本质，文章中可能会涉及到一些你没有学习过的知识点或概念。如果恰好遇到了这些知识盲点，请先去学习这部分知识，再来阅读这篇文章。</p>
+</blockquote>
+<h3 id="什么是代理"><a href="#什么是代理" class="headerlink" title="什么是代理"></a>什么是代理</h3><p>从字面意思来看，代理比较好理解，无非就是代为处理的意思。举个例子，你在上大学的时候，总是喜欢逃课。因此，你拜托你的同学帮你答到，而自己却窝在宿舍玩游戏… 你的这个同学恰好就充当了代理的作用，代替你去上课。</p>
+<p>是的，你没有看错，代理就是这么简单！</p>
+<p>理解了代理的意思，你脑海中恐怕还有两个巨大的疑问：</p>
+<ul>
+<li>怎么实现代理模式</li>
+<li>代理模式有什么实际用途</li>
+</ul>
+<p>要理解这两个问题，看一个简单的例子：<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public interface Flyable &#123;</span><br><span class="line">    void fly();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class Bird implements Flyable &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void fly() &#123;</span><br><span class="line">        System.out.println(&quot;Bird is flying...&quot;);</span><br><span class="line">        try &#123;</span><br><span class="line">            Thread.sleep(new Random().nextInt(1000));</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>很简单的一个例子，用一个随机睡眠时间模拟小鸟在空中的飞行时间。接下来问题来了，如果我要知道小鸟在天空中飞行了多久，怎么办？</p>
+<p>有人说，很简单，在Bird-&gt;fly()方法的开头记录起始时间，在方法结束记录完成时间，两个时间相减就得到了飞行时间。<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line"> public void fly() &#123;</span><br><span class="line">     long start = System.currentTimeMillis();</span><br><span class="line">     System.out.println(&quot;Bird is flying...&quot;);</span><br><span class="line">     try &#123;</span><br><span class="line">         Thread.sleep(new Random().nextInt(1000));</span><br><span class="line">     &#125; catch (InterruptedException e) &#123;</span><br><span class="line">         e.printStackTrace();</span><br><span class="line">     &#125;</span><br><span class="line">     long end = System.currentTimeMillis();</span><br><span class="line">     System.out.println(&quot;Fly time = &quot; + (end - start));</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>的确，这个方法没有任何问题，接下来加大问题的难度。如果Bird这个类来自于某个SDK（或者说Jar包）提供，你无法改动源码，怎么办？</p>
+<p>一定会有人说，我可以在调用的地方这样写：<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">        Bird bird = new Bird();</span><br><span class="line">        long start = System.currentTimeMillis();</span><br><span class="line">        bird.fly();</span><br><span class="line">        long end = System.currentTimeMillis();</span><br><span class="line">        System.out.println(&quot;Fly time = &quot; + (end - start));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这个方案看起来似乎没有问题，但其实你忽略了准备这些方法所需要的时间，执行一个方法，需要开辟栈内存、压栈、出栈等操作，这部分时间也是不可以忽略的。因此，这个解决方案不可行。那么，还有什么方法可以做到呢？</p>
+<h5 id="a）使用继承"><a href="#a）使用继承" class="headerlink" title="a）使用继承"></a>a）使用继承</h5><p>继承是最直观的解决方案，相信你已经想到了，至少我最开始想到的解决方案就是继承。<br>为此，我们重新创建一个类Bird2，在Bird2中我们只做一件事情，就是调用父类的fly方法，在前后记录时间，并打印时间差：<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class Bird2 extends Bird &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void fly() &#123;</span><br><span class="line">        long start = System.currentTimeMillis();</span><br><span class="line">        </span><br><span class="line">        super.fly();</span><br><span class="line">        </span><br><span class="line">        long end = System.currentTimeMillis();</span><br><span class="line">        System.out.println(&quot;Fly time = &quot; + (end - start));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这是一种解决方案，还有一种解决方案叫做：<strong>聚合</strong>，其实也是比较容易想到的。<br>我们再次创建新类Bird3，在Bird3的构造方法中传入Bird实例。同时，让Bird3也实现Flyable接口，并在fly方法中调用传入的Bird实例的fly方法：<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class Bird3 implements Flyable &#123;</span><br><span class="line">    private Bird bird;</span><br><span class="line"></span><br><span class="line">    public Bird3(Bird bird) &#123;</span><br><span class="line">        this.bird = bird;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void fly() &#123;</span><br><span class="line">        long start = System.currentTimeMillis();</span><br><span class="line"></span><br><span class="line">        bird.fly();</span><br><span class="line"></span><br><span class="line">        long end = System.currentTimeMillis();</span><br><span class="line">        System.out.println(&quot;Fly time = &quot; + (end - start));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>为了记录Bird-&gt;fly()方法的执行时间，我们在前后添加了记录时间的代码。同样地，通过这种方法我们也可以获得小鸟的飞行时间。那么，这两种方法孰优孰劣呢？咋一看，不好评判！</p>
+<p>继续深入思考，用问题推导来解答这个问题：</p>
+<p><strong>问题一</strong>：如果我还需要在fly方法前后打印日志，记录飞行开始和飞行结束，怎么办？<br>有人说，很简单！继承Bird2并在在前后添加打印语句即可。那么，问题来了，请看问题二。</p>
+<p><strong>问题二</strong>：如果我需要调换执行顺序，先打印日志，再获取飞行时间，怎么办？<br>有人说，再新建一个类Bird4继承Bird，打印日志。再新建一个类Bird5继承Bird4，获取方法执行时间。</p>
+<p>问题显而易见：使用继承将导致类无限制扩展，同时灵活性也无法获得保障。那么，使用 <a href="https://stackoverflow.com/questions/885937/what-is-the-difference-between-association-aggregation-and-composition" target="_blank" rel="noopener">聚合</a> 是否可以避免这个问题呢？<br>答案是：可以！但我们的类需要稍微改造一下。修改Bird3类，将聚合对象Bird类型修改为Flyable</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class Bird3 implements Flyable &#123;</span><br><span class="line">    private Flyable flyable;</span><br><span class="line"></span><br><span class="line">    public Bird3(Flyable flyable) &#123;</span><br><span class="line">        this.flyable = flyable;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void fly() &#123;</span><br><span class="line">        long start = System.currentTimeMillis();</span><br><span class="line"></span><br><span class="line">        flyable.fly();</span><br><span class="line"></span><br><span class="line">        long end = System.currentTimeMillis();</span><br><span class="line">        System.out.println(&quot;Fly time = &quot; + (end - start));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>为了让你看的更清楚，我将Bird3更名为BirdTimeProxy，即用于获取方法执行时间的代理的意思。同时我们新建BirdLogProxy代理类用于打印日志：</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class BirdLogProxy implements Flyable &#123;</span><br><span class="line">    private Flyable flyable;</span><br><span class="line"></span><br><span class="line">    public BirdLogProxy(Flyable flyable) &#123;</span><br><span class="line">        this.flyable = flyable;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void fly() &#123;</span><br><span class="line">        System.out.println(&quot;Bird fly start...&quot;);</span><br><span class="line"></span><br><span class="line">        flyable.fly();</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;Bird fly end...&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来神奇的事情发生了，如果我们需要先记录日志，再获取飞行时间，可以在调用的地方这么做：</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    Bird bird = new Bird();</span><br><span class="line">    BirdLogProxy p1 = new BirdLogProxy(bird);</span><br><span class="line">    BirdTimeProxy p2 = new BirdTimeProxy(p1);</span><br><span class="line"></span><br><span class="line">    p2.fly();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>反过来，可以这么做：</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">       Bird bird = new Bird();</span><br><span class="line">       BirdTimeProxy p2 = new BirdTimeProxy(bird);</span><br><span class="line">       BirdLogProxy p1 = new BirdLogProxy(p2);</span><br><span class="line"></span><br><span class="line">       p1.fly();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看到这里，有同学可能会有疑问了。虽然现象看起来，聚合可以灵活调换执行顺序。可是，为什么 <a href="https://stackoverflow.com/questions/885937/what-is-the-difference-between-association-aggregation-and-composition" target="_blank" rel="noopener">聚合</a> 可以做到，而继承不行呢。我们用一张图来解释一下：<br><img src="http://upload-images.jianshu.io/upload_images/703764-2d04ad5bbcb2d25e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h3 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h3><p>接下来，观察上面的类BirdTimeProxy，在它的fly方法中我们直接调用了flyable-&gt;fly()方法。换而言之，BirdTimeProxy其实代理了传入的Flyable对象，这就是典型的静态代理实现。</p>
+<p>从表面上看，静态代理已经完美解决了我们的问题。可是，试想一下，如果我们需要计算SDK中100个方法的运行时间，同样的代码至少需要重复100次，并且创建至少100个代理类。往小了说，如果Bird类有多个方法，我们需要知道其他方法的运行时间，同样的代码也至少需要重复多次。因此，静态代理至少有以下两个局限性问题：</p>
+<ul>
+<li>如果同时代理多个类，依然会导致类无限制扩展</li>
+<li>如果类中有多个方法，同样的逻辑需要反复实现</li>
+</ul>
+<p>那么，我们是否可以使用同一个代理类来代理任意对象呢？我们以获取方法运行时间为例，是否可以使用同一个类（例如：TimeProxy）来计算任意对象的任一方法的执行时间呢？甚至再大胆一点，代理的逻辑也可以自己指定。比如，获取方法的执行时间，打印日志，这类逻辑都可以自己指定。这就是本文重点探讨的问题，也是最难理解的部分：<strong>动态代理</strong>。</p>
+<h3 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h3><p>继续回到上面这个问题：是否可以使用同一个类（例如：TimeProxy）来计算任意对象的任一方法的执行时间呢。</p>
+<p>这个部分需要一定的抽象思维，我想，你脑海中的第一个解决方案应该是使用反射。反射是用于获取已创建实例的方法或者属性，并对其进行调用或者赋值。很明显，在这里，反射解决不了问题。但是，再大胆一点，如果我们可以动态生成TimeProxy这个类，并且动态编译。然后，再通过反射创建对象并加载到内存中，不就实现了对任意对象进行代理了吗？为了防止你依然一头雾水，我们用一张图来描述接下来要做什么：<br><img src="http://upload-images.jianshu.io/upload_images/703764-0e22137ce1f0291b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>动态生成Java源文件并且排版是一个非常繁琐的工作，为了简化操作，我们使用 <a href="https://github.com/square/javapoet" target="_blank" rel="noopener">JavaPoet</a> 这个第三方库帮我们生成TimeProxy的源码。希望 <a href="https://github.com/square/javapoet" target="_blank" rel="noopener">JavaPoet</a>  不要成为你的负担，不理解 <a href="https://github.com/square/javapoet" target="_blank" rel="noopener">JavaPoet</a> 没有关系，你只要把它当成一个Java源码生成工具使用即可。</p>
+<p>PS：你记住，任何工具库的使用都不会太难，它是为了简化某些操作而出现的，目标是简化而不是繁琐。因此，只要你适应它的规则就轻车熟路了。</p>
+<h5 id="第一步：生成TimeProxy源码"><a href="#第一步：生成TimeProxy源码" class="headerlink" title="第一步：生成TimeProxy源码"></a>第一步：生成TimeProxy源码</h5><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">public class Proxy &#123;</span><br><span class="line"></span><br><span class="line">    public static Object newProxyInstance() throws IOException &#123;</span><br><span class="line">        TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(&quot;TimeProxy&quot;)</span><br><span class="line">                .addSuperinterface(Flyable.class);</span><br><span class="line"></span><br><span class="line">        FieldSpec fieldSpec = FieldSpec.builder(Flyable.class, &quot;flyable&quot;, Modifier.PRIVATE).build();</span><br><span class="line">        typeSpecBuilder.addField(fieldSpec);</span><br><span class="line"></span><br><span class="line">        MethodSpec constructorMethodSpec = MethodSpec.constructorBuilder()</span><br><span class="line">                .addModifiers(Modifier.PUBLIC)</span><br><span class="line">                .addParameter(Flyable.class, &quot;flyable&quot;)</span><br><span class="line">                .addStatement(&quot;this.flyable = flyable&quot;)</span><br><span class="line">                .build();</span><br><span class="line">        typeSpecBuilder.addMethod(constructorMethodSpec);</span><br><span class="line"></span><br><span class="line">        Method[] methods = Flyable.class.getDeclaredMethods();</span><br><span class="line">        for (Method method : methods) &#123;</span><br><span class="line">            MethodSpec methodSpec = MethodSpec.methodBuilder(method.getName())</span><br><span class="line">                    .addModifiers(Modifier.PUBLIC)</span><br><span class="line">                    .addAnnotation(Override.class)</span><br><span class="line">                    .returns(method.getReturnType())</span><br><span class="line">                    .addStatement(&quot;long start = $T.currentTimeMillis()&quot;, System.class)</span><br><span class="line">                    .addCode(&quot;\n&quot;)</span><br><span class="line">                    .addStatement(&quot;this.flyable.&quot; + method.getName() + &quot;()&quot;)</span><br><span class="line">                    .addCode(&quot;\n&quot;)</span><br><span class="line">                    .addStatement(&quot;long end = $T.currentTimeMillis()&quot;, System.class)</span><br><span class="line">                    .addStatement(&quot;$T.out.println(\&quot;Fly Time =\&quot; + (end - start))&quot;, System.class)</span><br><span class="line">                    .build();</span><br><span class="line">            typeSpecBuilder.addMethod(methodSpec);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        JavaFile javaFile = JavaFile.builder(&quot;com.youngfeng.proxy&quot;, typeSpecBuilder.build()).build();</span><br><span class="line">        // 为了看的更清楚，我将源码文件生成到桌面</span><br><span class="line">        javaFile.writeTo(new File(&quot;/Users/ouyangfeng/Desktop/&quot;));</span><br><span class="line"></span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在main方法中调用Proxy.newProxyInstance()，你将看到桌面已经生成了TimeProxy.java文件，生成的内容如下：</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">package com.youngfeng.proxy;</span><br><span class="line"></span><br><span class="line">import java.lang.Override;</span><br><span class="line">import java.lang.System;</span><br><span class="line"></span><br><span class="line">class TimeProxy implements Flyable &#123;</span><br><span class="line">  private Flyable flyable;</span><br><span class="line"></span><br><span class="line">  public TimeProxy(Flyable flyable) &#123;</span><br><span class="line">    this.flyable = flyable;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  @Override</span><br><span class="line">  public void fly() &#123;</span><br><span class="line">    long start = System.currentTimeMillis();</span><br><span class="line"></span><br><span class="line">    this.flyable.fly();</span><br><span class="line"></span><br><span class="line">    long end = System.currentTimeMillis();</span><br><span class="line">    System.out.println(&quot;Fly Time =&quot; + (end - start));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="第二步：编译TimeProxy源码"><a href="#第二步：编译TimeProxy源码" class="headerlink" title="第二步：编译TimeProxy源码"></a>第二步：编译TimeProxy源码</h5><p>编译TimeProxy源码我们直接使用JDK提供的编译工具即可，为了使你看起来更清晰，我使用一个新的辅助类来完成编译操作：</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class JavaCompiler &#123;</span><br><span class="line"></span><br><span class="line">    public static void compile(File javaFile) throws IOException &#123;</span><br><span class="line">        javax.tools.JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();</span><br><span class="line">        StandardJavaFileManager fileManager = javaCompiler.getStandardFileManager(null, null, null);</span><br><span class="line">        Iterable iterable = fileManager.getJavaFileObjects(javaFile);</span><br><span class="line">        javax.tools.JavaCompiler.CompilationTask task = javaCompiler.getTask(null, fileManager, null, null, null, iterable);</span><br><span class="line">        task.call();</span><br><span class="line">        fileManager.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在Proxy-&gt;newProxyInstance()方法中调用该方法，编译顺利完成：</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 为了看的更清楚，我将源码文件生成到桌面</span><br><span class="line">String sourcePath = &quot;/Users/ouyangfeng/Desktop/&quot;;</span><br><span class="line">javaFile.writeTo(new File(sourcePath));</span><br><span class="line"></span><br><span class="line">// 编译</span><br><span class="line">JavaCompiler.compile(new File(sourcePath + &quot;/com/youngfeng/proxy/TimeProxy.java&quot;));</span><br></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/703764-0e82c03cdd902aaf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h5 id="第三步：加载到内存中并创建对象"><a href="#第三步：加载到内存中并创建对象" class="headerlink" title="第三步：加载到内存中并创建对象"></a>第三步：加载到内存中并创建对象</h5><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">URL[] urls = new URL[] &#123;new URL(&quot;file:/&quot; + sourcePath)&#125;;</span><br><span class="line">URLClassLoader classLoader = new URLClassLoader(urls);</span><br><span class="line">Class clazz = classLoader.loadClass(&quot;com.youngfeng.proxy.TimeProxy&quot;);</span><br><span class="line">Constructor constructor = clazz.getConstructor(Flyable.class);</span><br><span class="line">Flyable flyable = (Flyable) constructor.newInstance(new Bird());</span><br><span class="line">flyable.fly();</span><br></pre></td></tr></table></figure>
+<p>通过以上三个步骤，我们至少解决了下面两个问题：</p>
+<ul>
+<li>不再需要手动创建TimeProxy</li>
+<li>可以代理任意实现了Flyable接口的类对象，并获取接口方法的执行时间</li>
+</ul>
+<p>可是，说好的任意对象呢？</p>
+<h5 id="第四步：增加InvocationHandler接口"><a href="#第四步：增加InvocationHandler接口" class="headerlink" title="第四步：增加InvocationHandler接口"></a>第四步：增加InvocationHandler接口</h5><p>查看Proxy-&gt;newProxyInstance()的源码，代理类继承的接口我们是写死的，为了增加灵活性，我们将接口类型作为参数传入：<br><img src="http://upload-images.jianshu.io/upload_images/703764-cd110b5720d14823.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>接口的灵活性问题解决了，TimeProxy的局限性依然存在，它只能用于获取方法的执行时间，而如果要在方法执行前后打印日志则需要重新创建一个代理类，显然这是不妥的！</p>
+<p>为了增加控制的灵活性，我们考虑针将代理的处理逻辑也抽离出来（这里的处理就是打印方法的执行时间）。新增<code>InvocationHandler</code>接口，用于处理自定义逻辑：</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface InvocationHandler &#123;</span><br><span class="line">    void invoke(Object proxy, Method method, Object[] args);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>想象一下，如果客户程序员需要对代理类进行自定义的处理，只要实现该接口，并在invoke方法中进行相应的处理即可。这里我们在接口中设置了三个参数（其实也是为了和JDK源码保持一致）：</p>
+<ul>
+<li>proxy =&gt; 这个参数指定动态生成的代理类，这里是<code>TimeProxy</code></li>
+<li>method =&gt; 这个参数表示传入接口中的所有Method对象</li>
+<li>args =&gt; 这个参数对应当前method方法中的参数</li>
+</ul>
+<p>引入了InvocationHandler接口之后，我们的调用顺序应该变成了这样：</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">MyInvocationHandler handler = new MyInvocationHandler();</span><br><span class="line">Flyable proxy = Proxy.newProxyInstance(Flyable.class, handler);</span><br><span class="line">proxy.fly();</span><br><span class="line"></span><br><span class="line">方法执行流：proxy.fly() =&gt; handler.invoke()</span><br></pre></td></tr></table></figure>
+<p>为此，我们需要在Proxy.newProxyInstance()方法中做如下改动：</p>
+<ul>
+<li>在newProxyInstance方法中传入InvocationHandler</li>
+<li>在生成的代理类中增加成员变量handler</li>
+<li>在生成的代理类方法中，调用invoke方法</li>
+</ul>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"> public static Object newProxyInstance(Class inf, InvocationHandler handler) throws Exception &#123;</span><br><span class="line">       TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(&quot;TimeProxy&quot;)</span><br><span class="line">               .addModifiers(Modifier.PUBLIC)</span><br><span class="line">               .addSuperinterface(inf);</span><br><span class="line"></span><br><span class="line">       FieldSpec fieldSpec = FieldSpec.builder(InvocationHandler.class, &quot;handler&quot;, Modifier.PRIVATE).build();</span><br><span class="line">       typeSpecBuilder.addField(fieldSpec);</span><br><span class="line"></span><br><span class="line">       MethodSpec constructorMethodSpec = MethodSpec.constructorBuilder()</span><br><span class="line">               .addModifiers(Modifier.PUBLIC)</span><br><span class="line">               .addParameter(InvocationHandler.class, &quot;handler&quot;)</span><br><span class="line">               .addStatement(&quot;this.handler = handler&quot;)</span><br><span class="line">               .build();</span><br><span class="line"></span><br><span class="line">       typeSpecBuilder.addMethod(constructorMethodSpec);</span><br><span class="line"></span><br><span class="line">       Method[] methods = inf.getDeclaredMethods();</span><br><span class="line">       for (Method method : methods) &#123;</span><br><span class="line">           MethodSpec methodSpec = MethodSpec.methodBuilder(method.getName())</span><br><span class="line">                   .addModifiers(Modifier.PUBLIC)</span><br><span class="line">                   .addAnnotation(Override.class)</span><br><span class="line">                   .returns(method.getReturnType())</span><br><span class="line">                   .addCode(&quot;try &#123;\n&quot;)</span><br><span class="line">                   .addStatement(&quot;\t$T method = &quot; + inf.getName() + &quot;.class.getMethod(\&quot;&quot; + method.getName() + &quot;\&quot;)&quot;, Method.class)</span><br><span class="line">                   // 为了简单起见，这里参数直接写死为空</span><br><span class="line">                   .addStatement(&quot;\tthis.handler.invoke(this, method, null)&quot;)</span><br><span class="line">                   .addCode(&quot;&#125; catch(Exception e) &#123;\n&quot;)</span><br><span class="line">                   .addCode(&quot;\te.printStackTrace();\n&quot;)</span><br><span class="line">                   .addCode(&quot;&#125;\n&quot;)</span><br><span class="line">                   .build();</span><br><span class="line">           typeSpecBuilder.addMethod(methodSpec);</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       JavaFile javaFile = JavaFile.builder(&quot;com.youngfeng.proxy&quot;, typeSpecBuilder.build()).build();</span><br><span class="line">       // 为了看的更清楚，我将源码文件生成到桌面</span><br><span class="line">       String sourcePath = &quot;/Users/ouyangfeng/Desktop/&quot;;</span><br><span class="line">       javaFile.writeTo(new File(sourcePath));</span><br><span class="line"></span><br><span class="line">       // 编译</span><br><span class="line">       JavaCompiler.compile(new File(sourcePath + &quot;/com/youngfeng/proxy/TimeProxy.java&quot;));</span><br><span class="line"></span><br><span class="line">       // 使用反射load到内存</span><br><span class="line">       URL[] urls = new URL[] &#123;new URL(&quot;file:&quot; + sourcePath)&#125;;</span><br><span class="line">       URLClassLoader classLoader = new URLClassLoader(urls);</span><br><span class="line">       Class clazz = classLoader.loadClass(&quot;com.youngfeng.proxy.TimeProxy&quot;);</span><br><span class="line">       Constructor constructor = clazz.getConstructor(InvocationHandler.class);</span><br><span class="line">       Object obj = constructor.newInstance(handler);</span><br><span class="line"></span><br><span class="line">       return obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码你可能看起来比较吃力，我们直接调用该方法，查看最后生成的源码。在main方法中测试newProxyInstance查看生成的TimeProxy源码：</p>
+<p><strong>测试代码</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Proxy.newProxyInstance(Flyable.class, new MyInvocationHandler(new Bird()));</span><br></pre></td></tr></table></figure>
+<p><strong>生成的TimeProxy.java源码</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">package com.youngfeng.proxy;</span><br><span class="line"></span><br><span class="line">import java.lang.Override;</span><br><span class="line">import java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line">public class TimeProxy implements Flyable &#123;</span><br><span class="line">  private InvocationHandler handler;</span><br><span class="line"></span><br><span class="line">  public TimeProxy(InvocationHandler handler) &#123;</span><br><span class="line">    this.handler = handler;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  @Override</span><br><span class="line">  public void fly() &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">    	Method method = com.youngfeng.proxy.Flyable.class.getMethod(&quot;fly&quot;);</span><br><span class="line">    	this.handler.invoke(this, method, null);</span><br><span class="line">    &#125; catch(Exception e) &#123;</span><br><span class="line">    	e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>MyInvocationHandler.java</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public class MyInvocationHandler implements InvocationHandler &#123;</span><br><span class="line">    private Bird bird;</span><br><span class="line"></span><br><span class="line">    public MyInvocationHandler(Bird bird) &#123;</span><br><span class="line">        this.bird = bird;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void invoke(Object proxy, Method method, Object[] args) &#123;</span><br><span class="line">        long start = System.currentTimeMillis();</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            method.invoke(bird, new Object[] &#123;&#125;);</span><br><span class="line">        &#125; catch (IllegalAccessException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (InvocationTargetException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        long end = System.currentTimeMillis();</span><br><span class="line">        System.out.println(&quot;Fly time = &quot; + (end - start));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>至此，整个方法栈的调用栈变成了这样：<br><img src="http://upload-images.jianshu.io/upload_images/703764-4ff1323a12cb9c39.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>看到这里，估计很多同学已经晕了，在静态代理部分，我们在代理类中传入了被代理对象。可是，使用newProxyInstance生成动态代理对象的时候，我们居然不再需要传入被代理对象了。我们传入了的实际对象是InvocationHandler实现类的实例，这看起来有点像生成了InvocationHandler的代理对象，在动态生成的代理类的任意方法中都会间接调用InvocationHandler-&gt;invoke(proxy, method, args)方法。</p>
+<p>其实的确是这样。TimeProxy真正代理的对象就是InvocationHandler，不过这里设计的巧妙之处在于，InvocationHandler是一个接口，真正的实现由用户指定。另外，在每一个方法执行的时候，invoke方法都会被调用 ，这个时候如果你需要对某个方法进行自定义逻辑处理，可以根据method的特征信息进行判断分别处理。</p>
+<h3 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h3><p>上面这段解释是告诉你在执行Proxy-&gt;newProxyInstance方法的时候真正发生的事情，而在实际使用过程中你完全可以忘掉上面的解释。按照设计者的初衷，我们做如下简单归纳：</p>
+<ul>
+<li>Proxy-&gt;newProxyInstance(infs, handler) 用于生成代理对象</li>
+<li>InvocationHandler：这个接口主要用于自定义代理逻辑处理</li>
+<li>为了完成对被代理对象的方法拦截，我们需要在InvocationHandler对象中传入被代理对象实例。</li>
+</ul>
+<p>查看上面的代码，你可以看到我将Bird实例已经传入到了MyInvocationHandler中，原因就是第三点。</p>
+<p>这样设计有什么好处呢？有人说，我们大费周章，饶了一大圈，最终变成了这个样子，到底图什么呢？</p>
+<p>想象一下，到此为止，如果我们还需要对其它任意对象进行代理，是否还需要改动newProxyInstance方法的源码，答案是：完全不需要！</p>
+<p>只要你在newProxyInstance方法中指定代理需要实现的接口，指定用于自定义处理的InvocationHandler对象，整个代理的逻辑处理都在你自定义的InvocationHandler实现类中进行处理。至此，而我们终于可以从不断地写代理类用于实现自定义逻辑的重复工作中解放出来了，从此需要做什么，交给InvocationHandler。</p>
+<p>事实上，我们之前给自己定下的目标“使用同一个类来计算任意对象的任一方法的执行时间”已经实现了。严格来说，是我们超额完成了任务，TimeProxy不仅可以计算方法执行的时间，也可以打印方法执行日志，这完全取决于你的InvocationHandler接口实现。因此，这里取名为TimeProxy其实已经不合适了。我们可以修改为和JDK命名一致，即$Proxy0，感兴趣的同学请自行实践，本篇文章的代码将放到我的Github仓库，文章结尾会给出代码地址。</p>
+<h3 id="JDK实现揭秘"><a href="#JDK实现揭秘" class="headerlink" title="JDK实现揭秘"></a>JDK实现揭秘</h3><p>通过上面的这些步骤，我们完成了一个简易的仿JDK实现的动态代理逻辑。接下来，我们一起来看一看JDK实现的动态代理和我们到底有什么不同。</p>
+<p><strong>Proxy.java</strong><br><img src="http://upload-images.jianshu.io/upload_images/703764-2f5a7b2762949e11.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p><strong>InvocationHandler</strong><br><img src="http://upload-images.jianshu.io/upload_images/703764-9d58bd4930a28081.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>可以看到，官方版本Proxy类提供的方法多一些，而我们主要使用的接口newProxyInstance参数也和我们设计的不太一样。这里给大家简单解释一下，每个参数的意义：</p>
+<ul>
+<li>Classloader：类加载器，你可以使用自定义的类加载器，我们的实现版本为了简化，直接在代码中写死了Classloader。</li>
+<li>Class&lt;?&gt;[]：第二个参数也和我们的实现版本不一致，这个其实很容易理解，我们应该允许我们自己实现的代理类同时实现多个接口。前面设计只传入一个接口，只是为了简化实现，让你专注核心逻辑实现而已。</li>
+</ul>
+<p>最后一个参数就不用说了，和我们实现的版本完全是一样的。</p>
+<p>仔细观察官方版本的InvocationHandler，它和我们自己的实现的版本也有一个细微的差别：官方版本invoke方法有返回值，而我们的版本中是没有返回值的。那么，返回值到底有什么作用呢？直接来看官方文档：<br><img src="http://upload-images.jianshu.io/upload_images/703764-940eef4374694714.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p><em>核心思想：这里的返回值类型必须和传入接口的返回值类型一致，或者与其封装对象的类型一致。</em></p>
+<p>遗憾的是，这里并没有说明返回值的用途，其实这里稍微发挥一下想象力就知道了。在我们的版本实现中，Flyable接口的所有方法都是没有返回值的，问题是，如果有返回值呢？是的，你没有猜错，这里的invoke方法对应的就是传入接口中方法的返回值。</p>
+<h3 id="答疑解惑"><a href="#答疑解惑" class="headerlink" title="答疑解惑"></a>答疑解惑</h3><h5 id="invoke方法的第一个参数proxy到底有什么作用？"><a href="#invoke方法的第一个参数proxy到底有什么作用？" class="headerlink" title="invoke方法的第一个参数proxy到底有什么作用？"></a>invoke方法的第一个参数proxy到底有什么作用？</h5><p>这个问题其实也好理解，如果你的接口中有方法需要返回自身，如果在invoke中没有传入这个参数，将导致实例无法正常返回。在这种场景中，proxy的用途就表现出来了。简单来说，这其实就是最近非常火的链式编程的一种应用实现。</p>
+<h5 id="动态代理到底有什么用？"><a href="#动态代理到底有什么用？" class="headerlink" title="动态代理到底有什么用？"></a>动态代理到底有什么用？</h5><p>学习任何一门技术，一定要问一问自己，这到底有什么用。其实，在这篇文章的讲解过程中，我们已经说出了它的主要用途。你发现没，使用动态代理我们居然可以在不改变源码的情况下，直接在方法中插入自定义逻辑。这有点不太符合我们的一条线走到底的编程逻辑，这种编程模型有一个专业名称叫 <a href="https://baike.baidu.com/item/AOP/1332219" target="_blank" rel="noopener">AOP</a>。所谓的AOP，就像刀一样，抓住时机，趁机插入。<br><img src="http://upload-images.jianshu.io/upload_images/703764-4b3ff894932ec1e8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>基于这样一种动态特性，我们可以用它做很多事情，例如：</p>
+<ul>
+<li>事务提交或回退（Web开发中很常见）</li>
+<li>权限管理</li>
+<li>自定义缓存逻辑处理</li>
+<li>SDK Bug修复<br>…</li>
+</ul>
+<p>如果你阅读过 <a href="https://github.com/yuanhoujun/Android_Slide_To_Close" target="_blank" rel="noopener">Android_Slide_To_Close</a> 的源码会发现，它也在某个地方使用了动态代理设计模式。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>到此为止，关于动态代理的所有讲解已经结束了，原谅我使用了一个诱导性的标题“骗”你进来阅读这篇文章。如果你不是一个久经沙场的“老司机”，10分钟完全看懂动态代理设计模式还是有一定难度的。但即使没有看懂也没关系，如果你在第一次阅读完这篇文章后依然一头雾水，就不妨再仔细阅读一次。在阅读的过程中，一定要跟着文章思路去敲代码。反反复复，一定会看懂的。我在刚刚学习动态代理设计模式的时候就反复看了不下5遍，并且亲自敲代码实践了多次。</p>
+<p>为了让你少走弯路，我认为看懂这篇文章，你至少需要学习以下知识点：</p>
+<ul>
+<li>至少已经理解了面向对象语言的多态特性</li>
+<li>了解简单的反射用法</li>
+<li>会简单使用 <a href="https://github.com/square/javapoet" target="_blank" rel="noopener">JavaPoet</a> 生成Java源码</li>
+</ul>
+<p>如果你在阅读文章的过程中，有任何不理解的问题或者建议，欢迎在文章下方留言告诉我！</p>
+<p>本篇文章例子代码：<a href="https://github.com/yuanhoujun/java-dynamic-proxy" target="_blank" rel="noopener">https://github.com/yuanhoujun/java-dynamic-proxy</a></p>
+<hr>
+<p>我是欧阳锋，设计模式是一种非常好的编程指导模型，它在所有编程语言中是通用的，并且是亘古不变的。我建议你在这个方面多下苦功，不要纠结在一些重复的劳动中，活用设计模式会让你的代码更显灵动。想要了解我吗？看这里：<a href="http://www.youngfeng.com/2018/02/28/about%20ouyangfeng/%E6%AC%A7%E9%98%B3%E9%94%8B%E6%A1%A3%E6%A1%88%E9%A6%86/" target="_blank" rel="noopener">欧阳锋档案馆</a>。</p>
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered">
+                <div>
+                    
+                        <figure class="image is-128x128 has-mb-6">
+                            <img class="is-rounded" src="https://avatars2.githubusercontent.com/u/7424397?s=400&amp;u=41a286b5d8e1144211d1f6312986f4c687901b17&amp;v=4" alt="欧阳锋">
+                        </figure>
+                    
+                    
+                    <p class="is-size-4 is-block">
+                        欧阳锋
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        人生在勤，不索何获
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>广东 深圳</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        20
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        分类
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        12
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        标签
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        40
+                    </p>
+                </div>
+            </div>
+        </nav>
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/yuanhoujun" target="_blank">
+                关注我</a>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/yuanhoujun">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="新浪微博" href="https://weibo.com/u/6998296003">
+                
+                <i class="fab fa-weibo"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="微信公众号" href="https://upload-images.jianshu.io/upload_images/703764-d8085a19fb8f5408.jpg">
+                
+                <i class="fab fa-weixin"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="公司官网" href="https://yhdm360.com">
+                
+                <i class="fab fa-dribbble"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="十分简历" href="https://www.10fenjl.com">
+                
+                <i class="far fa-registered"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+    
+        
+
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            链接
+        </h3>
+        <ul class="menu-list">
+        
+            <li>
+                <a class="level is-mobile" href="https://yhdm360.com" target="_blank">
+                    <span class="level-left">
+                        <span class="level-item">一行代码</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">yhdm360.com</span>
+                    </span>
+                </a>
+            </li>
+        
+            <li>
+                <a class="level is-mobile" href="https://www.10fenjl.com" target="_blank">
+                    <span class="level-left">
+                        <span class="level-item">十分简历</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">www.10fenjl.com</span>
+                    </span>
+                </a>
+            </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                分类
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Bug-Fix/">
+            <span class="level-start">
+                <span class="level-item">Bug Fix</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/IT小知识/">
+            <span class="level-start">
+                <span class="level-item">IT小知识</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Kotlin/">
+            <span class="level-start">
+                <span class="level-item">Kotlin</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">10</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Kotlin/基础知识/">
+            <span class="level-start">
+                <span class="level-item">基础知识</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">9</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Kotlin/杂谈/">
+            <span class="level-start">
+                <span class="level-item">杂谈</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/关于欧阳锋/">
+            <span class="level-start">
+                <span class="level-item">关于欧阳锋</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/创业札记/">
+            <span class="level-start">
+                <span class="level-item">创业札记</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/开发工具/">
+            <span class="level-start">
+                <span class="level-item">开发工具</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/开发工具/Git/">
+            <span class="level-start">
+                <span class="level-item">Git</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/开源/">
+            <span class="level-start">
+                <span class="level-item">开源</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/设计模式/">
+            <span class="level-start">
+                <span class="level-item">设计模式</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/随文杂记/">
+            <span class="level-start">
+                <span class="level-item">随文杂记</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            标签云
+        </h3>
+        <a href="/tags/2017/" style="font-size: 12.5px;">2017</a> <a href="/tags/Android/" style="font-size: 17.5px;">Android</a> <a href="/tags/Bug/" style="font-size: 10px;">Bug</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/Gradle/" style="font-size: 10px;">Gradle</a> <a href="/tags/Groovy/" style="font-size: 10px;">Groovy</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Kotlin/" style="font-size: 20px;">Kotlin</a> <a href="/tags/Kotlin基础/" style="font-size: 10px;">Kotlin基础</a> <a href="/tags/Markdown/" style="font-size: 10px;">Markdown</a> <a href="/tags/infix/" style="font-size: 10px;">infix</a> <a href="/tags/object/" style="font-size: 10px;">object</a> <a href="/tags/this/" style="font-size: 10px;">this</a> <a href="/tags/代理属性/" style="font-size: 10px;">代理属性</a> <a href="/tags/代理模式/" style="font-size: 10px;">代理模式</a> <a href="/tags/关注/" style="font-size: 10px;">关注</a> <a href="/tags/创业/" style="font-size: 10px;">创业</a> <a href="/tags/前端/" style="font-size: 10px;">前端</a> <a href="/tags/动态代理/" style="font-size: 10px;">动态代理</a> <a href="/tags/十分简历/" style="font-size: 10px;">十分简历</a> <a href="/tags/命令行/" style="font-size: 10px;">命令行</a> <a href="/tags/工作室/" style="font-size: 10px;">工作室</a> <a href="/tags/延迟加载/" style="font-size: 10px;">延迟加载</a> <a href="/tags/开发工具/" style="font-size: 10px;">开发工具</a> <a href="/tags/开源/" style="font-size: 10px;">开源</a> <a href="/tags/总结/" style="font-size: 12.5px;">总结</a> <a href="/tags/扩展/" style="font-size: 10px;">扩展</a> <a href="/tags/操作符/" style="font-size: 10px;">操作符</a> <a href="/tags/欧阳锋/" style="font-size: 10px;">欧阳锋</a> <a href="/tags/泛型/" style="font-size: 10px;">泛型</a> <a href="/tags/深圳一行代码科技有限公司/" style="font-size: 10px;">深圳一行代码科技有限公司</a> <a href="/tags/滑动返回/" style="font-size: 10px;">滑动返回</a> <a href="/tags/版本控制工具/" style="font-size: 10px;">版本控制工具</a> <a href="/tags/相对论/" style="font-size: 10px;">相对论</a> <a href="/tags/编程/" style="font-size: 10px;">编程</a> <a href="/tags/编程语言/" style="font-size: 15px;">编程语言</a> <a href="/tags/脚本/" style="font-size: 10px;">脚本</a> <a href="/tags/视频教程/" style="font-size: 10px;">视频教程</a> <a href="/tags/设计模式/" style="font-size: 10px;">设计模式</a> <a href="/tags/重载/" style="font-size: 10px;">重载</a>
+    </div>
+</div>
+
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+            
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2019/01/12/写在十分简历发布前夕/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="写在十分简历发布前夕">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-01-12T10:52:00.000Z">2019-01-12</time></div>
+                    <a href="/2019/01/12/写在十分简历发布前夕/" class="has-link-black-ter is-size-6">写在十分简历发布前夕</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/创业札记/">创业札记</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2018/07/09/kotlin/2018最新Kotlin基础视频教程上线了/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="2018最新Kotlin基础视频教程上线了">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2018-07-09T07:02:00.000Z">2018-07-09</time></div>
+                    <a href="/2018/07/09/kotlin/2018最新Kotlin基础视频教程上线了/" class="has-link-black-ter is-size-6">2018最新Kotlin基础视频教程上线了</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Kotlin/">Kotlin</a> / <a class="has-link-grey -link" href="/categories/Kotlin/基础知识/">基础知识</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2018/04/27/kotlin/那些年，我们看不懂的那些Kotlin标准函数/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="那些年，我们看不懂的那些Kotlin标准函数">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2018-04-27T07:21:00.000Z">2018-04-27</time></div>
+                    <a href="/2018/04/27/kotlin/那些年，我们看不懂的那些Kotlin标准函数/" class="has-link-black-ter is-size-6">那些年，我们看不懂的那些Kotlin标准函数</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Kotlin/">Kotlin</a> / <a class="has-link-grey -link" href="/categories/Kotlin/基础知识/">基础知识</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2018/04/27/kotlin/测测你的Kotlin基础/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="测测你的Kotlin基础">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2018-04-27T07:09:00.000Z">2018-04-27</time></div>
+                    <a href="/2018/04/27/kotlin/测测你的Kotlin基础/" class="has-link-black-ter is-size-6">测测你的Kotlin基础</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Kotlin/">Kotlin</a> / <a class="has-link-grey -link" href="/categories/Kotlin/基础知识/">基础知识</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2018/04/27/kotlin/关于Kotlin抛弃可检测的异常处理，你怎么看？/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="关于Kotlin抛弃可检测的异常处理，你怎么看？">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2018-04-27T06:57:00.000Z">2018-04-27</time></div>
+                    <a href="/2018/04/27/kotlin/关于Kotlin抛弃可检测的异常处理，你怎么看？/" class="has-link-black-ter is-size-6">关于Kotlin抛弃可检测的异常处理，你怎么看？</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Kotlin/">Kotlin</a> / <a class="has-link-grey -link" href="/categories/Kotlin/基础知识/">基础知识</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            归档
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/07/">
+                <span class="level-start">
+                    <span class="level-item">七月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/04/">
+                <span class="level-start">
+                    <span class="level-item">四月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">7</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/03/">
+                <span class="level-start">
+                    <span class="level-item">三月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/02/">
+                <span class="level-start">
+                    <span class="level-item">二月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2016/08/">
+                <span class="level-start">
+                    <span class="level-item">八月 2016</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                标签
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/2017/">
+                        <span class="tag">2017</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android/">
+                        <span class="tag">Android</span>
+                        <span class="tag is-grey">5</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Bug/">
+                        <span class="tag">Bug</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Git/">
+                        <span class="tag">Git</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Gradle/">
+                        <span class="tag">Gradle</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Groovy/">
+                        <span class="tag">Groovy</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Java/">
+                        <span class="tag">Java</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Kotlin/">
+                        <span class="tag">Kotlin</span>
+                        <span class="tag is-grey">9</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Kotlin基础/">
+                        <span class="tag">Kotlin基础</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Markdown/">
+                        <span class="tag">Markdown</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/infix/">
+                        <span class="tag">infix</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/object/">
+                        <span class="tag">object</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/this/">
+                        <span class="tag">this</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/代理属性/">
+                        <span class="tag">代理属性</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/代理模式/">
+                        <span class="tag">代理模式</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/关注/">
+                        <span class="tag">关注</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/创业/">
+                        <span class="tag">创业</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/前端/">
+                        <span class="tag">前端</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/动态代理/">
+                        <span class="tag">动态代理</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/十分简历/">
+                        <span class="tag">十分简历</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/命令行/">
+                        <span class="tag">命令行</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/工作室/">
+                        <span class="tag">工作室</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/延迟加载/">
+                        <span class="tag">延迟加载</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/开发工具/">
+                        <span class="tag">开发工具</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/开源/">
+                        <span class="tag">开源</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/总结/">
+                        <span class="tag">总结</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/扩展/">
+                        <span class="tag">扩展</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/操作符/">
+                        <span class="tag">操作符</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/欧阳锋/">
+                        <span class="tag">欧阳锋</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/泛型/">
+                        <span class="tag">泛型</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/深圳一行代码科技有限公司/">
+                        <span class="tag">深圳一行代码科技有限公司</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/滑动返回/">
+                        <span class="tag">滑动返回</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/版本控制工具/">
+                        <span class="tag">版本控制工具</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/相对论/">
+                        <span class="tag">相对论</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/编程/">
+                        <span class="tag">编程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/编程语言/">
+                        <span class="tag">编程语言</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/脚本/">
+                        <span class="tag">脚本</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/视频教程/">
+                        <span class="tag">视频教程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/设计模式/">
+                        <span class="tag">设计模式</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/重载/">
+                        <span class="tag">重载</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+        
+        </div>
+    
+</div>
+
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only has-order-3 column-right ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2019/01/12/写在十分简历发布前夕/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="写在十分简历发布前夕">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-01-12T10:52:00.000Z">2019-01-12</time></div>
+                    <a href="/2019/01/12/写在十分简历发布前夕/" class="has-link-black-ter is-size-6">写在十分简历发布前夕</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/创业札记/">创业札记</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2018/07/09/kotlin/2018最新Kotlin基础视频教程上线了/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="2018最新Kotlin基础视频教程上线了">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2018-07-09T07:02:00.000Z">2018-07-09</time></div>
+                    <a href="/2018/07/09/kotlin/2018最新Kotlin基础视频教程上线了/" class="has-link-black-ter is-size-6">2018最新Kotlin基础视频教程上线了</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Kotlin/">Kotlin</a> / <a class="has-link-grey -link" href="/categories/Kotlin/基础知识/">基础知识</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2018/04/27/kotlin/那些年，我们看不懂的那些Kotlin标准函数/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="那些年，我们看不懂的那些Kotlin标准函数">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2018-04-27T07:21:00.000Z">2018-04-27</time></div>
+                    <a href="/2018/04/27/kotlin/那些年，我们看不懂的那些Kotlin标准函数/" class="has-link-black-ter is-size-6">那些年，我们看不懂的那些Kotlin标准函数</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Kotlin/">Kotlin</a> / <a class="has-link-grey -link" href="/categories/Kotlin/基础知识/">基础知识</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2018/04/27/kotlin/测测你的Kotlin基础/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="测测你的Kotlin基础">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2018-04-27T07:09:00.000Z">2018-04-27</time></div>
+                    <a href="/2018/04/27/kotlin/测测你的Kotlin基础/" class="has-link-black-ter is-size-6">测测你的Kotlin基础</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Kotlin/">Kotlin</a> / <a class="has-link-grey -link" href="/categories/Kotlin/基础知识/">基础知识</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2018/04/27/kotlin/关于Kotlin抛弃可检测的异常处理，你怎么看？/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="关于Kotlin抛弃可检测的异常处理，你怎么看？">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2018-04-27T06:57:00.000Z">2018-04-27</time></div>
+                    <a href="/2018/04/27/kotlin/关于Kotlin抛弃可检测的异常处理，你怎么看？/" class="has-link-black-ter is-size-6">关于Kotlin抛弃可检测的异常处理，你怎么看？</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Kotlin/">Kotlin</a> / <a class="has-link-grey -link" href="/categories/Kotlin/基础知识/">基础知识</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            归档
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/07/">
+                <span class="level-start">
+                    <span class="level-item">七月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/04/">
+                <span class="level-start">
+                    <span class="level-item">四月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">7</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/03/">
+                <span class="level-start">
+                    <span class="level-item">三月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/02/">
+                <span class="level-start">
+                    <span class="level-item">二月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2016/08/">
+                <span class="level-start">
+                    <span class="level-item">八月 2016</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                标签
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/2017/">
+                        <span class="tag">2017</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android/">
+                        <span class="tag">Android</span>
+                        <span class="tag is-grey">5</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Bug/">
+                        <span class="tag">Bug</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Git/">
+                        <span class="tag">Git</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Gradle/">
+                        <span class="tag">Gradle</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Groovy/">
+                        <span class="tag">Groovy</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Java/">
+                        <span class="tag">Java</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Kotlin/">
+                        <span class="tag">Kotlin</span>
+                        <span class="tag is-grey">9</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Kotlin基础/">
+                        <span class="tag">Kotlin基础</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Markdown/">
+                        <span class="tag">Markdown</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/infix/">
+                        <span class="tag">infix</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/object/">
+                        <span class="tag">object</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/this/">
+                        <span class="tag">this</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/代理属性/">
+                        <span class="tag">代理属性</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/代理模式/">
+                        <span class="tag">代理模式</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/关注/">
+                        <span class="tag">关注</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/创业/">
+                        <span class="tag">创业</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/前端/">
+                        <span class="tag">前端</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/动态代理/">
+                        <span class="tag">动态代理</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/十分简历/">
+                        <span class="tag">十分简历</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/命令行/">
+                        <span class="tag">命令行</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/工作室/">
+                        <span class="tag">工作室</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/延迟加载/">
+                        <span class="tag">延迟加载</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/开发工具/">
+                        <span class="tag">开发工具</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/开源/">
+                        <span class="tag">开源</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/总结/">
+                        <span class="tag">总结</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/扩展/">
+                        <span class="tag">扩展</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/操作符/">
+                        <span class="tag">操作符</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/欧阳锋/">
+                        <span class="tag">欧阳锋</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/泛型/">
+                        <span class="tag">泛型</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/深圳一行代码科技有限公司/">
+                        <span class="tag">深圳一行代码科技有限公司</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/滑动返回/">
+                        <span class="tag">滑动返回</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/版本控制工具/">
+                        <span class="tag">版本控制工具</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/相对论/">
+                        <span class="tag">相对论</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/编程/">
+                        <span class="tag">编程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/编程语言/">
+                        <span class="tag">编程语言</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/脚本/">
+                        <span class="tag">脚本</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/视频教程/">
+                        <span class="tag">视频教程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/设计模式/">
+                        <span class="tag">设计模式</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/重载/">
+                        <span class="tag">重载</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.svg" alt="欧阳锋工作室" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2019 欧阳锋工作室&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Download on GitHub" href="https://github.com/yuanhoujun">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+
+    
+    
+
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

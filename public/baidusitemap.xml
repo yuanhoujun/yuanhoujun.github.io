@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+
+    
+    
+    
+    
+  <url>
+    <loc>http://youngfeng.com/2019/01/12/%E5%86%99%E5%9C%A8%E5%8D%81%E5%88%86%E7%AE%80%E5%8E%86%E5%8F%91%E5%B8%83%E5%89%8D%E5%A4%95/</loc>
+    <lastmod>2019-04-28T12:39:23.528Z</lastmod>
+    <data>
+        <display>
+        <title>写在十分简历发布前夕</title>
+        <pubTime>2019-01-12T10:52:00.000Z</pubTime>
+        
+        <tag>创业</tag>
+         
+        <tag>深圳一行代码科技有限公司</tag>
+         
+        <tag>十分简历</tag>
+         
+         
+           
+             
+              <breadCrumb title="创业札记" url="http://youngfeng.com/categories/%E5%88%9B%E4%B8%9A%E6%9C%AD%E8%AE%B0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+    
+  <url>
+    <loc>http://youngfeng.com/2018/03/06/open%20source/Android%E4%B8%A4%E8%A1%8C%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E4%BB%BF%E5%BE%AE%E4%BF%A1%E6%BB%91%E5%8A%A8%E8%BF%94%E5%9B%9E%E6%95%88%E6%9E%9C/</loc>
+    <lastmod>2019-04-28T12:39:23.527Z</lastmod>
+    <data>
+        <display>
+        <title>Android两行代码实现仿微信滑动返回效果</title>
+        <pubTime>2018-03-06T01:57:00.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+        <tag>滑动返回</tag>
+         
+        <tag>开源</tag>
+         
+         
+           
+             
+              <breadCrumb title="开源" url="http://youngfeng.com/categories/%E5%BC%80%E6%BA%90/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://youngfeng.com/2018/04/27/kotlin/%E9%82%A3%E4%BA%9B%E5%B9%B4%EF%BC%8C%E6%88%91%E4%BB%AC%E7%9C%8B%E4%B8%8D%E6%87%82%E7%9A%84%E9%82%A3%E4%BA%9BKotlin%E6%A0%87%E5%87%86%E5%87%BD%E6%95%B0/</loc>
+    <lastmod>2019-04-28T12:39:23.527Z</lastmod>
+    <data>
+        <display>
+        <title>那些年，我们看不懂的那些Kotlin标准函数</title>
+        <pubTime>2018-04-27T07:21:00.000Z</pubTime>
+        
+        <tag>Kotlin</tag>
+         
+        <tag>编程语言</tag>
+         
+         
+           
+             
+              <breadCrumb title="Kotlin" url="http://youngfeng.com/categories/Kotlin/"/>
+          
+             
+              <breadCrumb title="基础知识" url="http://youngfeng.com/categories/Kotlin/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://youngfeng.com/2018/04/27/kotlin/%E6%B5%8B%E6%B5%8B%E4%BD%A0%E7%9A%84Kotlin%E5%9F%BA%E7%A1%80/</loc>
+    <lastmod>2019-04-28T12:39:23.526Z</lastmod>
+    <data>
+        <display>
+        <title>测测你的Kotlin基础</title>
+        <pubTime>2018-04-27T07:09:00.000Z</pubTime>
+        
+        <tag>Kotlin</tag>
+         
+        <tag>编程语言</tag>
+         
+         
+           
+             
+              <breadCrumb title="Kotlin" url="http://youngfeng.com/categories/Kotlin/"/>
+          
+             
+              <breadCrumb title="基础知识" url="http://youngfeng.com/categories/Kotlin/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://youngfeng.com/2018/01/26/kotlin/%E7%94%A8Kotlin%E5%86%99Android-Gradle%E8%84%9A%E6%9C%AC/</loc>
+    <lastmod>2019-04-28T12:39:23.526Z</lastmod>
+    <data>
+        <display>
+        <title>也许你应该试试用Kotlin写Gradle脚本</title>
+        <pubTime>2018-01-26T02:48:00.000Z</pubTime>
+        
+        <tag>Kotlin</tag>
+         
+        <tag>Groovy</tag>
+         
+        <tag>Gradle</tag>
+         
+        <tag>脚本</tag>
+         
+         
+           
+             
+              <breadCrumb title="Kotlin" url="http://youngfeng.com/categories/Kotlin/"/>
+          
+             
+              <breadCrumb title="杂谈" url="http://youngfeng.com/categories/Kotlin/%E6%9D%82%E8%B0%88/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://youngfeng.com/2018/04/14/kotlin/%E4%BD%A0%E6%98%AF%E5%90%A6%E4%B9%9F%E8%A2%ABKotlin%E8%AF%AD%E8%A8%80%E7%9A%84object%E7%BB%95%E6%99%95%E4%BA%86%E5%91%A2/</loc>
+    <lastmod>2019-04-28T12:39:23.525Z</lastmod>
+    <data>
+        <display>
+        <title>你是否也被Kotlin语言的object绕晕了呢</title>
+        <pubTime>2018-04-14T04:18:00.000Z</pubTime>
+        
+        <tag>Kotlin</tag>
+         
+        <tag>object</tag>
+         
+        <tag>编程语言</tag>
+         
+         
+           
+             
+              <breadCrumb title="Kotlin" url="http://youngfeng.com/categories/Kotlin/"/>
+          
+             
+              <breadCrumb title="基础知识" url="http://youngfeng.com/categories/Kotlin/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://youngfeng.com/2018/04/27/kotlin/%E5%85%B3%E4%BA%8EKotlin%E6%8A%9B%E5%BC%83%E5%8F%AF%E6%A3%80%E6%B5%8B%E7%9A%84%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%EF%BC%8C%E4%BD%A0%E6%80%8E%E4%B9%88%E7%9C%8B%EF%BC%9F/</loc>
+    <lastmod>2019-04-28T12:39:23.525Z</lastmod>
+    <data>
+        <display>
+        <title>关于Kotlin抛弃可检测的异常处理，你怎么看？</title>
+        <pubTime>2018-04-27T06:57:00.000Z</pubTime>
+        
+        <tag>Kotlin</tag>
+         
+        <tag>编程语言</tag>
+         
+         
+           
+             
+              <breadCrumb title="Kotlin" url="http://youngfeng.com/categories/Kotlin/"/>
+          
+             
+              <breadCrumb title="基础知识" url="http://youngfeng.com/categories/Kotlin/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://youngfeng.com/2018/02/06/kotlin/%E6%93%8D%E4%BD%9C%E7%AC%A6%E9%87%8D%E8%BD%BD%E5%8F%8A%E4%B8%AD%E7%BC%80%E8%B0%83%E7%94%A8/</loc>
+    <lastmod>2019-04-28T12:39:23.525Z</lastmod>
+    <data>
+        <display>
+        <title>Kotlin 操作符重载及中缀调用</title>
+        <pubTime>2018-02-06T03:39:00.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+        <tag>Kotlin</tag>
+         
+        <tag>操作符</tag>
+         
+        <tag>重载</tag>
+         
+        <tag>infix</tag>
+         
+         
+           
+             
+              <breadCrumb title="Kotlin" url="http://youngfeng.com/categories/Kotlin/"/>
+          
+             
+              <breadCrumb title="基础知识" url="http://youngfeng.com/categories/Kotlin/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://youngfeng.com/2018/04/14/kotlin/Kotlin%E9%9A%BE%E7%82%B9%E8%A7%A3%E6%9E%90%EF%BC%9Aextension%E5%92%8Cthis%E6%8C%87%E9%92%88/</loc>
+    <lastmod>2019-04-28T12:39:23.524Z</lastmod>
+    <data>
+        <display>
+        <title>Kotlin难点解析：extension和this指针</title>
+        <pubTime>2018-04-13T16:11:00.000Z</pubTime>
+        
+        <tag>Kotlin</tag>
+         
+        <tag>扩展</tag>
+         
+        <tag>this</tag>
+         
+         
+           
+             
+              <breadCrumb title="Kotlin" url="http://youngfeng.com/categories/Kotlin/"/>
+          
+             
+              <breadCrumb title="基础知识" url="http://youngfeng.com/categories/Kotlin/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://youngfeng.com/2018/04/17/kotlin/Kotlin%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%9A%84%E6%B3%9B%E5%9E%8B%E8%AE%BE%E8%AE%A1%E5%93%B2%E5%AD%A6/</loc>
+    <lastmod>2019-04-28T12:39:23.524Z</lastmod>
+    <data>
+        <display>
+        <title>Kotlin语言中的泛型设计哲学</title>
+        <pubTime>2018-04-17T15:16:00.000Z</pubTime>
+        
+        <tag>Kotlin</tag>
+         
+        <tag>泛型</tag>
+         
+         
+           
+             
+              <breadCrumb title="Kotlin" url="http://youngfeng.com/categories/Kotlin/"/>
+          
+             
+              <breadCrumb title="基础知识" url="http://youngfeng.com/categories/Kotlin/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://youngfeng.com/2016/08/22/kotlin/delegation/</loc>
+    <lastmod>2019-04-28T12:39:23.524Z</lastmod>
+    <data>
+        <display>
+        <title>Kotlin 代理模式</title>
+        <pubTime>2016-08-21T16:25:00.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+        <tag>Kotlin</tag>
+         
+        <tag>代理模式</tag>
+         
+        <tag>代理属性</tag>
+         
+        <tag>延迟加载</tag>
+         
+         
+           
+             
+              <breadCrumb title="Kotlin" url="http://youngfeng.com/categories/Kotlin/"/>
+          
+             
+              <breadCrumb title="基础知识" url="http://youngfeng.com/categories/Kotlin/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://youngfeng.com/2018/04/18/it%20tips/%E6%9C%80%E5%AE%8C%E6%95%B4%E7%9A%84Markdown%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/</loc>
+    <lastmod>2019-04-28T12:39:23.523Z</lastmod>
+    <data>
+        <display>
+        <title>最完整的Markdown基础教程</title>
+        <pubTime>2018-04-18T06:13:00.000Z</pubTime>
+        
+        <tag>Markdown</tag>
+         
+         
+           
+             
+              <breadCrumb title="IT小知识" url="http://youngfeng.com/categories/IT%E5%B0%8F%E7%9F%A5%E8%AF%86/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://youngfeng.com/2018/07/09/kotlin/2018%E6%9C%80%E6%96%B0Kotlin%E5%9F%BA%E7%A1%80%E8%A7%86%E9%A2%91%E6%95%99%E7%A8%8B%E4%B8%8A%E7%BA%BF%E4%BA%86/</loc>
+    <lastmod>2019-04-28T12:39:23.523Z</lastmod>
+    <data>
+        <display>
+        <title>2018最新Kotlin基础视频教程上线了</title>
+        <pubTime>2018-07-09T07:02:00.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+        <tag>Kotlin基础</tag>
+         
+        <tag>视频教程</tag>
+         
+         
+           
+             
+              <breadCrumb title="Kotlin" url="http://youngfeng.com/categories/Kotlin/"/>
+          
+             
+              <breadCrumb title="基础知识" url="http://youngfeng.com/categories/Kotlin/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://youngfeng.com/2018/03/02/design%20pattern/10%E5%88%86%E9%92%9F%E7%9C%8B%E6%87%82%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</loc>
+    <lastmod>2019-04-28T12:39:23.522Z</lastmod>
+    <data>
+        <display>
+        <title>10分钟看懂动态代理设计模式</title>
+        <pubTime>2018-03-02T07:46:00.000Z</pubTime>
+        
+        <tag>Java</tag>
+         
+        <tag>设计模式</tag>
+         
+        <tag>动态代理</tag>
+         
+         
+           
+             
+              <breadCrumb title="设计模式" url="http://youngfeng.com/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://youngfeng.com/2018/02/01/develop%20tools/%E5%85%B3%E4%BA%8EGit%EF%BC%8C%E4%BD%A0%E7%9C%9F%E7%9A%84%E5%AD%A6%E4%BC%9A%E4%BA%86%E5%90%97%EF%BC%9F/</loc>
+    <lastmod>2019-04-28T12:39:23.522Z</lastmod>
+    <data>
+        <display>
+        <title>关于Git，你真的学会了吗？</title>
+        <pubTime>2018-02-01T14:13:00.000Z</pubTime>
+        
+        <tag>Git</tag>
+         
+        <tag>版本控制工具</tag>
+         
+        <tag>开发工具</tag>
+         
+        <tag>命令行</tag>
+         
+         
+           
+             
+              <breadCrumb title="开发工具" url="http://youngfeng.com/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/"/>
+          
+             
+              <breadCrumb title="Git" url="http://youngfeng.com/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/Git/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://youngfeng.com/2018/03/05/comprehensive%20article/%E6%98%AF%E4%BD%A0%E8%87%AA%E5%B7%B1%E9%80%89%E6%8B%A9%E4%BA%86%E5%AE%89%E9%80%B8%EF%BC%8C%E5%88%AB%E6%80%AA%E8%B7%AF%E9%80%94%E5%A4%AA%E9%81%A5%E8%BF%9C/</loc>
+    <lastmod>2019-04-28T12:39:23.521Z</lastmod>
+    <data>
+        <display>
+        <title>是你自己选择了安逸，别怪路途太遥远</title>
+        <pubTime>2018-03-05T01:54:00.000Z</pubTime>
+        
+        <tag>2017</tag>
+         
+        <tag>总结</tag>
+         
+         
+           
+             
+              <breadCrumb title="随文杂记" url="http://youngfeng.com/categories/%E9%9A%8F%E6%96%87%E6%9D%82%E8%AE%B0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://youngfeng.com/2018/03/19/comprehensive%20article/%E6%8A%80%E6%9C%AF%E7%9B%B8%E5%AF%B9%E8%AE%BA%E4%B9%8B%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84/</loc>
+    <lastmod>2019-04-28T12:39:23.521Z</lastmod>
+    <data>
+        <display>
+        <title>技术相对论之软件架构</title>
+        <pubTime>2018-03-19T14:13:00.000Z</pubTime>
+        
+        <tag>相对论</tag>
+         
+        <tag>编程</tag>
+         
+         
+           
+             
+              <breadCrumb title="随文杂记" url="http://youngfeng.com/categories/%E9%9A%8F%E6%96%87%E6%9D%82%E8%AE%B0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://youngfeng.com/2018/02/28/about%20ouyangfeng/%E6%AC%A7%E9%98%B3%E9%94%8B%E6%A1%A3%E6%A1%88%E9%A6%86/</loc>
+    <lastmod>2019-04-28T12:39:23.520Z</lastmod>
+    <data>
+        <display>
+        <title>欧阳锋档案馆</title>
+        <pubTime>2018-02-28T14:24:00.000Z</pubTime>
+        
+        <tag>欧阳锋</tag>
+         
+        <tag>关注</tag>
+         
+        <tag>工作室</tag>
+         
+         
+           
+             
+              <breadCrumb title="关于欧阳锋" url="http://youngfeng.com/categories/%E5%85%B3%E4%BA%8E%E6%AC%A7%E9%98%B3%E9%94%8B/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://youngfeng.com/2018/01/02/bug%20fix/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%8D%B0%E8%B1%A1%E6%B7%B1%E5%88%BB%E7%9A%84Bug%E8%BF%BD%E8%B8%AA%E8%BF%87%E7%A8%8B/</loc>
+    <lastmod>2019-04-28T12:39:23.520Z</lastmod>
+    <data>
+        <display>
+        <title>记一次印象深刻的Bug追踪过程</title>
+        <pubTime>2018-01-02T10:03:00.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+        <tag>Bug</tag>
+         
+        <tag>前端</tag>
+         
+         
+           
+             
+              <breadCrumb title="Bug Fix" url="http://youngfeng.com/categories/Bug-Fix/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://youngfeng.com/2018/02/15/about%20ouyangfeng/2017%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/</loc>
+    <lastmod>2019-04-28T12:39:23.519Z</lastmod>
+    <data>
+        <display>
+        <title>2017年终总结</title>
+        <pubTime>2018-02-15T15:59:00.000Z</pubTime>
+        
+        <tag>2017</tag>
+         
+        <tag>总结</tag>
+         
+         
+           
+             
+              <breadCrumb title="关于欧阳锋" url="http://youngfeng.com/categories/%E5%85%B3%E4%BA%8E%E6%AC%A7%E9%98%B3%E9%94%8B/"/>
+          
+        </display>
+    </data>
+    </url>
+
+</urlset>
