@@ -124,7 +124,7 @@ widgets:
         # Author's current location to be shown in the profile widget
         location: '广东 深圳'
         # Path or URL to the avatar to be shown in the profile widget
-        avatar: 'https://avatars2.githubusercontent.com/u/7424397?s=400&u=41a286b5d8e1144211d1f6312986f4c687901b17&v=4'
+        avatar: 'https://upload.jianshu.io/users/upload_avatars/703764/0eaaf45c06e4.jpeg?imageMogr2/auto-orient/strip|imageView2/1/w/240/h/240'
         # Email address for the Gravatar to be shown in the profile widget
         gravatar: 
         # Whether to show avatar image rounded or square
