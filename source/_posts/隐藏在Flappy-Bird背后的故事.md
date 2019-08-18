@@ -73,3 +73,6 @@ tags:
 这个故事我第一次听说是来自奇异博士的youtube视频，在这里呢，我有责任奉劝大家不要试图去访问马里亚纳深网，这里是全世界最黑暗的角落，一旦进去也许就再也出不来了。
 
 我非常同意奇异博士说过的一句话，你想要的也许是他们的金钱，而他们想要的却是你的灵魂！
+
+### 参考资料
+[Suposta história do Flappy Bird](http://medob.blogspot.com/2014/02/suposta-historia-do-flappy-bird.html)
