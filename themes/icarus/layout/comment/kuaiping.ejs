@@ -1,12 +1,12 @@
-<% if (!has_config('comment.appid') { %>
+<% if (!has_config('comment.appid')) { %>
     <div class="notification is-danger">
         You forgot to set the <code>appid</code> or <code>conf</code> for Changyan. Please set it in <code>_config.yml</code>.
     </div>
 <% } else { %>
     <div id="KPCS"></div>
-    <script>
-        window.kuaiping = { appId: "<%= get_config('comment.appid') %>", sourceId: "<%= post.path %>"};
+    <script type="text/javascript">
+        window.kuaiping = { appId: "<%= get_config('comment.appid') %>", sourceId: "<%= post.path %>" };
     </script>
-    <script src="https://cdn.kuaiping.yhdm360.com/common/js/kuaiping.js"></script>
+    <script type="text/javascrpt" src="https://cdn.kuaiping.yhdm360.com/common/js/kuaiping.js"></script>
 <% } %>
 
