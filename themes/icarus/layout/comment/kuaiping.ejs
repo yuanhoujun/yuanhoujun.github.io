@@ -3,10 +3,7 @@
         You forgot to set the <code>appid</code> or <code>conf</code> for Changyan. Please set it in <code>_config.yml</code>.
     </div>
 <% } else { %>
-    <div id="KPCS"></div>
-    <script type="text/javascript">
-        window.kuaiping = { appId: "<%= get_config('comment.appid') %>", sourceId: "<%= post.path %>" };
-    </script>
-    <script type="text/javascrpt" src="https://cdn.kuaiping.yhdm360.com/common/js/kuaiping.js"></script>
+    <div id="KPSM" sourceid="<%= post.path %>" appid="<%= get_config('comment.appid') %>"></div>
+    <script type="text/javascript" src="https://cdn.kuaiping.yhdm360.com/pub/common/js/kp.js"></script>
 <% } %>
 

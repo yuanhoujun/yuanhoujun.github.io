@@ -103,12 +103,12 @@ sidebar:
     left:
         # Whether the left sidebar is sticky when page scrolls
         # https://ppoffice.github.io/hexo-theme-icarus/Configuration/Theme/make-a-sidebar-sticky-when-page-scrolls/
-        sticky: false
+        sticky: true
     # right sidebar settings
     right:
         # Whether the right sidebar is sticky when page scrolls
         # https://ppoffice.github.io/hexo-theme-icarus/Configuration/Theme/make-a-sidebar-sticky-when-page-scrolls/
-        sticky: false
+        sticky: true
 # Sidebar widget settings
 # https://ppoffice.github.io/hexo-theme-icarus/categories/Widgets/
 widgets:
