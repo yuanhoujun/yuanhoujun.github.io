@@ -7,7 +7,9 @@ tags:
 ### 快评是什么
 快评是由[深圳市一行代码科技有限公司](https://yhdm360.com)开发的一款社会化的评论系统，快评使用Markdown编辑器进行评论回复。目前，支持使用微信或手机号进行登录。
 
-体验地址：
+体验地址：[https://www.youngfeng.com/2019/09/25/Hexo-Next%E4%B8%BB%E9%A2%98%E5%BF%AB%E9%80%9F%E9%9B%86%E6%88%90%E5%BF%AB%E8%AF%84/](https://www.youngfeng.com/2019/09/25/Hexo-Next%E4%B8%BB%E9%A2%98%E5%BF%AB%E9%80%9F%E9%9B%86%E6%88%90%E5%BF%AB%E8%AF%84/)
+
+<!-- more -->
 
 ### 集成步骤
 1）注册并登录快评官网
@@ -31,11 +33,12 @@ tags:
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190925125438656.jpeg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FwcGxlMzM3MDA4,size_16,color_FFFFFF,t_70)
 ![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9jZG4ua3VhaXBpbmcueWhkbTM2MC5jb20vcHViL2NvbW1vbi9pbWFnZS93eGdyb3VwLnBuZw?x-oss-process=image/format,png)
+
 **备注：如果上方二维码失效，请直接添加群主微信ouyangfeng_office，备注“快评”**
 
 ### 参考文档
 快评官网：[https://kuaiping.yhdm360.com](https://kuaiping.yhdm360.com)
 
-Kuaiping-adapter: [https://kuaiping.yhdm360.com](https://kuaiping.yhdm360.com)
+Kuaiping-adapter: [https://github.com/yuanhoujun/kuaiping-adapter](https://github.com/yuanhoujun/kuaiping-adapter)
 
 Next: [https://github.com/iissnan/hexo-theme-next.git](https://github.com/iissnan/hexo-theme-next.git)
