@@ -95,8 +95,4 @@ deploy:
   repo: 
     github: git@github.com:yuanhoujun/yuanhoujun.github.io.git,master
     coding: git@git.coding.net:ouyangfeng2016/ouyangfeng2016.coding.me.git,master
-- type: baidu_url_submitter   
-
-
-
-
+- type: baidu_url_submitter
