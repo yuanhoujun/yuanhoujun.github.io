@@ -1,9 +1,0 @@
-<% if (!has_config('comment.appid')) { %>
-    <div class="notification is-danger">
-        You forgot to set the <code>appid</code> or <code>conf</code> for Changyan. Please set it in <code>_config.yml</code>.
-    </div>
-<% } else { %>
-    <div id="KPSM" sourceid="<%= post.path %>" appid="<%= get_config('comment.appid') %>"></div>
-    <script type="text/javascript" src="https://cdn.kuaiping.yhdm360.com/pub/common/js/kp.js"></script>
-<% } %>
-

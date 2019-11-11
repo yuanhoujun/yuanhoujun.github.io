@@ -7,7 +7,7 @@ title: 欧阳锋工作室
 subtitle: 编程，我们是认真的！
 description: 关注欧阳锋工作室，你想知道的都在这里~
 author: 欧阳锋工作室
-language: zh-CN
+language: zh-cn
 timezone:
 
 # URL
@@ -72,7 +72,7 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: icarus
+theme: tranquilpeak
 
 # 自动生成sitemap
 sitemap:
