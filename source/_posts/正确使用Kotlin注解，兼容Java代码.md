@@ -420,7 +420,6 @@ Base unboxBase(Box<Base> box) { …… }
 如果是新工程，建议大家全部使用Kotlin代码，避免出现上述注解，减少阅读上的困难。目前，Kotlin版本已经非常稳定了，请大家放心使用。
 
 阅读更多技术文章，请关注微信公众号”欧阳锋工作室“
-
 ![](http://youngfeng.com/assets/images/mpwexin.jpg)
 
 参与Kotlin技术讨论，请添加唯一官方QQ交流群：329673958
