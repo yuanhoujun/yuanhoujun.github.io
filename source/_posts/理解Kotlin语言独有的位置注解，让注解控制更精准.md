@@ -6,9 +6,6 @@ tags:
 - 注解
 categories:
 - Kotlin
-thumbnailImage: ![](thumb.jpeg)
-thumbnailImagePosition: left
-autoThumbnailImage:false
 comments: true
 ---
 
