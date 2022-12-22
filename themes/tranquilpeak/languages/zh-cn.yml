@@ -73,6 +73,6 @@ post:
 
 author:
     # 你的个人简介 (支持 Markdown 和 HTML 语法)
-    bio: "Stay hungry, stay foolish"
+    bio: ""
     # 你的工作简介
-    job: "深圳一行代码科技有限公司创始人"
+    job: ""
