@@ -1,0 +1,764 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="欧阳锋工作室">
+    <title>10分钟看懂动态代理设计模式 - 欧阳锋工作室</title>
+    <meta name="author" content="欧阳锋工作室">
+    
+    
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"欧阳锋工作室","sameAs":["https://github.com/yuanhoujun","assets/images/mpwexin.jpg","https://weibo.com/u/6140262139?is_all=1","mailto:ouyangfeng2016@gmail.com"],"image":"avatar.jpeg"},"articleBody":"\n动态代理是Java语言中非常经典的一种设计模式，也是所有设计模式中最难理解的一种。本文将通过一个简单的例子模拟JDK动态代理实现，让你彻底明白动态代理设计模式的本质，文章中可能会涉及到一些你没有学习过的知识点或概念。如果恰好遇到了这些知识盲点，请先去学习这部分知识，再来阅读这篇文章。\n\n什么是代理从字面意思来看，代理比较好理解，无非就是代为处理的意思。举个例子，你在上大学的时候，总是喜欢逃课。因此，你拜托你的同学帮你答到，而自己却窝在宿舍玩游戏… 你的这个同学恰好就充当了代理的作用，代替你去上课。\n是的，你没有看错，代理就是这么简单！\n理解了代理的意思，你脑海中恐怕还有两个巨大的疑问：\n\n怎么实现代理模式\n代理模式有什么实际用途\n\n要理解这两个问题，看一个简单的例子：12345678910111213141516public interface Flyable &#123;    void fly();&#125;public class Bird implements Flyable &#123;    @Override    public void fly() &#123;        System.out.println(\"Bird is flying...\");        try &#123;            Thread.sleep(new Random().nextInt(1000));        &#125; catch (InterruptedException e) &#123;            e.printStackTrace();        &#125;    &#125;&#125;\n很简单的一个例子，用一个随机睡眠时间模拟小鸟在空中的飞行时间。接下来问题来了，如果我要知道小鸟在天空中飞行了多久，怎么办？\n有人说，很简单，在Bird-&gt;fly()方法的开头记录起始时间，在方法结束记录完成时间，两个时间相减就得到了飞行时间。123456789101112@Override public void fly() &#123;     long start = System.currentTimeMillis();     System.out.println(\"Bird is flying...\");     try &#123;         Thread.sleep(new Random().nextInt(1000));     &#125; catch (InterruptedException e) &#123;         e.printStackTrace();     &#125;     long end = System.currentTimeMillis();     System.out.println(\"Fly time = \" + (end - start)); &#125;\n的确，这个方法没有任何问题，接下来加大问题的难度。如果Bird这个类来自于某个SDK（或者说Jar包）提供，你无法改动源码，怎么办？\n一定会有人说，我可以在调用的地方这样写：1234567public static void main(String[] args) &#123;        Bird bird = new Bird();        long start = System.currentTimeMillis();        bird.fly();        long end = System.currentTimeMillis();        System.out.println(\"Fly time = \" + (end - start));&#125;\n这个方案看起来似乎没有问题，但其实你忽略了准备这些方法所需要的时间，执行一个方法，需要开辟栈内存、压栈、出栈等操作，这部分时间也是不可以忽略的。因此，这个解决方案不可行。那么，还有什么方法可以做到呢？\na）使用继承继承是最直观的解决方案，相信你已经想到了，至少我最开始想到的解决方案就是继承。为此，我们重新创建一个类Bird2，在Bird2中我们只做一件事情，就是调用父类的fly方法，在前后记录时间，并打印时间差：123456789101112public class Bird2 extends Bird &#123;    @Override    public void fly() &#123;        long start = System.currentTimeMillis();                super.fly();                long end = System.currentTimeMillis();        System.out.println(\"Fly time = \" + (end - start));    &#125;&#125;\n这是一种解决方案，还有一种解决方案叫做：聚合，其实也是比较容易想到的。我们再次创建新类Bird3，在Bird3的构造方法中传入Bird实例。同时，让Bird3也实现Flyable接口，并在fly方法中调用传入的Bird实例的fly方法：1234567891011121314151617public class Bird3 implements Flyable &#123;    private Bird bird;    public Bird3(Bird bird) &#123;        this.bird = bird;    &#125;    @Override    public void fly() &#123;        long start = System.currentTimeMillis();        bird.fly();        long end = System.currentTimeMillis();        System.out.println(\"Fly time = \" + (end - start));    &#125;&#125;\n为了记录Bird-&gt;fly()方法的执行时间，我们在前后添加了记录时间的代码。同样地，通过这种方法我们也可以获得小鸟的飞行时间。那么，这两种方法孰优孰劣呢？咋一看，不好评判！\n继续深入思考，用问题推导来解答这个问题：\n问题一：如果我还需要在fly方法前后打印日志，记录飞行开始和飞行结束，怎么办？有人说，很简单！继承Bird2并在在前后添加打印语句即可。那么，问题来了，请看问题二。\n问题二：如果我需要调换执行顺序，先打印日志，再获取飞行时间，怎么办？有人说，再新建一个类Bird4继承Bird，打印日志。再新建一个类Bird5继承Bird4，获取方法执行时间。\n问题显而易见：使用继承将导致类无限制扩展，同时灵活性也无法获得保障。那么，使用 聚合 是否可以避免这个问题呢？答案是：可以！但我们的类需要稍微改造一下。修改Bird3类，将聚合对象Bird类型修改为Flyable\n1234567891011121314151617public class Bird3 implements Flyable &#123;    private Flyable flyable;    public Bird3(Flyable flyable) &#123;        this.flyable = flyable;    &#125;    @Override    public void fly() &#123;        long start = System.currentTimeMillis();        flyable.fly();        long end = System.currentTimeMillis();        System.out.println(\"Fly time = \" + (end - start));    &#125;&#125;\n为了让你看的更清楚，我将Bird3更名为BirdTimeProxy，即用于获取方法执行时间的代理的意思。同时我们新建BirdLogProxy代理类用于打印日志：\n12345678910111213141516public class BirdLogProxy implements Flyable &#123;    private Flyable flyable;    public BirdLogProxy(Flyable flyable) &#123;        this.flyable = flyable;    &#125;    @Override    public void fly() &#123;        System.out.println(\"Bird fly start...\");        flyable.fly();        System.out.println(\"Bird fly end...\");    &#125;&#125;\n接下来神奇的事情发生了，如果我们需要先记录日志，再获取飞行时间，可以在调用的地方这么做：\n1234567public static void main(String[] args) &#123;    Bird bird = new Bird();    BirdLogProxy p1 = new BirdLogProxy(bird);    BirdTimeProxy p2 = new BirdTimeProxy(p1);    p2.fly();&#125;\n反过来，可以这么做：\n1234567public static void main(String[] args) &#123;       Bird bird = new Bird();       BirdTimeProxy p2 = new BirdTimeProxy(bird);       BirdLogProxy p1 = new BirdLogProxy(p2);       p1.fly();&#125;\n看到这里，有同学可能会有疑问了。虽然现象看起来，聚合可以灵活调换执行顺序。可是，为什么 聚合 可以做到，而继承不行呢。我们用一张图来解释一下：\n静态代理接下来，观察上面的类BirdTimeProxy，在它的fly方法中我们直接调用了flyable-&gt;fly()方法。换而言之，BirdTimeProxy其实代理了传入的Flyable对象，这就是典型的静态代理实现。\n从表面上看，静态代理已经完美解决了我们的问题。可是，试想一下，如果我们需要计算SDK中100个方法的运行时间，同样的代码至少需要重复100次，并且创建至少100个代理类。往小了说，如果Bird类有多个方法，我们需要知道其他方法的运行时间，同样的代码也至少需要重复多次。因此，静态代理至少有以下两个局限性问题：\n\n如果同时代理多个类，依然会导致类无限制扩展\n如果类中有多个方法，同样的逻辑需要反复实现\n\n那么，我们是否可以使用同一个代理类来代理任意对象呢？我们以获取方法运行时间为例，是否可以使用同一个类（例如：TimeProxy）来计算任意对象的任一方法的执行时间呢？甚至再大胆一点，代理的逻辑也可以自己指定。比如，获取方法的执行时间，打印日志，这类逻辑都可以自己指定。这就是本文重点探讨的问题，也是最难理解的部分：动态代理。\n动态代理继续回到上面这个问题：是否可以使用同一个类（例如：TimeProxy）来计算任意对象的任一方法的执行时间呢。\n这个部分需要一定的抽象思维，我想，你脑海中的第一个解决方案应该是使用反射。反射是用于获取已创建实例的方法或者属性，并对其进行调用或者赋值。很明显，在这里，反射解决不了问题。但是，再大胆一点，如果我们可以动态生成TimeProxy这个类，并且动态编译。然后，再通过反射创建对象并加载到内存中，不就实现了对任意对象进行代理了吗？为了防止你依然一头雾水，我们用一张图来描述接下来要做什么：\n动态生成Java源文件并且排版是一个非常繁琐的工作，为了简化操作，我们使用 JavaPoet 这个第三方库帮我们生成TimeProxy的源码。希望 JavaPoet  不要成为你的负担，不理解 JavaPoet 没有关系，你只要把它当成一个Java源码生成工具使用即可。\nPS：你记住，任何工具库的使用都不会太难，它是为了简化某些操作而出现的，目标是简化而不是繁琐。因此，只要你适应它的规则就轻车熟路了。\n第一步：生成TimeProxy源码12345678910111213141516171819202122232425262728293031323334353637383940public class Proxy &#123;    public static Object newProxyInstance() throws IOException &#123;        TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(\"TimeProxy\")                .addSuperinterface(Flyable.class);        FieldSpec fieldSpec = FieldSpec.builder(Flyable.class, \"flyable\", Modifier.PRIVATE).build();        typeSpecBuilder.addField(fieldSpec);        MethodSpec constructorMethodSpec = MethodSpec.constructorBuilder()                .addModifiers(Modifier.PUBLIC)                .addParameter(Flyable.class, \"flyable\")                .addStatement(\"this.flyable = flyable\")                .build();        typeSpecBuilder.addMethod(constructorMethodSpec);        Method[] methods = Flyable.class.getDeclaredMethods();        for (Method method : methods) &#123;            MethodSpec methodSpec = MethodSpec.methodBuilder(method.getName())                    .addModifiers(Modifier.PUBLIC)                    .addAnnotation(Override.class)                    .returns(method.getReturnType())                    .addStatement(\"long start = $T.currentTimeMillis()\", System.class)                    .addCode(\"\\n\")                    .addStatement(\"this.flyable.\" + method.getName() + \"()\")                    .addCode(\"\\n\")                    .addStatement(\"long end = $T.currentTimeMillis()\", System.class)                    .addStatement(\"$T.out.println(\\\"Fly Time =\\\" + (end - start))\", System.class)                    .build();            typeSpecBuilder.addMethod(methodSpec);        &#125;        JavaFile javaFile = JavaFile.builder(\"com.youngfeng.proxy\", typeSpecBuilder.build()).build();        // 为了看的更清楚，我将源码文件生成到桌面        javaFile.writeTo(new File(\"/Users/ouyangfeng/Desktop/\"));        return null;    &#125;&#125;\n在main方法中调用Proxy.newProxyInstance()，你将看到桌面已经生成了TimeProxy.java文件，生成的内容如下：\n12345678910111213141516171819202122package com.youngfeng.proxy;import java.lang.Override;import java.lang.System;class TimeProxy implements Flyable &#123;  private Flyable flyable;  public TimeProxy(Flyable flyable) &#123;    this.flyable = flyable;  &#125;  @Override  public void fly() &#123;    long start = System.currentTimeMillis();    this.flyable.fly();    long end = System.currentTimeMillis();    System.out.println(\"Fly Time =\" + (end - start));  &#125;&#125;\n第二步：编译TimeProxy源码编译TimeProxy源码我们直接使用JDK提供的编译工具即可，为了使你看起来更清晰，我使用一个新的辅助类来完成编译操作：\n1234567891011public class JavaCompiler &#123;    public static void compile(File javaFile) throws IOException &#123;        javax.tools.JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();        StandardJavaFileManager fileManager = javaCompiler.getStandardFileManager(null, null, null);        Iterable iterable = fileManager.getJavaFileObjects(javaFile);        javax.tools.JavaCompiler.CompilationTask task = javaCompiler.getTask(null, fileManager, null, null, null, iterable);        task.call();        fileManager.close();    &#125;&#125;\n在Proxy-&gt;newProxyInstance()方法中调用该方法，编译顺利完成：\n123456// 为了看的更清楚，我将源码文件生成到桌面String sourcePath = \"/Users/ouyangfeng/Desktop/\";javaFile.writeTo(new File(sourcePath));// 编译JavaCompiler.compile(new File(sourcePath + \"/com/youngfeng/proxy/TimeProxy.java\"));\n\n第三步：加载到内存中并创建对象123456URL[] urls = new URL[] &#123;new URL(\"file:/\" + sourcePath)&#125;;URLClassLoader classLoader = new URLClassLoader(urls);Class clazz = classLoader.loadClass(\"com.youngfeng.proxy.TimeProxy\");Constructor constructor = clazz.getConstructor(Flyable.class);Flyable flyable = (Flyable) constructor.newInstance(new Bird());flyable.fly();\n通过以上三个步骤，我们至少解决了下面两个问题：\n\n不再需要手动创建TimeProxy\n可以代理任意实现了Flyable接口的类对象，并获取接口方法的执行时间\n\n可是，说好的任意对象呢？\n第四步：增加InvocationHandler接口查看Proxy-&gt;newProxyInstance()的源码，代理类继承的接口我们是写死的，为了增加灵活性，我们将接口类型作为参数传入：\n接口的灵活性问题解决了，TimeProxy的局限性依然存在，它只能用于获取方法的执行时间，而如果要在方法执行前后打印日志则需要重新创建一个代理类，显然这是不妥的！\n为了增加控制的灵活性，我们考虑针将代理的处理逻辑也抽离出来（这里的处理就是打印方法的执行时间）。新增InvocationHandler接口，用于处理自定义逻辑：\n123public interface InvocationHandler &#123;    void invoke(Object proxy, Method method, Object[] args);&#125;\n想象一下，如果客户程序员需要对代理类进行自定义的处理，只要实现该接口，并在invoke方法中进行相应的处理即可。这里我们在接口中设置了三个参数（其实也是为了和JDK源码保持一致）：\n\nproxy =&gt; 这个参数指定动态生成的代理类，这里是TimeProxy\nmethod =&gt; 这个参数表示传入接口中的所有Method对象\nargs =&gt; 这个参数对应当前method方法中的参数\n\n引入了InvocationHandler接口之后，我们的调用顺序应该变成了这样：\n12345MyInvocationHandler handler = new MyInvocationHandler();Flyable proxy = Proxy.newProxyInstance(Flyable.class, handler);proxy.fly();方法执行流：proxy.fly() =&gt; handler.invoke()\n为此，我们需要在Proxy.newProxyInstance()方法中做如下改动：\n\n在newProxyInstance方法中传入InvocationHandler\n在生成的代理类中增加成员变量handler\n在生成的代理类方法中，调用invoke方法\n\n1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950 public static Object newProxyInstance(Class inf, InvocationHandler handler) throws Exception &#123;       TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(\"TimeProxy\")               .addModifiers(Modifier.PUBLIC)               .addSuperinterface(inf);       FieldSpec fieldSpec = FieldSpec.builder(InvocationHandler.class, \"handler\", Modifier.PRIVATE).build();       typeSpecBuilder.addField(fieldSpec);       MethodSpec constructorMethodSpec = MethodSpec.constructorBuilder()               .addModifiers(Modifier.PUBLIC)               .addParameter(InvocationHandler.class, \"handler\")               .addStatement(\"this.handler = handler\")               .build();       typeSpecBuilder.addMethod(constructorMethodSpec);       Method[] methods = inf.getDeclaredMethods();       for (Method method : methods) &#123;           MethodSpec methodSpec = MethodSpec.methodBuilder(method.getName())                   .addModifiers(Modifier.PUBLIC)                   .addAnnotation(Override.class)                   .returns(method.getReturnType())                   .addCode(\"try &#123;\\n\")                   .addStatement(\"\\t$T method = \" + inf.getName() + \".class.getMethod(\\\"\" + method.getName() + \"\\\")\", Method.class)                   // 为了简单起见，这里参数直接写死为空                   .addStatement(\"\\tthis.handler.invoke(this, method, null)\")                   .addCode(\"&#125; catch(Exception e) &#123;\\n\")                   .addCode(\"\\te.printStackTrace();\\n\")                   .addCode(\"&#125;\\n\")                   .build();           typeSpecBuilder.addMethod(methodSpec);       &#125;       JavaFile javaFile = JavaFile.builder(\"com.youngfeng.proxy\", typeSpecBuilder.build()).build();       // 为了看的更清楚，我将源码文件生成到桌面       String sourcePath = \"/Users/ouyangfeng/Desktop/\";       javaFile.writeTo(new File(sourcePath));       // 编译       JavaCompiler.compile(new File(sourcePath + \"/com/youngfeng/proxy/TimeProxy.java\"));       // 使用反射load到内存       URL[] urls = new URL[] &#123;new URL(\"file:\" + sourcePath)&#125;;       URLClassLoader classLoader = new URLClassLoader(urls);       Class clazz = classLoader.loadClass(\"com.youngfeng.proxy.TimeProxy\");       Constructor constructor = clazz.getConstructor(InvocationHandler.class);       Object obj = constructor.newInstance(handler);       return obj;&#125;\n上面的代码你可能看起来比较吃力，我们直接调用该方法，查看最后生成的源码。在main方法中测试newProxyInstance查看生成的TimeProxy源码：\n测试代码\n1Proxy.newProxyInstance(Flyable.class, new MyInvocationHandler(new Bird()));\n生成的TimeProxy.java源码\n12345678910111213141516171819202122package com.youngfeng.proxy;import java.lang.Override;import java.lang.reflect.Method;public class TimeProxy implements Flyable &#123;  private InvocationHandler handler;  public TimeProxy(InvocationHandler handler) &#123;    this.handler = handler;  &#125;  @Override  public void fly() &#123;    try &#123;    \tMethod method = com.youngfeng.proxy.Flyable.class.getMethod(\"fly\");    \tthis.handler.invoke(this, method, null);    &#125; catch(Exception e) &#123;    \te.printStackTrace();    &#125;  &#125;&#125;\nMyInvocationHandler.java\n1234567891011121314151617181920212223public class MyInvocationHandler implements InvocationHandler &#123;    private Bird bird;    public MyInvocationHandler(Bird bird) &#123;        this.bird = bird;    &#125;    @Override    public void invoke(Object proxy, Method method, Object[] args) &#123;        long start = System.currentTimeMillis();        try &#123;            method.invoke(bird, new Object[] &#123;&#125;);        &#125; catch (IllegalAccessException e) &#123;            e.printStackTrace();        &#125; catch (InvocationTargetException e) &#123;            e.printStackTrace();        &#125;        long end = System.currentTimeMillis();        System.out.println(\"Fly time = \" + (end - start));    &#125;&#125;\n至此，整个方法栈的调用栈变成了这样：\n看到这里，估计很多同学已经晕了，在静态代理部分，我们在代理类中传入了被代理对象。可是，使用newProxyInstance生成动态代理对象的时候，我们居然不再需要传入被代理对象了。我们传入了的实际对象是InvocationHandler实现类的实例，这看起来有点像生成了InvocationHandler的代理对象，在动态生成的代理类的任意方法中都会间接调用InvocationHandler-&gt;invoke(proxy, method, args)方法。\n其实的确是这样。TimeProxy真正代理的对象就是InvocationHandler，不过这里设计的巧妙之处在于，InvocationHandler是一个接口，真正的实现由用户指定。另外，在每一个方法执行的时候，invoke方法都会被调用 ，这个时候如果你需要对某个方法进行自定义逻辑处理，可以根据method的特征信息进行判断分别处理。\n如何使用上面这段解释是告诉你在执行Proxy-&gt;newProxyInstance方法的时候真正发生的事情，而在实际使用过程中你完全可以忘掉上面的解释。按照设计者的初衷，我们做如下简单归纳：\n\nProxy-&gt;newProxyInstance(infs, handler) 用于生成代理对象\nInvocationHandler：这个接口主要用于自定义代理逻辑处理\n为了完成对被代理对象的方法拦截，我们需要在InvocationHandler对象中传入被代理对象实例。\n\n查看上面的代码，你可以看到我将Bird实例已经传入到了MyInvocationHandler中，原因就是第三点。\n这样设计有什么好处呢？有人说，我们大费周章，饶了一大圈，最终变成了这个样子，到底图什么呢？\n想象一下，到此为止，如果我们还需要对其它任意对象进行代理，是否还需要改动newProxyInstance方法的源码，答案是：完全不需要！\n只要你在newProxyInstance方法中指定代理需要实现的接口，指定用于自定义处理的InvocationHandler对象，整个代理的逻辑处理都在你自定义的InvocationHandler实现类中进行处理。至此，而我们终于可以从不断地写代理类用于实现自定义逻辑的重复工作中解放出来了，从此需要做什么，交给InvocationHandler。\n事实上，我们之前给自己定下的目标“使用同一个类来计算任意对象的任一方法的执行时间”已经实现了。严格来说，是我们超额完成了任务，TimeProxy不仅可以计算方法执行的时间，也可以打印方法执行日志，这完全取决于你的InvocationHandler接口实现。因此，这里取名为TimeProxy其实已经不合适了。我们可以修改为和JDK命名一致，即$Proxy0，感兴趣的同学请自行实践，本篇文章的代码将放到我的Github仓库，文章结尾会给出代码地址。\nJDK实现揭秘通过上面的这些步骤，我们完成了一个简易的仿JDK实现的动态代理逻辑。接下来，我们一起来看一看JDK实现的动态代理和我们到底有什么不同。\nProxy.java\nInvocationHandler\n可以看到，官方版本Proxy类提供的方法多一些，而我们主要使用的接口newProxyInstance参数也和我们设计的不太一样。这里给大家简单解释一下，每个参数的意义：\n\nClassloader：类加载器，你可以使用自定义的类加载器，我们的实现版本为了简化，直接在代码中写死了Classloader。\nClass&lt;?&gt;[]：第二个参数也和我们的实现版本不一致，这个其实很容易理解，我们应该允许我们自己实现的代理类同时实现多个接口。前面设计只传入一个接口，只是为了简化实现，让你专注核心逻辑实现而已。\n\n最后一个参数就不用说了，和我们实现的版本完全是一样的。\n仔细观察官方版本的InvocationHandler，它和我们自己的实现的版本也有一个细微的差别：官方版本invoke方法有返回值，而我们的版本中是没有返回值的。那么，返回值到底有什么作用呢？直接来看官方文档：\n核心思想：这里的返回值类型必须和传入接口的返回值类型一致，或者与其封装对象的类型一致。\n遗憾的是，这里并没有说明返回值的用途，其实这里稍微发挥一下想象力就知道了。在我们的版本实现中，Flyable接口的所有方法都是没有返回值的，问题是，如果有返回值呢？是的，你没有猜错，这里的invoke方法对应的就是传入接口中方法的返回值。\n答疑解惑invoke方法的第一个参数proxy到底有什么作用？这个问题其实也好理解，如果你的接口中有方法需要返回自身，如果在invoke中没有传入这个参数，将导致实例无法正常返回。在这种场景中，proxy的用途就表现出来了。简单来说，这其实就是最近非常火的链式编程的一种应用实现。\n动态代理到底有什么用？学习任何一门技术，一定要问一问自己，这到底有什么用。其实，在这篇文章的讲解过程中，我们已经说出了它的主要用途。你发现没，使用动态代理我们居然可以在不改变源码的情况下，直接在方法中插入自定义逻辑。这有点不太符合我们的一条线走到底的编程逻辑，这种编程模型有一个专业名称叫 AOP。所谓的AOP，就像刀一样，抓住时机，趁机插入。\n基于这样一种动态特性，我们可以用它做很多事情，例如：\n\n事务提交或回退（Web开发中很常见）\n权限管理\n自定义缓存逻辑处理\nSDK Bug修复…\n\n如果你阅读过 Android_Slide_To_Close 的源码会发现，它也在某个地方使用了动态代理设计模式。\n总结到此为止，关于动态代理的所有讲解已经结束了，原谅我使用了一个诱导性的标题“骗”你进来阅读这篇文章。如果你不是一个久经沙场的“老司机”，10分钟完全看懂动态代理设计模式还是有一定难度的。但即使没有看懂也没关系，如果你在第一次阅读完这篇文章后依然一头雾水，就不妨再仔细阅读一次。在阅读的过程中，一定要跟着文章思路去敲代码。反反复复，一定会看懂的。我在刚刚学习动态代理设计模式的时候就反复看了不下5遍，并且亲自敲代码实践了多次。\n为了让你少走弯路，我认为看懂这篇文章，你至少需要学习以下知识点：\n\n至少已经理解了面向对象语言的多态特性\n了解简单的反射用法\n会简单使用 JavaPoet 生成Java源码\n\n如果你在阅读文章的过程中，有任何不理解的问题或者建议，欢迎在文章下方留言告诉我！\n本篇文章例子代码：https://github.com/yuanhoujun/java-dynamic-proxy\n\n我是欧阳锋，设计模式是一种非常好的编程指导模型，它在所有编程语言中是通用的，并且是亘古不变的。我建议你在这个方面多下苦功，不要纠结在一些重复的劳动中，活用设计模式会让你的代码更显灵动。想要了解我吗？看这里：欧阳锋档案馆。\n","dateCreated":"2018-03-02T15:46:00+08:00","dateModified":"2022-09-08T16:13:27+08:00","datePublished":"2018-03-02T15:46:00+08:00","description":"\n动态代理是Java语言中非常经典的一种设计模式，也是所有设计模式中最难理解的一种。本文将通过一个简单的例子模拟JDK动态代理实现，让你彻底明白动态代理设计模式的本质","headline":"10分钟看懂动态代理设计模式","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://youngfeng.com/2018/03/02/design pattern/10分钟看懂动态代理设计模式/"},"publisher":{"@type":"Organization","name":"欧阳锋工作室","sameAs":["https://github.com/yuanhoujun","assets/images/mpwexin.jpg","https://weibo.com/u/6140262139?is_all=1","mailto:ouyangfeng2016@gmail.com"],"image":"avatar.jpeg","logo":{"@type":"ImageObject","url":"avatar.jpeg"}},"url":"http://youngfeng.com/2018/03/02/design pattern/10分钟看懂动态代理设计模式/","keywords":"动态代理, Java, 设计模式"}</script>
+    <meta name="description" content="动态代理是Java语言中非常经典的一种设计模式，也是所有设计模式中最难理解的一种。本文将通过一个简单的例子模拟JDK动态代理实现，让你彻底明白动态代理设计模式的本质">
+<meta name="keywords" content="动态代理,Java,设计模式">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="10分钟看懂动态代理设计模式">
+<meta property="og:url" content="http://youngfeng.com/2018/03/02/design pattern/10分钟看懂动态代理设计模式/index.html">
+<meta property="og:site_name" content="欧阳锋工作室">
+<meta property="og:description" content="动态代理是Java语言中非常经典的一种设计模式，也是所有设计模式中最难理解的一种。本文将通过一个简单的例子模拟JDK动态代理实现，让你彻底明白动态代理设计模式的本质">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/703764-2d04ad5bbcb2d25e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/703764-0e22137ce1f0291b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/703764-0e82c03cdd902aaf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/703764-cd110b5720d14823.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/703764-4ff1323a12cb9c39.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/703764-2f5a7b2762949e11.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/703764-9d58bd4930a28081.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/703764-940eef4374694714.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/703764-4b3ff894932ec1e8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2022-09-08T08:13:27.732Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="10分钟看懂动态代理设计模式">
+<meta name="twitter:description" content="动态代理是Java语言中非常经典的一种设计模式，也是所有设计模式中最难理解的一种。本文将通过一个简单的例子模拟JDK动态代理实现，让你彻底明白动态代理设计模式的本质">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/703764-2d04ad5bbcb2d25e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="http://youngfeng.com/assets/images/avatar.jpeg"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    <link rel="stylesheet" href="/assets/css/all.css">
+    <link rel="stylesheet" href="/assets/css/jquery.fancybox.css">
+    <link rel="stylesheet" href="/assets/css/thumbs.css">
+    <link rel="stylesheet" href="/assets/css/tranquilpeak.css">
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            欧阳锋工作室
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/avatar.jpeg" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/avatar.jpeg" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">欧阳锋工作室</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>author.bio</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://github.com/yuanhoujun"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="GitHub"
+                        >
+                        <i class="sidebar-button-icon fab fa-github" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/assets/images/mpwexin.jpg"
+                            
+                            rel="noopener"
+                            title="微信公众号"
+                        >
+                        <i class="sidebar-button-icon fab fa-weixin" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">微信公众号</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://weibo.com/u/6140262139?is_all=1"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="微博"
+                        >
+                        <i class="sidebar-button-icon fab fa-weibo" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">微博</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="mailto:ouyangfeng2016@gmail.com"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="邮箱"
+                        >
+                        <i class="sidebar-button-icon fa fa-envelope" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">邮箱</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            10分钟看懂动态代理设计模式
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2018-03-02T15:46:00+08:00">
+	
+		    3月 02, 2018
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/categories/设计模式/">设计模式</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <blockquote>
+<p>动态代理是Java语言中非常经典的一种设计模式，也是所有设计模式中最难理解的一种。本文将通过一个简单的例子模拟JDK动态代理实现，让你彻底明白动态代理设计模式的本质<a id="more"></a>，文章中可能会涉及到一些你没有学习过的知识点或概念。如果恰好遇到了这些知识盲点，请先去学习这部分知识，再来阅读这篇文章。</p>
+</blockquote>
+<h3 id="什么是代理"><a href="#什么是代理" class="headerlink" title="什么是代理"></a>什么是代理</h3><p>从字面意思来看，代理比较好理解，无非就是代为处理的意思。举个例子，你在上大学的时候，总是喜欢逃课。因此，你拜托你的同学帮你答到，而自己却窝在宿舍玩游戏… 你的这个同学恰好就充当了代理的作用，代替你去上课。</p>
+<p>是的，你没有看错，代理就是这么简单！</p>
+<p>理解了代理的意思，你脑海中恐怕还有两个巨大的疑问：</p>
+<ul>
+<li>怎么实现代理模式</li>
+<li>代理模式有什么实际用途</li>
+</ul>
+<p>要理解这两个问题，看一个简单的例子：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Flyable</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">fly</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Bird</span> <span class="keyword">implements</span> <span class="title">Flyable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fly</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"Bird is flying..."</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="keyword">new</span> Random().nextInt(<span class="number">1000</span>));</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>很简单的一个例子，用一个随机睡眠时间模拟小鸟在空中的飞行时间。接下来问题来了，如果我要知道小鸟在天空中飞行了多久，怎么办？</p>
+<p>有人说，很简单，在Bird-&gt;fly()方法的开头记录起始时间，在方法结束记录完成时间，两个时间相减就得到了飞行时间。<br><figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">void</span> fly() &#123;</span><br><span class="line">     <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line">     System.out.<span class="built_in">println</span>(<span class="string">"Bird is flying..."</span>);</span><br><span class="line">     <span class="built_in">try</span> &#123;</span><br><span class="line">         Thread.sleep(<span class="keyword">new</span> Random().nextInt(<span class="number">1000</span>));</span><br><span class="line">     &#125; <span class="built_in">catch</span> (InterruptedException e) &#123;</span><br><span class="line">         e.printStackTrace();</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">long</span> <span class="built_in">end</span> = System.currentTimeMillis();</span><br><span class="line">     System.out.<span class="built_in">println</span>(<span class="string">"Fly time = "</span> + (<span class="built_in">end</span> - start));</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>的确，这个方法没有任何问题，接下来加大问题的难度。如果Bird这个类来自于某个SDK（或者说Jar包）提供，你无法改动源码，怎么办？</p>
+<p>一定会有人说，我可以在调用的地方这样写：<br><figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(<span class="keyword">String</span>[] args) &#123;</span><br><span class="line">        Bird bird = <span class="keyword">new</span> Bird();</span><br><span class="line">        <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line">        bird.fly();</span><br><span class="line">        <span class="keyword">long</span> <span class="built_in">end</span> = System.currentTimeMillis();</span><br><span class="line">        System.out.<span class="built_in">println</span>(<span class="string">"Fly time = "</span> + (<span class="built_in">end</span> - start));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这个方案看起来似乎没有问题，但其实你忽略了准备这些方法所需要的时间，执行一个方法，需要开辟栈内存、压栈、出栈等操作，这部分时间也是不可以忽略的。因此，这个解决方案不可行。那么，还有什么方法可以做到呢？</p>
+<h5 id="a）使用继承"><a href="#a）使用继承" class="headerlink" title="a）使用继承"></a>a）使用继承</h5><p>继承是最直观的解决方案，相信你已经想到了，至少我最开始想到的解决方案就是继承。<br>为此，我们重新创建一个类Bird2，在Bird2中我们只做一件事情，就是调用父类的fly方法，在前后记录时间，并打印时间差：<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public <span class="class"><span class="keyword">class</span> <span class="title">Bird2</span> <span class="keyword">extends</span> <span class="title">Bird</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    public void fly() &#123;</span><br><span class="line">        long start = <span class="type">System</span>.currentTimeMillis();</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">super</span>.fly();</span><br><span class="line">        </span><br><span class="line">        long end = <span class="type">System</span>.currentTimeMillis();</span><br><span class="line">        <span class="type">System</span>.out.println(<span class="string">"Fly time = "</span> + (end - start));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这是一种解决方案，还有一种解决方案叫做：<strong>聚合</strong>，其实也是比较容易想到的。<br>我们再次创建新类Bird3，在Bird3的构造方法中传入Bird实例。同时，让Bird3也实现Flyable接口，并在fly方法中调用传入的Bird实例的fly方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Bird3</span> <span class="keyword">implements</span> <span class="title">Flyable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Bird bird;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Bird3</span><span class="params">(Bird bird)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.bird = bird;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fly</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line"></span><br><span class="line">        bird.fly();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">long</span> end = System.currentTimeMillis();</span><br><span class="line">        System.out.println(<span class="string">"Fly time = "</span> + (end - start));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>为了记录Bird-&gt;fly()方法的执行时间，我们在前后添加了记录时间的代码。同样地，通过这种方法我们也可以获得小鸟的飞行时间。那么，这两种方法孰优孰劣呢？咋一看，不好评判！</p>
+<p>继续深入思考，用问题推导来解答这个问题：</p>
+<p><strong>问题一</strong>：如果我还需要在fly方法前后打印日志，记录飞行开始和飞行结束，怎么办？<br>有人说，很简单！继承Bird2并在在前后添加打印语句即可。那么，问题来了，请看问题二。</p>
+<p><strong>问题二</strong>：如果我需要调换执行顺序，先打印日志，再获取飞行时间，怎么办？<br>有人说，再新建一个类Bird4继承Bird，打印日志。再新建一个类Bird5继承Bird4，获取方法执行时间。</p>
+<p>问题显而易见：使用继承将导致类无限制扩展，同时灵活性也无法获得保障。那么，使用 <a href="https://stackoverflow.com/questions/885937/what-is-the-difference-between-association-aggregation-and-composition" target="_blank" rel="noopener">聚合</a> 是否可以避免这个问题呢？<br>答案是：可以！但我们的类需要稍微改造一下。修改Bird3类，将聚合对象Bird类型修改为Flyable</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Bird3</span> <span class="keyword">implements</span> <span class="title">Flyable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Flyable flyable;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Bird3</span><span class="params">(Flyable flyable)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.flyable = flyable;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fly</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line"></span><br><span class="line">        flyable.fly();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">long</span> end = System.currentTimeMillis();</span><br><span class="line">        System.out.println(<span class="string">"Fly time = "</span> + (end - start));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>为了让你看的更清楚，我将Bird3更名为BirdTimeProxy，即用于获取方法执行时间的代理的意思。同时我们新建BirdLogProxy代理类用于打印日志：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BirdLogProxy</span> <span class="keyword">implements</span> <span class="title">Flyable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Flyable flyable;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">BirdLogProxy</span><span class="params">(Flyable flyable)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.flyable = flyable;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fly</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"Bird fly start..."</span>);</span><br><span class="line"></span><br><span class="line">        flyable.fly();</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"Bird fly end..."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来神奇的事情发生了，如果我们需要先记录日志，再获取飞行时间，可以在调用的地方这么做：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">public</span> static void main(<span class="keyword">String[] </span>args) &#123;</span><br><span class="line">    <span class="keyword">Bird </span><span class="keyword">bird </span>= new <span class="keyword">Bird();</span></span><br><span class="line"><span class="keyword"> </span>   <span class="keyword">BirdLogProxy </span><span class="built_in">p1</span> = new <span class="keyword">BirdLogProxy(bird);</span></span><br><span class="line"><span class="keyword"> </span>   <span class="keyword">BirdTimeProxy </span><span class="built_in">p2</span> = new <span class="keyword">BirdTimeProxy(p1);</span></span><br><span class="line"><span class="keyword"></span></span><br><span class="line"><span class="keyword"> </span>   <span class="built_in">p2</span>.fly()<span class="comment">;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>反过来，可以这么做：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">public</span> static void main(<span class="keyword">String[] </span>args) &#123;</span><br><span class="line">       <span class="keyword">Bird </span><span class="keyword">bird </span>= new <span class="keyword">Bird();</span></span><br><span class="line"><span class="keyword"> </span>      <span class="keyword">BirdTimeProxy </span><span class="built_in">p2</span> = new <span class="keyword">BirdTimeProxy(bird);</span></span><br><span class="line"><span class="keyword"> </span>      <span class="keyword">BirdLogProxy </span><span class="built_in">p1</span> = new <span class="keyword">BirdLogProxy(p2);</span></span><br><span class="line"><span class="keyword"></span></span><br><span class="line"><span class="keyword"> </span>      <span class="built_in">p1</span>.fly()<span class="comment">;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看到这里，有同学可能会有疑问了。虽然现象看起来，聚合可以灵活调换执行顺序。可是，为什么 <a href="https://stackoverflow.com/questions/885937/what-is-the-difference-between-association-aggregation-and-composition" target="_blank" rel="noopener">聚合</a> 可以做到，而继承不行呢。我们用一张图来解释一下：<br><img src="http://upload-images.jianshu.io/upload_images/703764-2d04ad5bbcb2d25e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h3 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h3><p>接下来，观察上面的类BirdTimeProxy，在它的fly方法中我们直接调用了flyable-&gt;fly()方法。换而言之，BirdTimeProxy其实代理了传入的Flyable对象，这就是典型的静态代理实现。</p>
+<p>从表面上看，静态代理已经完美解决了我们的问题。可是，试想一下，如果我们需要计算SDK中100个方法的运行时间，同样的代码至少需要重复100次，并且创建至少100个代理类。往小了说，如果Bird类有多个方法，我们需要知道其他方法的运行时间，同样的代码也至少需要重复多次。因此，静态代理至少有以下两个局限性问题：</p>
+<ul>
+<li>如果同时代理多个类，依然会导致类无限制扩展</li>
+<li>如果类中有多个方法，同样的逻辑需要反复实现</li>
+</ul>
+<p>那么，我们是否可以使用同一个代理类来代理任意对象呢？我们以获取方法运行时间为例，是否可以使用同一个类（例如：TimeProxy）来计算任意对象的任一方法的执行时间呢？甚至再大胆一点，代理的逻辑也可以自己指定。比如，获取方法的执行时间，打印日志，这类逻辑都可以自己指定。这就是本文重点探讨的问题，也是最难理解的部分：<strong>动态代理</strong>。</p>
+<h3 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h3><p>继续回到上面这个问题：是否可以使用同一个类（例如：TimeProxy）来计算任意对象的任一方法的执行时间呢。</p>
+<p>这个部分需要一定的抽象思维，我想，你脑海中的第一个解决方案应该是使用反射。反射是用于获取已创建实例的方法或者属性，并对其进行调用或者赋值。很明显，在这里，反射解决不了问题。但是，再大胆一点，如果我们可以动态生成TimeProxy这个类，并且动态编译。然后，再通过反射创建对象并加载到内存中，不就实现了对任意对象进行代理了吗？为了防止你依然一头雾水，我们用一张图来描述接下来要做什么：<br><img src="http://upload-images.jianshu.io/upload_images/703764-0e22137ce1f0291b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>动态生成Java源文件并且排版是一个非常繁琐的工作，为了简化操作，我们使用 <a href="https://github.com/square/javapoet" target="_blank" rel="noopener">JavaPoet</a> 这个第三方库帮我们生成TimeProxy的源码。希望 <a href="https://github.com/square/javapoet" target="_blank" rel="noopener">JavaPoet</a>  不要成为你的负担，不理解 <a href="https://github.com/square/javapoet" target="_blank" rel="noopener">JavaPoet</a> 没有关系，你只要把它当成一个Java源码生成工具使用即可。</p>
+<p>PS：你记住，任何工具库的使用都不会太难，它是为了简化某些操作而出现的，目标是简化而不是繁琐。因此，只要你适应它的规则就轻车熟路了。</p>
+<h5 id="第一步：生成TimeProxy源码"><a href="#第一步：生成TimeProxy源码" class="headerlink" title="第一步：生成TimeProxy源码"></a>第一步：生成TimeProxy源码</h5><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> Proxy &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Object newProxyInstance() <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(<span class="string">"TimeProxy"</span>)</span><br><span class="line">                .addSuperinterface(Flyable.<span class="keyword">class</span>);</span><br><span class="line"></span><br><span class="line">        FieldSpec fieldSpec = FieldSpec.builder(Flyable.<span class="keyword">class</span>, <span class="string">"flyable"</span>, Modifier.<span class="keyword">PRIVATE</span>).build();</span><br><span class="line">        typeSpecBuilder.addField(fieldSpec);</span><br><span class="line"></span><br><span class="line">        MethodSpec constructorMethodSpec = MethodSpec.constructorBuilder()</span><br><span class="line">                .addModifiers(Modifier.<span class="keyword">PUBLIC</span>)</span><br><span class="line">                .addParameter(Flyable.<span class="keyword">class</span>, <span class="string">"flyable"</span>)</span><br><span class="line">                .addStatement(<span class="string">"this.flyable = flyable"</span>)</span><br><span class="line">                .build();</span><br><span class="line">        typeSpecBuilder.addMethod(constructorMethodSpec);</span><br><span class="line"></span><br><span class="line">        Method[] methods = Flyable.<span class="keyword">class</span>.getDeclaredMethods();</span><br><span class="line">        <span class="keyword">for</span> (Method method : methods) &#123;</span><br><span class="line">            MethodSpec methodSpec = MethodSpec.methodBuilder(method.getName())</span><br><span class="line">                    .addModifiers(Modifier.<span class="keyword">PUBLIC</span>)</span><br><span class="line">                    .addAnnotation(Override.<span class="keyword">class</span>)</span><br><span class="line">                    .returns(method.getReturnType())</span><br><span class="line">                    .addStatement(<span class="string">"long start = $T.currentTimeMillis()"</span>, System.<span class="keyword">class</span>)</span><br><span class="line">                    .addCode(<span class="string">"\n"</span>)</span><br><span class="line">                    .addStatement(<span class="string">"this.flyable."</span> + method.getName() + <span class="string">"()"</span>)</span><br><span class="line">                    .addCode(<span class="string">"\n"</span>)</span><br><span class="line">                    .addStatement(<span class="string">"long end = $T.currentTimeMillis()"</span>, System.<span class="keyword">class</span>)</span><br><span class="line">                    .addStatement(<span class="string">"$T.out.println(\"Fly Time =\" + (end - start))"</span>, System.<span class="keyword">class</span>)</span><br><span class="line">                    .build();</span><br><span class="line">            typeSpecBuilder.addMethod(methodSpec);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        JavaFile javaFile = JavaFile.builder(<span class="string">"com.youngfeng.proxy"</span>, typeSpecBuilder.build()).build();</span><br><span class="line">        <span class="comment">// 为了看的更清楚，我将源码文件生成到桌面</span></span><br><span class="line">        javaFile.writeTo(<span class="keyword">new</span> <span class="keyword">File</span>(<span class="string">"/Users/ouyangfeng/Desktop/"</span>));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在main方法中调用Proxy.newProxyInstance()，你将看到桌面已经生成了TimeProxy.java文件，生成的内容如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.youngfeng.proxy;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.Override;</span><br><span class="line"><span class="keyword">import</span> java.lang.System;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TimeProxy</span> <span class="keyword">implements</span> <span class="title">Flyable</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> Flyable flyable;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">TimeProxy</span><span class="params">(Flyable flyable)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.flyable = flyable;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fly</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">this</span>.flyable.fly();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">long</span> end = System.currentTimeMillis();</span><br><span class="line">    System.out.println(<span class="string">"Fly Time ="</span> + (end - start));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="第二步：编译TimeProxy源码"><a href="#第二步：编译TimeProxy源码" class="headerlink" title="第二步：编译TimeProxy源码"></a>第二步：编译TimeProxy源码</h5><p>编译TimeProxy源码我们直接使用JDK提供的编译工具即可，为了使你看起来更清晰，我使用一个新的辅助类来完成编译操作：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> JavaCompiler &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="keyword">compile</span>(<span class="keyword">File</span> javaFile) <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        javax.tools.JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();</span><br><span class="line">        StandardJavaFileManager fileManager = javaCompiler.getStandardFileManager(<span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">        Iterable iterable = fileManager.getJavaFileObjects(javaFile);</span><br><span class="line">        javax.tools.JavaCompiler.CompilationTask <span class="keyword">task</span> = javaCompiler.getTask(<span class="keyword">null</span>, fileManager, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, iterable);</span><br><span class="line">        <span class="keyword">task</span>.<span class="keyword">call</span>();</span><br><span class="line">        fileManager.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在Proxy-&gt;newProxyInstance()方法中调用该方法，编译顺利完成：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 为了看的更清楚，我将源码文件生成到桌面</span></span><br><span class="line"><span class="keyword">String</span> sourcePath = <span class="string">"/Users/ouyangfeng/Desktop/"</span>;</span><br><span class="line">javaFile.writeTo(<span class="keyword">new</span> <span class="built_in">File</span>(sourcePath));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 编译</span></span><br><span class="line">JavaCompiler.compile(<span class="keyword">new</span> <span class="built_in">File</span>(sourcePath + <span class="string">"/com/youngfeng/proxy/TimeProxy.java"</span>));</span><br></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/703764-0e82c03cdd902aaf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h5 id="第三步：加载到内存中并创建对象"><a href="#第三步：加载到内存中并创建对象" class="headerlink" title="第三步：加载到内存中并创建对象"></a>第三步：加载到内存中并创建对象</h5><figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">URL[] urls = <span class="keyword">new</span> <span class="type">URL</span>[] &#123;<span class="keyword">new</span> <span class="type">URL</span>(<span class="string">"file:/"</span> + sourcePath)&#125;;</span><br><span class="line">URLClassLoader classLoader = <span class="keyword">new</span> <span class="type">URLClassLoader</span>(urls);</span><br><span class="line">Class clazz = classLoader.loadClass(<span class="string">"com.youngfeng.proxy.TimeProxy"</span>);</span><br><span class="line">Constructor constructor = clazz.getConstructor(Flyable.class);</span><br><span class="line">Flyable flyable = (Flyable) constructor.<span class="keyword">new</span><span class="type">Instance</span>(<span class="keyword">new</span> <span class="type">Bird</span>());</span><br><span class="line">flyable.fly();</span><br></pre></td></tr></table></figure>
+<p>通过以上三个步骤，我们至少解决了下面两个问题：</p>
+<ul>
+<li>不再需要手动创建TimeProxy</li>
+<li>可以代理任意实现了Flyable接口的类对象，并获取接口方法的执行时间</li>
+</ul>
+<p>可是，说好的任意对象呢？</p>
+<h5 id="第四步：增加InvocationHandler接口"><a href="#第四步：增加InvocationHandler接口" class="headerlink" title="第四步：增加InvocationHandler接口"></a>第四步：增加InvocationHandler接口</h5><p>查看Proxy-&gt;newProxyInstance()的源码，代理类继承的接口我们是写死的，为了增加灵活性，我们将接口类型作为参数传入：<br><img src="http://upload-images.jianshu.io/upload_images/703764-cd110b5720d14823.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>接口的灵活性问题解决了，TimeProxy的局限性依然存在，它只能用于获取方法的执行时间，而如果要在方法执行前后打印日志则需要重新创建一个代理类，显然这是不妥的！</p>
+<p>为了增加控制的灵活性，我们考虑针将代理的处理逻辑也抽离出来（这里的处理就是打印方法的执行时间）。新增<code>InvocationHandler</code>接口，用于处理自定义逻辑：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public<span class="built_in"> interface </span>InvocationHandler &#123;</span><br><span class="line">    void invoke(Object proxy, Method method, Object[] args);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>想象一下，如果客户程序员需要对代理类进行自定义的处理，只要实现该接口，并在invoke方法中进行相应的处理即可。这里我们在接口中设置了三个参数（其实也是为了和JDK源码保持一致）：</p>
+<ul>
+<li>proxy =&gt; 这个参数指定动态生成的代理类，这里是<code>TimeProxy</code></li>
+<li>method =&gt; 这个参数表示传入接口中的所有Method对象</li>
+<li>args =&gt; 这个参数对应当前method方法中的参数</li>
+</ul>
+<p>引入了InvocationHandler接口之后，我们的调用顺序应该变成了这样：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">MyInvocationHandler handler = new MyInvocationHandler();</span><br><span class="line">Flyable<span class="built_in"> proxy </span>= Proxy.newProxyInstance(Flyable.class, handler);</span><br><span class="line">proxy.fly();</span><br><span class="line"></span><br><span class="line">方法执行流：proxy.fly() =&gt; handler.invoke()</span><br></pre></td></tr></table></figure>
+<p>为此，我们需要在Proxy.newProxyInstance()方法中做如下改动：</p>
+<ul>
+<li>在newProxyInstance方法中传入InvocationHandler</li>
+<li>在生成的代理类中增加成员变量handler</li>
+<li>在生成的代理类方法中，调用invoke方法</li>
+</ul>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">public</span> <span class="keyword">static</span> Object newProxyInstance(<span class="keyword">Class</span> inf, InvocationHandler handler) <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">       TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(<span class="string">"TimeProxy"</span>)</span><br><span class="line">               .addModifiers(Modifier.<span class="keyword">PUBLIC</span>)</span><br><span class="line">               .addSuperinterface(inf);</span><br><span class="line"></span><br><span class="line">       FieldSpec fieldSpec = FieldSpec.builder(InvocationHandler.<span class="keyword">class</span>, <span class="string">"handler"</span>, Modifier.<span class="keyword">PRIVATE</span>).build();</span><br><span class="line">       typeSpecBuilder.addField(fieldSpec);</span><br><span class="line"></span><br><span class="line">       MethodSpec constructorMethodSpec = MethodSpec.constructorBuilder()</span><br><span class="line">               .addModifiers(Modifier.<span class="keyword">PUBLIC</span>)</span><br><span class="line">               .addParameter(InvocationHandler.<span class="keyword">class</span>, <span class="string">"handler"</span>)</span><br><span class="line">               .addStatement(<span class="string">"this.handler = handler"</span>)</span><br><span class="line">               .build();</span><br><span class="line"></span><br><span class="line">       typeSpecBuilder.addMethod(constructorMethodSpec);</span><br><span class="line"></span><br><span class="line">       Method[] methods = inf.getDeclaredMethods();</span><br><span class="line">       <span class="keyword">for</span> (Method method : methods) &#123;</span><br><span class="line">           MethodSpec methodSpec = MethodSpec.methodBuilder(method.getName())</span><br><span class="line">                   .addModifiers(Modifier.<span class="keyword">PUBLIC</span>)</span><br><span class="line">                   .addAnnotation(Override.<span class="keyword">class</span>)</span><br><span class="line">                   .returns(method.getReturnType())</span><br><span class="line">                   .addCode(<span class="string">"try &#123;\n"</span>)</span><br><span class="line">                   .addStatement(<span class="string">"\t$T method = "</span> + inf.getName() + <span class="string">".class.getMethod(\""</span> + method.getName() + <span class="string">"\")"</span>, Method.<span class="keyword">class</span>)</span><br><span class="line">                   <span class="comment">// 为了简单起见，这里参数直接写死为空</span></span><br><span class="line">                   .addStatement(<span class="string">"\tthis.handler.invoke(this, method, null)"</span>)</span><br><span class="line">                   .addCode(<span class="string">"&#125; catch(Exception e) &#123;\n"</span>)</span><br><span class="line">                   .addCode(<span class="string">"\te.printStackTrace();\n"</span>)</span><br><span class="line">                   .addCode(<span class="string">"&#125;\n"</span>)</span><br><span class="line">                   .build();</span><br><span class="line">           typeSpecBuilder.addMethod(methodSpec);</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       JavaFile javaFile = JavaFile.builder(<span class="string">"com.youngfeng.proxy"</span>, typeSpecBuilder.build()).build();</span><br><span class="line">       <span class="comment">// 为了看的更清楚，我将源码文件生成到桌面</span></span><br><span class="line">       String sourcePath = <span class="string">"/Users/ouyangfeng/Desktop/"</span>;</span><br><span class="line">       javaFile.writeTo(<span class="keyword">new</span> <span class="keyword">File</span>(sourcePath));</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 编译</span></span><br><span class="line">       JavaCompiler.<span class="keyword">compile</span>(<span class="keyword">new</span> <span class="keyword">File</span>(sourcePath + <span class="string">"/com/youngfeng/proxy/TimeProxy.java"</span>));</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 使用反射load到内存</span></span><br><span class="line">       URL[] urls = <span class="keyword">new</span> URL[] &#123;<span class="keyword">new</span> URL(<span class="string">"file:"</span> + sourcePath)&#125;;</span><br><span class="line">       URLClassLoader classLoader = <span class="keyword">new</span> URLClassLoader(urls);</span><br><span class="line">       <span class="keyword">Class</span> clazz = classLoader.loadClass(<span class="string">"com.youngfeng.proxy.TimeProxy"</span>);</span><br><span class="line">       Constructor constructor = clazz.getConstructor(InvocationHandler.<span class="keyword">class</span>);</span><br><span class="line">       Object obj = constructor.newInstance(handler);</span><br><span class="line"></span><br><span class="line">       <span class="keyword">return</span> obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码你可能看起来比较吃力，我们直接调用该方法，查看最后生成的源码。在main方法中测试newProxyInstance查看生成的TimeProxy源码：</p>
+<p><strong>测试代码</strong></p>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Proxy.<span class="keyword">new</span><span class="type">ProxyInstance</span>(Flyable.class, <span class="keyword">new</span> <span class="type">MyInvocationHandler</span>(<span class="keyword">new</span> <span class="type">Bird</span>()));</span><br></pre></td></tr></table></figure>
+<p><strong>生成的TimeProxy.java源码</strong></p>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.youngfeng.proxy;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.Override;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TimeProxy</span> <span class="keyword">implements</span> <span class="title">Flyable</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> InvocationHandler <span class="keyword">handler</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">TimeProxy</span><span class="params">(InvocationHandler <span class="keyword">handler</span>)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.<span class="keyword">handler</span> = <span class="keyword">handler</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">fly</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">    	Method method = com.youngfeng.proxy.Flyable.class.getMethod(<span class="string">"fly"</span>);</span><br><span class="line">    	<span class="keyword">this</span>.<span class="keyword">handler</span>.invoke(<span class="keyword">this</span>, method, <span class="keyword">null</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span>(Exception e) &#123;</span><br><span class="line">    	e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>MyInvocationHandler.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyInvocationHandler</span> <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Bird bird;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyInvocationHandler</span><span class="params">(Bird bird)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.bird = bird;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            method.invoke(bird, <span class="keyword">new</span> Object[] &#123;&#125;);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IllegalAccessException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InvocationTargetException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">long</span> end = System.currentTimeMillis();</span><br><span class="line">        System.out.println(<span class="string">"Fly time = "</span> + (end - start));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>至此，整个方法栈的调用栈变成了这样：<br><img src="http://upload-images.jianshu.io/upload_images/703764-4ff1323a12cb9c39.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>看到这里，估计很多同学已经晕了，在静态代理部分，我们在代理类中传入了被代理对象。可是，使用newProxyInstance生成动态代理对象的时候，我们居然不再需要传入被代理对象了。我们传入了的实际对象是InvocationHandler实现类的实例，这看起来有点像生成了InvocationHandler的代理对象，在动态生成的代理类的任意方法中都会间接调用InvocationHandler-&gt;invoke(proxy, method, args)方法。</p>
+<p>其实的确是这样。TimeProxy真正代理的对象就是InvocationHandler，不过这里设计的巧妙之处在于，InvocationHandler是一个接口，真正的实现由用户指定。另外，在每一个方法执行的时候，invoke方法都会被调用 ，这个时候如果你需要对某个方法进行自定义逻辑处理，可以根据method的特征信息进行判断分别处理。</p>
+<h3 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h3><p>上面这段解释是告诉你在执行Proxy-&gt;newProxyInstance方法的时候真正发生的事情，而在实际使用过程中你完全可以忘掉上面的解释。按照设计者的初衷，我们做如下简单归纳：</p>
+<ul>
+<li>Proxy-&gt;newProxyInstance(infs, handler) 用于生成代理对象</li>
+<li>InvocationHandler：这个接口主要用于自定义代理逻辑处理</li>
+<li>为了完成对被代理对象的方法拦截，我们需要在InvocationHandler对象中传入被代理对象实例。</li>
+</ul>
+<p>查看上面的代码，你可以看到我将Bird实例已经传入到了MyInvocationHandler中，原因就是第三点。</p>
+<p>这样设计有什么好处呢？有人说，我们大费周章，饶了一大圈，最终变成了这个样子，到底图什么呢？</p>
+<p>想象一下，到此为止，如果我们还需要对其它任意对象进行代理，是否还需要改动newProxyInstance方法的源码，答案是：完全不需要！</p>
+<p>只要你在newProxyInstance方法中指定代理需要实现的接口，指定用于自定义处理的InvocationHandler对象，整个代理的逻辑处理都在你自定义的InvocationHandler实现类中进行处理。至此，而我们终于可以从不断地写代理类用于实现自定义逻辑的重复工作中解放出来了，从此需要做什么，交给InvocationHandler。</p>
+<p>事实上，我们之前给自己定下的目标“使用同一个类来计算任意对象的任一方法的执行时间”已经实现了。严格来说，是我们超额完成了任务，TimeProxy不仅可以计算方法执行的时间，也可以打印方法执行日志，这完全取决于你的InvocationHandler接口实现。因此，这里取名为TimeProxy其实已经不合适了。我们可以修改为和JDK命名一致，即$Proxy0，感兴趣的同学请自行实践，本篇文章的代码将放到我的Github仓库，文章结尾会给出代码地址。</p>
+<h3 id="JDK实现揭秘"><a href="#JDK实现揭秘" class="headerlink" title="JDK实现揭秘"></a>JDK实现揭秘</h3><p>通过上面的这些步骤，我们完成了一个简易的仿JDK实现的动态代理逻辑。接下来，我们一起来看一看JDK实现的动态代理和我们到底有什么不同。</p>
+<p><strong>Proxy.java</strong><br><img src="http://upload-images.jianshu.io/upload_images/703764-2f5a7b2762949e11.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p><strong>InvocationHandler</strong><br><img src="http://upload-images.jianshu.io/upload_images/703764-9d58bd4930a28081.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>可以看到，官方版本Proxy类提供的方法多一些，而我们主要使用的接口newProxyInstance参数也和我们设计的不太一样。这里给大家简单解释一下，每个参数的意义：</p>
+<ul>
+<li>Classloader：类加载器，你可以使用自定义的类加载器，我们的实现版本为了简化，直接在代码中写死了Classloader。</li>
+<li>Class&lt;?&gt;[]：第二个参数也和我们的实现版本不一致，这个其实很容易理解，我们应该允许我们自己实现的代理类同时实现多个接口。前面设计只传入一个接口，只是为了简化实现，让你专注核心逻辑实现而已。</li>
+</ul>
+<p>最后一个参数就不用说了，和我们实现的版本完全是一样的。</p>
+<p>仔细观察官方版本的InvocationHandler，它和我们自己的实现的版本也有一个细微的差别：官方版本invoke方法有返回值，而我们的版本中是没有返回值的。那么，返回值到底有什么作用呢？直接来看官方文档：<br><img src="http://upload-images.jianshu.io/upload_images/703764-940eef4374694714.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p><em>核心思想：这里的返回值类型必须和传入接口的返回值类型一致，或者与其封装对象的类型一致。</em></p>
+<p>遗憾的是，这里并没有说明返回值的用途，其实这里稍微发挥一下想象力就知道了。在我们的版本实现中，Flyable接口的所有方法都是没有返回值的，问题是，如果有返回值呢？是的，你没有猜错，这里的invoke方法对应的就是传入接口中方法的返回值。</p>
+<h3 id="答疑解惑"><a href="#答疑解惑" class="headerlink" title="答疑解惑"></a>答疑解惑</h3><h5 id="invoke方法的第一个参数proxy到底有什么作用？"><a href="#invoke方法的第一个参数proxy到底有什么作用？" class="headerlink" title="invoke方法的第一个参数proxy到底有什么作用？"></a>invoke方法的第一个参数proxy到底有什么作用？</h5><p>这个问题其实也好理解，如果你的接口中有方法需要返回自身，如果在invoke中没有传入这个参数，将导致实例无法正常返回。在这种场景中，proxy的用途就表现出来了。简单来说，这其实就是最近非常火的链式编程的一种应用实现。</p>
+<h5 id="动态代理到底有什么用？"><a href="#动态代理到底有什么用？" class="headerlink" title="动态代理到底有什么用？"></a>动态代理到底有什么用？</h5><p>学习任何一门技术，一定要问一问自己，这到底有什么用。其实，在这篇文章的讲解过程中，我们已经说出了它的主要用途。你发现没，使用动态代理我们居然可以在不改变源码的情况下，直接在方法中插入自定义逻辑。这有点不太符合我们的一条线走到底的编程逻辑，这种编程模型有一个专业名称叫 <a href="https://baike.baidu.com/item/AOP/1332219" target="_blank" rel="noopener">AOP</a>。所谓的AOP，就像刀一样，抓住时机，趁机插入。<br><img src="http://upload-images.jianshu.io/upload_images/703764-4b3ff894932ec1e8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>基于这样一种动态特性，我们可以用它做很多事情，例如：</p>
+<ul>
+<li>事务提交或回退（Web开发中很常见）</li>
+<li>权限管理</li>
+<li>自定义缓存逻辑处理</li>
+<li>SDK Bug修复<br>…</li>
+</ul>
+<p>如果你阅读过 <a href="https://github.com/yuanhoujun/Android_Slide_To_Close" target="_blank" rel="noopener">Android_Slide_To_Close</a> 的源码会发现，它也在某个地方使用了动态代理设计模式。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>到此为止，关于动态代理的所有讲解已经结束了，原谅我使用了一个诱导性的标题“骗”你进来阅读这篇文章。如果你不是一个久经沙场的“老司机”，10分钟完全看懂动态代理设计模式还是有一定难度的。但即使没有看懂也没关系，如果你在第一次阅读完这篇文章后依然一头雾水，就不妨再仔细阅读一次。在阅读的过程中，一定要跟着文章思路去敲代码。反反复复，一定会看懂的。我在刚刚学习动态代理设计模式的时候就反复看了不下5遍，并且亲自敲代码实践了多次。</p>
+<p>为了让你少走弯路，我认为看懂这篇文章，你至少需要学习以下知识点：</p>
+<ul>
+<li>至少已经理解了面向对象语言的多态特性</li>
+<li>了解简单的反射用法</li>
+<li>会简单使用 <a href="https://github.com/square/javapoet" target="_blank" rel="noopener">JavaPoet</a> 生成Java源码</li>
+</ul>
+<p>如果你在阅读文章的过程中，有任何不理解的问题或者建议，欢迎在文章下方留言告诉我！</p>
+<p>本篇文章例子代码：<a href="https://github.com/yuanhoujun/java-dynamic-proxy" target="_blank" rel="noopener">https://github.com/yuanhoujun/java-dynamic-proxy</a></p>
+<hr>
+<p>我是欧阳锋，设计模式是一种非常好的编程指导模型，它在所有编程语言中是通用的，并且是亘古不变的。我建议你在这个方面多下苦功，不要纠结在一些重复的劳动中，活用设计模式会让你的代码更显灵动。想要了解我吗？看这里：<a href="http://www.youngfeng.com/2018/02/28/about%20ouyangfeng/%E6%AC%A7%E9%98%B3%E9%94%8B%E6%A1%A3%E6%A1%88%E9%A6%86/" target="_blank" rel="noopener">欧阳锋档案馆</a>。</p>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-link" href="/tags/Java/">Java</a> <a class="tag tag--primary tag--small t-link" href="/tags/动态代理/">动态代理</a> <a class="tag tag--primary tag--small t-link" href="/tags/设计模式/">设计模式</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2019/11/12/正确使用Kotlin注解，兼容Java代码/"
+                    data-tooltip="正确使用Kotlin注解，兼容Java代码"
+                    aria-label="上一篇: 正确使用Kotlin注解，兼容Java代码"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    <a
+                        class="post-action-btn btn btn--disabled"
+                        aria-hidden="true"
+                    >
+                        
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://service.weibo.com/share/share.php?&amp;title=http://youngfeng.com/2018/03/02/design pattern/10分钟看懂动态代理设计模式/"
+                    title="分享到 Weibo"
+                    aria-label="分享到 Weibo"
+                >
+                    <i class="fab fa-weibo" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://connect.qq.com/widget/shareqq/index.html?url=http://youngfeng.com/2018/03/02/design pattern/10分钟看懂动态代理设计模式/&amp;title=10分钟看懂动态代理设计模式"
+                    title="分享到 QQ"
+                    aria-label="分享到 QQ"
+                >
+                    <i class="fab fa-qq" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://youngfeng.com/2018/03/02/design pattern/10分钟看懂动态代理设计模式/"
+                    title="分享到 Qzone"
+                    aria-label="分享到 Qzone"
+                >
+                    <i class="fa fa-star" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <p>
+        <a href="https://beian.miit.gov.cn">粤ICP备2022110674号-1</a>
+    </p>
+    <p class="copyrights">
+        Copyrights &copy; 2022 欧阳锋工作室. All Rights Reserved.
+    </p>
+</footer>
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2019/11/12/正确使用Kotlin注解，兼容Java代码/"
+                    data-tooltip="正确使用Kotlin注解，兼容Java代码"
+                    aria-label="上一篇: 正确使用Kotlin注解，兼容Java代码"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    <a
+                        class="post-action-btn btn btn--disabled"
+                        aria-hidden="true"
+                    >
+                        
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://service.weibo.com/share/share.php?&amp;title=http://youngfeng.com/2018/03/02/design pattern/10分钟看懂动态代理设计模式/"
+                    title="分享到 Weibo"
+                    aria-label="分享到 Weibo"
+                >
+                    <i class="fab fa-weibo" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://connect.qq.com/widget/shareqq/index.html?url=http://youngfeng.com/2018/03/02/design pattern/10分钟看懂动态代理设计模式/&amp;title=10分钟看懂动态代理设计模式"
+                    title="分享到 QQ"
+                    aria-label="分享到 QQ"
+                >
+                    <i class="fab fa-qq" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://youngfeng.com/2018/03/02/design pattern/10分钟看懂动态代理设计模式/"
+                    title="分享到 Qzone"
+                    aria-label="分享到 Qzone"
+                >
+                    <i class="fa fa-star" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="http://service.weibo.com/share/share.php?&amp;title=http://youngfeng.com/2018/03/02/design pattern/10分钟看懂动态代理设计模式/"
+                        aria-label="分享到 Weibo"
+                    >
+                        <i class="fab fa-weibo" aria-hidden="true"></i><span>分享到 Weibo</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="http://connect.qq.com/widget/shareqq/index.html?url=http://youngfeng.com/2018/03/02/design pattern/10分钟看懂动态代理设计模式/&amp;title=10分钟看懂动态代理设计模式"
+                        aria-label="分享到 QQ"
+                    >
+                        <i class="fab fa-qq" aria-hidden="true"></i><span>分享到 QQ</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://youngfeng.com/2018/03/02/design pattern/10分钟看懂动态代理设计模式/"
+                        aria-label="分享到 Qzone"
+                    >
+                        <i class="fa fa-star" aria-hidden="true"></i><span>分享到 Qzone</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/avatar.jpeg" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">欧阳锋工作室</h4>
+        
+            <div id="about-card-bio"><p>author.bio</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>author.job</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                广东深圳
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+<script src="/assets/js/jquery.js"></script>
+<script src="/assets/js/jquery.fancybox.js"></script>
+<script src="/assets/js/thumbs.js"></script>
+<script src="/assets/js/tranquilpeak.js"></script>
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>

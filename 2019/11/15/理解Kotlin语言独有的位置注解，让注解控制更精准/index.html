@@ -1,0 +1,713 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="欧阳锋工作室">
+    <title>理解Kotlin语言独有的位置注解，让注解控制更精准 - 欧阳锋工作室</title>
+    <meta name="author" content="欧阳锋工作室">
+    
+    
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"欧阳锋工作室","sameAs":["https://github.com/yuanhoujun","assets/images/mpwexin.jpg","https://weibo.com/u/6140262139?is_all=1","mailto:ouyangfeng2016@gmail.com"],"image":"avatar.jpeg"},"articleBody":"\n在Kotlin语言编写的代码中，你应该看到过类似这样的注解@file:JvmName(...)，这有点难以理解，正常的注解不会存在类似@file:这样的前缀，在Java语言中也没有类似的语法。那么，这到底有什么作用呢？ 由于其特殊的作用，我把它称之为”位置注解“。\n\nKotlin语言是一门将语法简化到极致的编程语言，我们一起来看一段简单的代码：\n123class Person &#123;    var name: String? = null&#125;\n这段极其简单的代码，经过Kotlin编译器的处理，等价于下面这段Java代码：\n12345678910111213public final class Person &#123;   @Nullable   private String name;   @Nullable   public final String getName() &#123;      return this.name;   &#125;   public final void setName(@Nullable String var1) &#123;      this.name = var1;   &#125;&#125;\n虽然在Kotlin语言中，看起来只是声明了一个成员变量，实际上编译后不仅声明了一个成员变量name，还生成了与之对应的setter/getter方法。\n这个时候，问题来了，如果我们在Person类的name属性上方添加一个注解，会出现什么问题呢？\n1234class Person &#123;   @Callable   var name: String? = null&#125;\n我们刚才说到，实际生成的字节码中包含了setter/getter方法，那么这个注解可能出现的位置就有4个地方：\n\n属性（成员变量name）\nsetter方法\nsetter方法参数name\ngetter方法\n\n用代码来表示，具体可能出现的位置如下图所示：\n12345678910111213141516171819public final class Person &#123;   // 位置一：属性   @Callable   @Nullable   private String name;\t   // 位置二：setter方法   @Callable   public final void setName(/*位置三：setter方法参数*/ @Nullable String var1) &#123;      this.name = var1;   &#125;      // 位置四：getter方法   @Callable   @Nullable   public final String getName() &#123;      return this.name;   &#125;&#125;\n这个时候编译器晕菜了，它无法确定你到底想要让注解出现在什么位置。那么，这种情况下，Kotlin编译器究竟会怎么做呢？感兴趣的同学不妨自己做做实验。\n那么，是否有办法使注解准确地出现在指定位置呢？答案是：当然有！位置注解恰好就是用来解决这个问题的。\n我们将上面的代码添加位置注解，修改为下面这样：\n1234class Person &#123;    @field:Callable    var name: String? = null&#125;\n通过添加位置注解@field，    @Callable注解将准确出现在属性定义的位置，如下所示：\n123456789101112131415public final class Person &#123;   // 注解将出现在这里   @Callable   @Nullable   private String name;\t   public final void setName(@Nullable String var1) &#123;      this.name = var1;   &#125;      @Nullable   public final String getName() &#123;      return this.name;   &#125;&#125;\n对应上述其它三个位置的位置注解分别是：\n\nset: 对应setter方法位置\nget：对应getter方法位置\nsetparam：对应setter方法参数位置\n\n除此之外，Kotlin还提供了以下几个位置注解，对应其它不同使用场景：\n@file:这个注解用在文件级别，每一个Kotlin文件对应一个或多个Java类，当对应一个类的时候，可通过添加该位置注解，结合上一节课讲到的注解@JvmName一起使用，可改变生成的Java类名。\n你可以理解为这个注解实际作用的位置就是最终编译生成的Java类。\n1234@file:JvmName(\"FooKt\")fun foo() &#123;    println(\"Hello, world...\")&#125;\n最终生成的代码类似下面这样，生成的类名恰好是注解上方所填写的名称：\n123456@JvmName(\"FooKt\")public final class FooKt &#123;\tpublic final void foo() &#123;\t\t...\t&#125;&#125;\n@param:这个注解的作用是使注解出现的位置定位到构造函数的参数上面。\n大家知道，在Kotlin语言中，如果在构造函数参数前面添加var或val关键词，在对应类中会生成相应的属性、setter、getter方法。\n为了让注解准确地出现在其构造函数参数的位置，这个注解就应运而生了！\n我们继续来看一个例子：\n1class Person(@param:Callable var name: String)\n添加上述位置注解后，最终生成的注解就会出现在构造函数参数的位置，如下所示：\n12345678910111213141516171819public final class Person &#123;   @NotNull   private String name;   @NotNull   public final String getName() &#123;      return this.name;   &#125;   public final void setName(@NotNull String var1) &#123;      this.name = var1;   &#125;\t   // 注解最终出现在了这里   public Person(@Callable @NotNull String name) &#123;      super();      this.name = name;   &#125;&#125;\n@property:这是一个特殊的位置注解，这个注解对于Java端是不可见的，其代表的位置是对应属性的Property对象。这样说起来有点抽象，我们来看一个例子，先来了解一下Property到底是什么东西。\n我们继续以Person类为例，通过下面一段代码去访问它：\n1234567fun main(args: Array&lt;String&gt;) &#123;    val person = Person(\"Scott\")        val propertyName = person::name    // 这里将打印 name: falsee    println(\"$&#123;propertyName.name&#125;: $&#123;propertyName.isConst&#125;\")&#125;\n上述代码中，propertyName对应的就是Person类中name属性的Property实例，简单来说就是，Property保存了对应属性的相关信息，代表了当前属性。通过Property可以获取到当前属性的相关信息（包括变量的名称，是否常量，是否延迟初始化等等）。\n如果在构造函数的name前面添加位置注解@property:，注解生成的位置会稍微有点难以理解。访问这个注解的唯一方法就是通过其Property实例，我们一起来试一下：\n1class Person(@property:Callable var name: String)\n访问该注解的唯一方式是通过其Property实例，并且Java端无法访问到：\n1234567fun main(args: Array&lt;String&gt;) &#123;    val person = Person(\"Scott\")    val propertyName = person::name    // 访问该注解的唯一方式    println(propertyName.annotations.find &#123; it.annotationClass == Callable::class &#125;)&#125;\n那么，具体到字节码，该注解到底出现在了哪里呢？我们不妨来反编译看一看：\n1234567891011121314151617181920212223public final class Person &#123;   @NotNull   private String name;\t   // 注解出现在了这里，非常特殊的一个位置   @Callable   public static void name$annotations() &#123;   &#125;   @NotNull   public final String getName() &#123;      return this.name;   &#125;   public final void setName(@NotNull String var1) &#123;      this.name = var1;   &#125;   public Person(@NotNull String name) &#123;      super();      this.name = name;   &#125;&#125;\n可以看到注解出现在了Kotlin编译器生成的一个以属性名称加$与annotations后缀作为方法命名的静态方法上。这是Kotlin编译器约定的一个特殊方法，通过Property实例可以准确访问到这里。\n而知道了这个约定命名方式之后，事实上Java端也可以通过特殊的方式来访问到该注解，严格来讲，Java无法访问并不准确。\n@receiver：这也是一个非常特殊的位置注解，Kotlin支持扩展函数，即在不通过继承的情况下对原有类扩展函数或属性。扩展中有一个很重要的概念就是receiver，所谓的receiver，就是指被扩展类的实例本身。\n但问题来了，扩展并不会改变原有类的代码，如何将注解放到receiver位置呢，这似乎是一个不可能完成的事情。\n这就要说到扩展的实现原理了，扩展实际上对应Kotlin中的一个全局函数，当转换到字节码的时候，函数的第一个参数就是receiver本身。这样说起来可能比较抽象，我们直接来看一个例子：\n我们先对Person类增加扩展函数sayHi: \n123fun Person.sayHi(greet: String) &#123;    println(\"$greet, $name\")&#125;\n然后反编译查看最终得到的Java代码：\n1234public static final void sayHi(@NotNull Person $receiver, @NotNull String greet) &#123;  String var2 = greet + \", \" + $receiver.getName();  System.out.println(var2);&#125;\n可以看到Kotlin编译器生成了一个静态方法，静态方法的第一个参数就是receiver，对应扩展类实例本身，第二个参数是扩展函数实际的参数。\n这就是Kotlin扩展的实现原理，其最终是通过增加静态函数来实现的，扩展函数的第一个参数永远指向被扩展类的实例，即receiver。而我们添加了位置注解@receiver之后，注解生成的位置就会出现在扩展函数第一个参数的位置，类似下面这样：\n1234public static final void sayHi(@Callable @NotNull Person $receiver, @NotNull String greet) &#123;  String var2 = greet + \", \" + $receiver.getName();  System.out.println(var2);&#125;\n这就是@receiver位置注解的作用，理解了扩展函数的原理，这个注解的作用就不难理解了。\n@delegate这是今天我们要说的最后一个位置注解，这又是一个相对比较难理解的位置注解，因为在Java语言中并不存在类似的概念。在Kotlin语言中代理模式大行其道，Kotlin语言使用by关键字就可以轻松实现代理模式。\n这里存在一个同样的问题，前面我们说过，在Kotlin类中声明一个属性实际会同时生成setter/getter方法，这样注解可能出现的位置除属性之外就是三处（setter/getter/setter参数)。而如果属性本身使用代理的方式生成，这里就多了一个位置：代理类属性的位置。\n这样说，可能还不太直观，我们用官方的lazy实现来举一个例子。\n我们在Person类中增加一个代理属性gender：\n1234class Person(var name: String) &#123;    @delegate:Callable    val gender by lazy &#123; \"male\" &#125;&#125;\n老规矩，我们还是直接反编译得到Java代码再来分析：\n12345678910111213141516171819public final class Person &#123;   // 注解出现在了这个位置   // 也就是真正的代理类实例的位置   @Callable   @NotNull   private final Lazy gender$delegate;   @NotNull   public final String getGender() &#123;      Lazy var1 = this.gender$delegate;      return (String)var1.getValue();   &#125;   public Person(@NotNull String name) &#123;      super();      this.name = name;      this.gender$delegate = LazyKt.lazy((Function0)null.INSTANCE);   &#125;&#125;\n通过上面的代码，我们可以清晰地看到Kotlin编译器在类中生成真正的代理类实例属性，gender的值实际是从代理对象中获取的。这个位置注解的作用就是将注解精确地放置到代理类的实例属性上方。\n默认位置注解优先级位置注解在Kotlin语言中并不是强制要求的，我们可以不添加位置注解，在未添加位置注解的情况下，Kotlin语言会按照下面的优先级将注解放置到指定的位置（如果注解可以同时出现在多个位置的话）：\nparam &gt; property &gt; field\n最佳实践以上就是Kotlin语言中我们可以用到的所有位置注解，这是因为Kotlin语言将语法简化到了极致，我们才需要这些注解精确地告诉编译器需要将注解放置到哪里。如果你需要在代码中添加注解，应该始终记得增加位置注解，以便注解可以精确地放置到你想要放置的位置，避免出现一些不必要的麻烦。\n阅读更多技术文章，请关注微信公众号”欧阳锋工作室“\n\n参与Kotlin技术讨论，请添加唯一官方QQ交流群：329673958\n","dateCreated":"2019-11-15T11:42:45+08:00","dateModified":"2022-09-08T16:13:27+08:00","datePublished":"2019-11-15T11:42:45+08:00","description":"\n在Kotlin语言编写的代码中，你应该看到过类似这样的注解@file:JvmName(...)，这有点难以理解，正常的注解不会存在类似@file:这样的前缀，在Java语言中也没有类似的语法。那么，这到底有什么作用呢？","headline":"理解Kotlin语言独有的位置注解，让注解控制更精准","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://youngfeng.com/2019/11/15/理解Kotlin语言独有的位置注解，让注解控制更精准/"},"publisher":{"@type":"Organization","name":"欧阳锋工作室","sameAs":["https://github.com/yuanhoujun","assets/images/mpwexin.jpg","https://weibo.com/u/6140262139?is_all=1","mailto:ouyangfeng2016@gmail.com"],"image":"avatar.jpeg","logo":{"@type":"ImageObject","url":"avatar.jpeg"}},"url":"http://youngfeng.com/2019/11/15/理解Kotlin语言独有的位置注解，让注解控制更精准/","keywords":"Kotlin, 注解"}</script>
+    <meta name="description" content="在Kotlin语言编写的代码中，你应该看到过类似这样的注解@file:JvmName(...)，这有点难以理解，正常的注解不会存在类似@file:这样的前缀，在Java语言中也没有类似的语法。那么，这到底有什么作用呢？">
+<meta name="keywords" content="Kotlin,注解">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="理解Kotlin语言独有的位置注解，让注解控制更精准">
+<meta property="og:url" content="http://youngfeng.com/2019/11/15/理解Kotlin语言独有的位置注解，让注解控制更精准/index.html">
+<meta property="og:site_name" content="欧阳锋工作室">
+<meta property="og:description" content="在Kotlin语言编写的代码中，你应该看到过类似这样的注解@file:JvmName(...)，这有点难以理解，正常的注解不会存在类似@file:这样的前缀，在Java语言中也没有类似的语法。那么，这到底有什么作用呢？">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="http://youngfeng.com/assets/images/mpwexin.jpg">
+<meta property="og:updated_time" content="2022-09-08T08:13:27.745Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="理解Kotlin语言独有的位置注解，让注解控制更精准">
+<meta name="twitter:description" content="在Kotlin语言编写的代码中，你应该看到过类似这样的注解@file:JvmName(...)，这有点难以理解，正常的注解不会存在类似@file:这样的前缀，在Java语言中也没有类似的语法。那么，这到底有什么作用呢？">
+<meta name="twitter:image" content="http://youngfeng.com/assets/images/mpwexin.jpg">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="http://youngfeng.com/assets/images/avatar.jpeg"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    <link rel="stylesheet" href="/assets/css/all.css">
+    <link rel="stylesheet" href="/assets/css/jquery.fancybox.css">
+    <link rel="stylesheet" href="/assets/css/thumbs.css">
+    <link rel="stylesheet" href="/assets/css/tranquilpeak.css">
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            欧阳锋工作室
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/avatar.jpeg" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/avatar.jpeg" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">欧阳锋工作室</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>author.bio</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://github.com/yuanhoujun"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="GitHub"
+                        >
+                        <i class="sidebar-button-icon fab fa-github" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/assets/images/mpwexin.jpg"
+                            
+                            rel="noopener"
+                            title="微信公众号"
+                        >
+                        <i class="sidebar-button-icon fab fa-weixin" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">微信公众号</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://weibo.com/u/6140262139?is_all=1"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="微博"
+                        >
+                        <i class="sidebar-button-icon fab fa-weibo" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">微博</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="mailto:ouyangfeng2016@gmail.com"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="邮箱"
+                        >
+                        <i class="sidebar-button-icon fa fa-envelope" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">邮箱</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            理解Kotlin语言独有的位置注解，让注解控制更精准
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2019-11-15T11:42:45+08:00">
+	
+		    11月 15, 2019
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/categories/Kotlin/">Kotlin</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <blockquote>
+<p>在Kotlin语言编写的代码中，你应该看到过类似这样的注解<code>@file:JvmName(...)</code>，这有点难以理解，正常的注解不会存在类似<code>@file:</code>这样的前缀，在Java语言中也没有类似的语法。那么，这到底有什么作用呢？<a id="more"></a> 由于其特殊的作用，我把它称之为”位置注解“。</p>
+</blockquote>
+<p>Kotlin语言是一门将语法简化到极致的编程语言，我们一起来看一段简单的代码：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name: <span class="built_in">String</span>? = <span class="keyword">null</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这段极其简单的代码，经过Kotlin编译器的处理，等价于下面这段Java代码：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">   <span class="meta">@Nullable</span></span><br><span class="line">   <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@Nullable</span></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">final</span> String getName() &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>.name;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">final</span> void setName(<span class="meta">@Nullable</span> String var1) &#123;</span><br><span class="line">      <span class="keyword">this</span>.name = var1;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>虽然在Kotlin语言中，看起来只是声明了一个成员变量，实际上编译后不仅声明了一个成员变量<code>name</code>，还生成了与之对应的<code>setter/getter</code>方法。</p>
+<p>这个时候，问题来了，如果我们在<code>Person</code>类的<code>name</code>属性上方添加一个注解，会出现什么问题呢？</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">   <span class="meta">@Callable</span></span><br><span class="line">   <span class="keyword">var</span> name: <span class="built_in">String</span>? = <span class="keyword">null</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们刚才说到，实际生成的字节码中包含了<code>setter/getter</code>方法，那么这个注解可能出现的位置就有4个地方：</p>
+<ul>
+<li>属性（成员变量name）</li>
+<li>setter方法</li>
+<li>setter方法参数name</li>
+<li>getter方法</li>
+</ul>
+<p>用代码来表示，具体可能出现的位置如下图所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">   <span class="comment">// 位置一：属性</span></span><br><span class="line">   <span class="meta">@Callable</span></span><br><span class="line">   <span class="meta">@Nullable</span></span><br><span class="line">   <span class="keyword">private</span> String name;</span><br><span class="line">	</span><br><span class="line">   <span class="comment">// 位置二：setter方法</span></span><br><span class="line">   <span class="meta">@Callable</span></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">final</span> void setName(<span class="comment">/*位置三：setter方法参数*/</span> <span class="meta">@Nullable</span> String var1) &#123;</span><br><span class="line">      <span class="keyword">this</span>.name = var1;</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">// 位置四：getter方法</span></span><br><span class="line">   <span class="meta">@Callable</span></span><br><span class="line">   <span class="meta">@Nullable</span></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">final</span> String getName() &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>.name;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个时候编译器晕菜了，它无法确定你到底想要让注解出现在什么位置。那么，这种情况下，Kotlin编译器究竟会怎么做呢？感兴趣的同学不妨自己做做实验。</p>
+<p>那么，是否有办法使注解准确地出现在指定位置呢？答案是：当然有！位置注解恰好就是用来解决这个问题的。</p>
+<p>我们将上面的代码添加位置注解，修改为下面这样：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">class</span> <span class="selector-tag">Person</span> &#123;</span><br><span class="line">    <span class="variable">@field:</span>Callable</span><br><span class="line">    var <span class="attribute">name</span>: String? = null</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过添加位置注解<code>@field</code>，    <code>@Callable</code>注解将准确出现在属性定义的位置，如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">   <span class="comment">// 注解将出现在这里</span></span><br><span class="line">   <span class="meta">@Callable</span></span><br><span class="line">   <span class="meta">@Nullable</span></span><br><span class="line">   <span class="keyword">private</span> String name;</span><br><span class="line">	</span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">final</span> void setName(<span class="meta">@Nullable</span> String var1) &#123;</span><br><span class="line">      <span class="keyword">this</span>.name = var1;</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">   <span class="meta">@Nullable</span></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">final</span> String getName() &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>.name;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对应上述其它三个位置的位置注解分别是：</p>
+<ul>
+<li>set: 对应setter方法位置</li>
+<li>get：对应getter方法位置</li>
+<li>setparam：对应setter方法参数位置</li>
+</ul>
+<p>除此之外，Kotlin还提供了以下几个位置注解，对应其它不同使用场景：</p>
+<h3 id="file"><a href="#file" class="headerlink" title="@file:"></a>@file:</h3><p>这个注解用在文件级别，每一个Kotlin文件对应一个或多个Java类，当对应一个类的时候，可通过添加该位置注解，结合上一节课讲到的注解<code>@JvmName</code>一起使用，可改变生成的Java类名。</p>
+<p>你可以理解为这个注解实际作用的位置就是最终编译生成的Java类。</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">@file:</span>JvmName(<span class="string">"FooKt"</span>)</span><br><span class="line">fun foo() &#123;</span><br><span class="line">    <span class="selector-tag">println</span>(<span class="string">"Hello, world..."</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最终生成的代码类似下面这样，生成的类名恰好是注解上方所填写的名称：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@JvmName</span>(<span class="string">"FooKt"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">FooKt</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">foo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="param"><a href="#param" class="headerlink" title="@param:"></a>@param:</h3><p>这个注解的作用是使注解出现的位置定位到构造函数的参数上面。</p>
+<p>大家知道，在Kotlin语言中，如果在构造函数参数前面添加<code>var</code>或<code>val</code>关键词，在对应类中会生成相应的属性、setter、getter方法。</p>
+<p>为了让注解准确地出现在其构造函数参数的位置，这个注解就应运而生了！</p>
+<p>我们继续来看一个例子：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">class</span> <span class="selector-tag">Person</span>(<span class="variable">@param</span>:Callable var <span class="attribute">name</span>: String)</span><br></pre></td></tr></table></figure>
+<p>添加上述位置注解后，最终生成的注解就会出现在构造函数参数的位置，如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">   <span class="meta">@NotNull</span></span><br><span class="line">   <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@NotNull</span></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">final</span> String getName() &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>.name;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">final</span> void setName(<span class="meta">@NotNull</span> String var1) &#123;</span><br><span class="line">      <span class="keyword">this</span>.name = var1;</span><br><span class="line">   &#125;</span><br><span class="line">	</span><br><span class="line">   <span class="comment">// 注解最终出现在了这里</span></span><br><span class="line">   <span class="keyword">public</span> Person(<span class="meta">@Callable</span> <span class="meta">@NotNull</span> String name) &#123;</span><br><span class="line">      <span class="keyword">super</span>();</span><br><span class="line">      <span class="keyword">this</span>.name = name;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="property"><a href="#property" class="headerlink" title="@property:"></a>@property:</h3><p>这是一个特殊的位置注解，这个注解对于Java端是不可见的，其代表的位置是对应属性的Property对象。这样说起来有点抽象，我们来看一个例子，先来了解一下<code>Property</code>到底是什么东西。</p>
+<p>我们继续以<code>Person</code>类为例，通过下面一段代码去访问它：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> person = Person(<span class="string">"Scott"</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">val</span> propertyName = person::name</span><br><span class="line">    <span class="comment">// 这里将打印 name: falsee</span></span><br><span class="line">    println(<span class="string">"<span class="subst">$&#123;propertyName.name&#125;</span>: <span class="subst">$&#123;propertyName.isConst&#125;</span>"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码中，propertyName对应的就是<code>Person</code>类中<code>name</code>属性的Property实例，简单来说就是，Property保存了对应属性的相关信息，代表了当前属性。通过Property可以获取到当前属性的相关信息（包括变量的名称，是否常量，是否延迟初始化等等）。</p>
+<p>如果在构造函数的<code>name</code>前面添加位置注解<code>@property:</code>，注解生成的位置会稍微有点难以理解。访问这个注解的唯一方法就是通过其Property实例，我们一起来试一下：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">class</span> <span class="selector-tag">Person</span>(<span class="variable">@property</span>:Callable var <span class="attribute">name</span>: String)</span><br></pre></td></tr></table></figure>
+<p>访问该注解的唯一方式是通过其Property实例，并且Java端无法访问到：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> person = Person(<span class="string">"Scott"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> propertyName = person::name</span><br><span class="line">    <span class="comment">// 访问该注解的唯一方式</span></span><br><span class="line">    println(propertyName.annotations.find &#123; it.annotationClass == Callable::<span class="class"><span class="keyword">class</span> &#125;)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么，具体到字节码，该注解到底出现在了哪里呢？我们不妨来反编译看一看：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">   <span class="meta">@NotNull</span></span><br><span class="line">   <span class="keyword">private</span> String name;</span><br><span class="line">	</span><br><span class="line">   <span class="comment">// 注解出现在了这里，非常特殊的一个位置</span></span><br><span class="line">   <span class="meta">@Callable</span></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> name$annotations() &#123;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@NotNull</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>.name;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(@NotNull String var1)</span> </span>&#123;</span><br><span class="line">      <span class="keyword">this</span>.name = var1;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">(@NotNull String name)</span> </span>&#123;</span><br><span class="line">      <span class="keyword">super</span>();</span><br><span class="line">      <span class="keyword">this</span>.name = name;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到注解出现在了Kotlin编译器生成的一个以属性名称加<strong>$</strong>与<strong>annotations</strong>后缀作为方法命名的静态方法上。这是Kotlin编译器约定的一个特殊方法，通过Property实例可以准确访问到这里。</p>
+<p>而知道了这个约定命名方式之后，事实上Java端也可以通过特殊的方式来访问到该注解，严格来讲，Java无法访问并不准确。</p>
+<h3 id="receiver："><a href="#receiver：" class="headerlink" title="@receiver："></a>@receiver：</h3><p>这也是一个非常特殊的位置注解，Kotlin支持扩展函数，即在不通过继承的情况下对原有类扩展函数或属性。扩展中有一个很重要的概念就是<strong>receiver</strong>，所谓的receiver，就是指被扩展类的实例本身。</p>
+<p>但问题来了，扩展并不会改变原有类的代码，如何将注解放到<strong>receiver</strong>位置呢，这似乎是一个不可能完成的事情。</p>
+<p>这就要说到扩展的实现原理了，扩展实际上对应Kotlin中的一个全局函数，当转换到字节码的时候，函数的第一个参数就是receiver本身。这样说起来可能比较抽象，我们直接来看一个例子：</p>
+<p>我们先对<code>Person</code>类增加扩展函数<code>sayHi</code>: </p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> Person.<span class="title">sayHi</span><span class="params">(greet: <span class="type">String</span>)</span></span> &#123;</span><br><span class="line">    println(<span class="string">"<span class="variable">$greet</span>, <span class="variable">$name</span>"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后反编译查看最终得到的Java代码：</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public <span class="keyword">static</span> final void sayHi(<span class="symbol">@NotNull</span> Person $receiver, <span class="symbol">@NotNull</span> <span class="built_in">String</span> greet) &#123;</span><br><span class="line">  <span class="built_in">String</span> var2 = greet + <span class="string">", "</span> + $receiver.getName()<span class="comment">;</span></span><br><span class="line">  System.out.println(var2)<span class="comment">;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到Kotlin编译器生成了一个静态方法，静态方法的第一个参数就是<code>receiver</code>，对应扩展类实例本身，第二个参数是扩展函数实际的参数。</p>
+<p>这就是Kotlin扩展的实现原理，其最终是通过增加静态函数来实现的，扩展函数的第一个参数永远指向被扩展类的实例，即receiver。而我们添加了位置注解<code>@receiver</code>之后，注解生成的位置就会出现在扩展函数第一个参数的位置，类似下面这样：</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public <span class="keyword">static</span> final void sayHi(<span class="symbol">@Callable</span> <span class="symbol">@NotNull</span> Person $receiver, <span class="symbol">@NotNull</span> <span class="built_in">String</span> greet) &#123;</span><br><span class="line">  <span class="built_in">String</span> var2 = greet + <span class="string">", "</span> + $receiver.getName()<span class="comment">;</span></span><br><span class="line">  System.out.println(var2)<span class="comment">;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这就是<code>@receiver</code>位置注解的作用，理解了扩展函数的原理，这个注解的作用就不难理解了。</p>
+<h3 id="delegate"><a href="#delegate" class="headerlink" title="@delegate"></a>@delegate</h3><p>这是今天我们要说的最后一个位置注解，这又是一个相对比较难理解的位置注解，因为在Java语言中并不存在类似的概念。在Kotlin语言中代理模式大行其道，Kotlin语言使用<code>by</code>关键字就可以轻松实现代理模式。</p>
+<p>这里存在一个同样的问题，前面我们说过，在Kotlin类中声明一个属性实际会同时生成<code>setter/getter</code>方法，这样注解可能出现的位置除属性之外就是三处（setter/getter/setter参数)。而如果属性本身使用代理的方式生成，这里就多了一个位置：<strong>代理类属性</strong>的位置。</p>
+<p>这样说，可能还不太直观，我们用官方的<code>lazy</code>实现来举一个例子。</p>
+<p>我们在<code>Person</code>类中增加一个代理属性<code>gender</code>：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span></span>(<span class="keyword">var</span> name: String) &#123;</span><br><span class="line">    <span class="meta">@delegate:Callable</span></span><br><span class="line">    <span class="keyword">val</span> gender <span class="keyword">by</span> lazy &#123; <span class="string">"male"</span> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>老规矩，我们还是直接反编译得到Java代码再来分析：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">   <span class="comment">// 注解出现在了这个位置</span></span><br><span class="line">   <span class="comment">// 也就是真正的代理类实例的位置</span></span><br><span class="line">   <span class="meta">@Callable</span></span><br><span class="line">   <span class="meta">@NotNull</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">final</span> Lazy gender$delegate;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@NotNull</span></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">final</span> String getGender() &#123;</span><br><span class="line">      Lazy var1 = <span class="keyword">this</span>.gender$delegate;</span><br><span class="line">      <span class="keyword">return</span> (String)var1.getValue();</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">public</span> Person(<span class="meta">@NotNull</span> String name) &#123;</span><br><span class="line">      <span class="keyword">super</span>();</span><br><span class="line">      <span class="keyword">this</span>.name = name;</span><br><span class="line">      <span class="keyword">this</span>.gender$delegate = LazyKt.lazy((Function0)<span class="literal">null</span>.INSTANCE);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过上面的代码，我们可以清晰地看到Kotlin编译器在类中生成真正的代理类实例属性，<code>gender</code>的值实际是从代理对象中获取的。这个位置注解的作用就是将注解精确地放置到代理类的实例属性上方。</p>
+<h3 id="默认位置注解优先级"><a href="#默认位置注解优先级" class="headerlink" title="默认位置注解优先级"></a>默认位置注解优先级</h3><p>位置注解在Kotlin语言中并不是强制要求的，我们可以不添加位置注解，在未添加位置注解的情况下，Kotlin语言会按照下面的优先级将注解放置到指定的位置（如果注解可以同时出现在多个位置的话）：</p>
+<p><code>param</code> &gt; <code>property</code> &gt; <code>field</code></p>
+<h3 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h3><p>以上就是Kotlin语言中我们可以用到的所有位置注解，这是因为Kotlin语言将语法简化到了极致，我们才需要这些注解精确地告诉编译器需要将注解放置到哪里。如果你需要在代码中添加注解，应该始终记得增加位置注解，以便注解可以精确地放置到你想要放置的位置，避免出现一些不必要的麻烦。</p>
+<p>阅读更多技术文章，请关注微信公众号”欧阳锋工作室“</p>
+<p><img src="http://youngfeng.com/assets/images/mpwexin.jpg" alt=""></p>
+<p>参与Kotlin技术讨论，请添加唯一官方QQ交流群：329673958</p>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-link" href="/tags/Kotlin/">Kotlin</a> <a class="tag tag--primary tag--small t-link" href="/tags/注解/">注解</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2019/11/17/巧解约瑟夫环问题/"
+                    data-tooltip="巧解约瑟夫环问题"
+                    aria-label="上一篇: 巧解约瑟夫环问题"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2019/11/12/正确使用Kotlin注解，兼容Java代码/"
+                    data-tooltip="正确使用Kotlin注解，兼容Java代码"
+                    aria-label="下一篇: 正确使用Kotlin注解，兼容Java代码"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://service.weibo.com/share/share.php?&amp;title=http://youngfeng.com/2019/11/15/理解Kotlin语言独有的位置注解，让注解控制更精准/"
+                    title="分享到 Weibo"
+                    aria-label="分享到 Weibo"
+                >
+                    <i class="fab fa-weibo" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://connect.qq.com/widget/shareqq/index.html?url=http://youngfeng.com/2019/11/15/理解Kotlin语言独有的位置注解，让注解控制更精准/&amp;title=理解Kotlin语言独有的位置注解，让注解控制更精准"
+                    title="分享到 QQ"
+                    aria-label="分享到 QQ"
+                >
+                    <i class="fab fa-qq" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://youngfeng.com/2019/11/15/理解Kotlin语言独有的位置注解，让注解控制更精准/"
+                    title="分享到 Qzone"
+                    aria-label="分享到 Qzone"
+                >
+                    <i class="fa fa-star" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <p>
+        <a href="https://beian.miit.gov.cn">粤ICP备2022110674号-1</a>
+    </p>
+    <p class="copyrights">
+        Copyrights &copy; 2022 欧阳锋工作室. All Rights Reserved.
+    </p>
+</footer>
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2019/11/17/巧解约瑟夫环问题/"
+                    data-tooltip="巧解约瑟夫环问题"
+                    aria-label="上一篇: 巧解约瑟夫环问题"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2019/11/12/正确使用Kotlin注解，兼容Java代码/"
+                    data-tooltip="正确使用Kotlin注解，兼容Java代码"
+                    aria-label="下一篇: 正确使用Kotlin注解，兼容Java代码"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://service.weibo.com/share/share.php?&amp;title=http://youngfeng.com/2019/11/15/理解Kotlin语言独有的位置注解，让注解控制更精准/"
+                    title="分享到 Weibo"
+                    aria-label="分享到 Weibo"
+                >
+                    <i class="fab fa-weibo" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://connect.qq.com/widget/shareqq/index.html?url=http://youngfeng.com/2019/11/15/理解Kotlin语言独有的位置注解，让注解控制更精准/&amp;title=理解Kotlin语言独有的位置注解，让注解控制更精准"
+                    title="分享到 QQ"
+                    aria-label="分享到 QQ"
+                >
+                    <i class="fab fa-qq" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://youngfeng.com/2019/11/15/理解Kotlin语言独有的位置注解，让注解控制更精准/"
+                    title="分享到 Qzone"
+                    aria-label="分享到 Qzone"
+                >
+                    <i class="fa fa-star" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="http://service.weibo.com/share/share.php?&amp;title=http://youngfeng.com/2019/11/15/理解Kotlin语言独有的位置注解，让注解控制更精准/"
+                        aria-label="分享到 Weibo"
+                    >
+                        <i class="fab fa-weibo" aria-hidden="true"></i><span>分享到 Weibo</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="http://connect.qq.com/widget/shareqq/index.html?url=http://youngfeng.com/2019/11/15/理解Kotlin语言独有的位置注解，让注解控制更精准/&amp;title=理解Kotlin语言独有的位置注解，让注解控制更精准"
+                        aria-label="分享到 QQ"
+                    >
+                        <i class="fab fa-qq" aria-hidden="true"></i><span>分享到 QQ</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://youngfeng.com/2019/11/15/理解Kotlin语言独有的位置注解，让注解控制更精准/"
+                        aria-label="分享到 Qzone"
+                    >
+                        <i class="fa fa-star" aria-hidden="true"></i><span>分享到 Qzone</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/avatar.jpeg" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">欧阳锋工作室</h4>
+        
+            <div id="about-card-bio"><p>author.bio</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>author.job</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                广东深圳
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+<script src="/assets/js/jquery.js"></script>
+<script src="/assets/js/jquery.fancybox.js"></script>
+<script src="/assets/js/thumbs.js"></script>
+<script src="/assets/js/tranquilpeak.js"></script>
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>

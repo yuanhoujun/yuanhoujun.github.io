@@ -1,0 +1,702 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="欧阳锋工作室">
+    <title>巧解约瑟夫环问题 - 欧阳锋工作室</title>
+    <meta name="author" content="欧阳锋工作室">
+    
+    
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"欧阳锋工作室","sameAs":["https://github.com/yuanhoujun","assets/images/mpwexin.jpg","https://weibo.com/u/6140262139?is_all=1","mailto:ouyangfeng2016@gmail.com"],"image":"avatar.jpeg"},"articleBody":"\n100个小孩手拉手围成一圈，从第1个小孩开始报数，数到3出列，下一个小孩继续从1开始报数，循环报数，求最后留在队列中的小孩的位置。\n\n这是一道非常经典的算法题，我在面试的时候经常提到这道题。这道题是完全可以通过正向思维解答的，但遗憾的是，在所有面试的人中，几乎没有一个人可以正确地解答这道题。\n\n那么，到底要如何解答这道题呢，我们一起来试试看！\n解法一：生死看淡，不服就干首先，我们尝试用正向思维解答，我们用一个集合模拟100个人，集合中的值记录的是原来队列中人物的索引（从0开始）。为了保证函数的通用性，我们用n表示队列中的人数，m表示出列的位置：\n本篇文章我们使用Java语言进行讲解，如果你想看其它语言的实现，请在微信公众号”欧阳锋工作室“给我留言\n12345678910111213141516171819202122232425262728293031323334public static int f(int n, int m) &#123;    // 这里用一个集合模拟队列    List&lt;Integer&gt; list = new ArrayList&lt;&gt;();    for (int i = 0; i &lt; n; i ++) &#123;        list.add(i);    &#125;    // 计数器，记录报数序号    int count = 0;    // 当前循环的队列位置索引    int index = 0;    while (list.size() &gt; 1) &#123;        count ++;        // 这里还要注意一个问题，如果报数来到了队列尾部，我们需要从第一个人继续往下报数        // 因此这里的索引计数器需要归0        if (index &gt;= list.size()) &#123;            index = 0;        &#125;        // 接下来开始循环报数，将序号为m的人移出队列        if (count &gt;= m) &#123;            // 移出队列，同时计数器归0            list.remove(index);            count = 0;        &#125;        index ++;    &#125;    return list.get(0);&#125;\n以上这种解法是最容易被想到的方法，问题是：这样做正确吗？\n很显然不对！这里忽略了一个问题，一旦队列中有人被移出队列，队列的索引就会发生变化。举个例子，假设第3个人被移除，正常来说，下一个人的索引应该是4。而实际上，这个人的索引依然是3，因为索引计数是连续的。被移除的人索引也会消失，后面所有人的索引都会往前移动一位。\n这是上述解法最容易出现的问题，知道了问题的根源，我们将代码继续改进。\n我们在上述代码的第28行后面增加一行代码，人物出列后主动将索引值减一：\n12345678// 接下来开始循环报数，将序号为m的人移出队列if (count &gt;= m) &#123;    // 移出队列，同时计数器归0    list.remove(index);    count = 0;    // 这里的索引要减1    index --;&#125;\n修改后，我们尝试运行以上代码，将100与3的值传入到函数中，运行得到结果90，答案是正确的。\n解法二：死生不惧，一往直前直给的解题方式，除了上述解法之外，还有一种常见的解法，就是不管三七二十一，一路循环，直至输出结果。\n这种解法同样需要构建用户队列，只是队列的形式发生了变化，我们使用一个长度为n的Boolean数组构建用户队列。\n这种解法的完整代码如下：\n123456789101112131415161718192021222324252627282930313233343536373839404142public static int f(int n, int m) &#123;    Boolean[] arr = new Boolean[n];    for (int i = 0; i &lt; arr.length; i ++) &#123;        arr[i] = true;    &#125;    // 队列中还剩余的人数    int leftCount = arr.length;    // 计数器，记录报数序号    int count = 0;    // 当前循环的队列位置索引    int index = 0;    while (leftCount &gt; 1) &#123;        if (arr[index]) &#123;            count++;        &#125;        if (count == m) &#123;            arr[index] = false;            count = 0;            leftCount --;        &#125;        index ++;        // 这里同样需要处理计数到达队列尾部的情况        if (index &gt;= n) &#123;            index = 0;        &#125;    &#125;    int result = 0;    for (int i = 0; i &lt; arr.length; i ++) &#123;        if (arr[i]) &#123;            result = i;            break;        &#125;    &#125;    return result;&#125;\n这种解法相对于第一种解法来说，时间复杂度更高，循环次数更多，循环次数差不多是第一种解法的3到5倍，甚至更多。但相对第一种解法，这种解法更容易被人接受，也无需考虑索引的变化。在面试中，如果你想不到任何一种解法，我推荐你使用这种解法。\n解法三：巧用链表，场景还原分析考题，我们不难发现，这似乎是我们非常熟悉的链表结构。在第三种解法中，我们尝试使用链表模拟这个用户队列，看看能否带给我们一些惊喜。\n由于始终使用单向报数，我们就用一个单向链表来模拟这个数据结构：\n12345678910// 这里用Child类来模拟每一个参与的小孩，其中的value值保存的是当前用户的索引public class Child &#123;    // 简单起见，这里我们全部使用public    public Child next;    public int value;    public Child(int value) &#123;        this.value = value;    &#125;&#125;\n12345678910111213141516171819202122232425262728293031323334353637public static int f(int n, int m) &#123;    Child head = new Child(0);    Child current = head;    for (int i = 1; i &lt; n; i ++) &#123;        Child child = new Child(i);        current.next = child;        current = child;    &#125;    // 为了构建首尾相接的链表，这里我们主动将尾节点与头结点连接起来    // 当前节点恰好指向尾节点    current.next = head;    // 接下来再移动一次指针，让current指向头节点    // 为了方便获取前一个节点，这里我们用一个变量表示前一个节点    Child prev = current;    current = current.next;    // 定义计数器    int count = 0;    // 一旦收尾相接，当前节点指向了自身，证明队列中只有一个用户了，跳出循环，游戏结束    while (current.next != current) &#123;        count ++;        if (count == m) &#123;            prev.next = current.next;            count = 0;        &#125;        prev = current;        current = current.next;    &#125;    return current.value;&#125;\n以上就是这种解法的完整代码，代码中包含了每一行代码的详细解释。在这个解法中，我们利用链表模拟了人物队列，通过控制当前用户的指针移动来模拟报数。最终，当用户的下一个用户指针指向自己的时候跳出循环，游戏结束，当前用户就是队列中剩余的最后一个用户。\n这种解法相对于上面两种解法来说更容易理解，并且这种解法的时间复杂度不高，循环次数与第一个解法的循环次数一致。目前来说，他是在所有的解法中是最优的。\n那么，是否还有更好的解法呢？\n解法四：数学大法，九九归一计算机科学离不开数学！最后，我们一起来试试看，尝试利用数学的武器更加巧妙地解决这个问题。由于这是一个规律性的动作，我们可以肯定，这应该有一个固定的数学规律。\n但现在的问题是，如何找到这个规律呢？这似乎不太容易。\n这里我们先假设总人数为n，报数为m的人出列，用f(n, m)表示最终留在队列中的人的位置。\n为了便于大家理解，我们先来看一个实际的例子，假设n=5, m=3, 即队列中只有5个人，报数为3的人出列。\n123456789101112第一轮报数，位置为3的人出列[1, 2, x, 4, 5]出列后，从4开始报数，我们将开始报数的人挪到第一位，剩下的人按照报数的顺序往后排，得到一个新的队列：[4, 5, 1, 2]从这里，我们开始第二轮报数，这一轮报数位置为1的人出列[4, 5, x, 2]我们继续按照上面的方式，转换队列，重新第三轮报数：[2, 4, 5] =&gt; [2, 4, x]第四轮：[2, 4] =&gt; [x, 4]第五轮：[4]\n以上就是n = 5, m = 3的情况下完整的报数情况，接下来我们仅关注第一次报数发生的变化。\n第一轮报数完成后，队列由[1, 2, 3, 4, 5]转换成了[4, 5, 2, 1]。\n\n队列一：[1, 2, 3, 4, 5]\n队列二：[4, 5, 1, 2]\n\n注意看，如果我们不去关注队列中人物的位置，仅关注队列本身。这两个队列有什么关系？\n\n两个队列都是从1开始报数\n两个队列人数仅仅相差1\n\n这里很微妙，这其实可以看做数量为5的人物队列，与数量为4的人物队列。如果我们用Q表示队列的话，第一个队列可以用Q(5)表示，第二个队列可以用Q(4)来表示，Q(4)实际上是Q(5)的子队列。\n在这两个队列中，还有两个干扰项 [1, 2], 为了排除干扰，我们将他们改成 [6, 7], 即：\n\n队列一：[1, 2, 3, 4, 5]\n队列二：[4, 5, 6, 7]\n\n这个时候队列Q(5)与Q(4)产生了一定的关系，同等位置处的索引值恰好相差3（其实就是m的值，为什么是m呢？大家可以自行思考一下）。\n接下来，我们关注第二个队列的第一轮报数，报数为3的人出列，也就是队列二中的6。那么，TA在原来队列中的位置到底是什么呢？答案是1，实际就是将6 % 5进行取模得到的值。\n这里似乎有一个固定的规律，即：假设队列2第一轮报数出列的人在队列2中的位置是x2, 在队列1中的位置是x1, x2与x1应该存在下面这个关系：\n1x1 = (x2 + 3) % 5\n第一轮报数等式成立，那么第二轮报数是否成立呢？一直到剩余最后一个人是否成立呢？答案是：当然成立。\n由此，我们可以猜测f(n, m)与f(n, m - 1)存在下面这样的关系：\n1f(n, m) = (f(n - 1, m) + m) % n\n为了加深大家的理解，我们将转换过程用图片再一次展示给大家看：\n\n以上就是队列长度为n，第一次报数为m的用户出列后将n-1的其他人转换到n-1的子队列的过程。\n由此可以得出结论，这里的转换是普适的，以上的公式适用于所有情况。\n上述公式中，我们没有考虑当前队列中只有一个人的情况，这里我们将其补全，得到下面的递推公式：\n12f(n, m) = 0 (n = 1)f(n, m) = (f(n - 1, m) + m) % n (n &gt; 1)\n得到上述递推公式之后，问题就变得简单了：\n1234public static int f(int n, int m) &#123;    if (n == 1) return 0;    return (f(n - 1, m) + m) % n;&#125;\n换成三目运算符，我们甚至可以使用一行代码解答这个问题：\n123public static int f(int n, int m) &#123;    return n == 1 ? 0 : (f3(n - 1, m) + m) % n;&#125;\n最佳实践以上就是”约瑟夫环问题“的常见几种解法，算法效率最高的解法是第四种，其次是第一种与第三种，第二种解法效率最差，但最容易想到。尽管通过数学归纳法可以最高效地解答这个问题，但我仍然推荐第三种解法，这种解法最符合计算机思维。同时，算法复杂度也不高。但如果在高度要求性能的程序中，当然毫无疑问，解法四是你的最优选择。\n总结在这个问题解答的过程中，我们用到了链表，链表是一种非常常见的数据结构。可能你经常在用，但并不了解。链表问题经常出现在算法中，如果你希望对链表进一步深入了解，请关注公众号”欧阳锋工作室“，下一篇文章我们讲一讲与链表相关的那些算法题。\n\n","dateCreated":"2019-11-17T08:18:00+08:00","dateModified":"2022-09-08T16:13:27+08:00","datePublished":"2019-11-17T08:18:00+08:00","description":"\n100个小孩手拉手围成一圈，从第1个小孩开始报数，数到3出列，下一个小孩继续从1开始报数，循环报数，求最后留在队列中的小孩的位置。\n\n这是一道非常经典的算法题，我在面试的时候经常提到这道题。这道题是完全可以通过正向思维解答的，但遗憾的是，在所有面试的人中，几乎没有一个人可以正确地解答这道题。","headline":"巧解约瑟夫环问题","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://youngfeng.com/2019/11/17/巧解约瑟夫环问题/"},"publisher":{"@type":"Organization","name":"欧阳锋工作室","sameAs":["https://github.com/yuanhoujun","assets/images/mpwexin.jpg","https://weibo.com/u/6140262139?is_all=1","mailto:ouyangfeng2016@gmail.com"],"image":"avatar.jpeg","logo":{"@type":"ImageObject","url":"avatar.jpeg"}},"url":"http://youngfeng.com/2019/11/17/巧解约瑟夫环问题/","keywords":"算法, 约瑟夫环, 队列"}</script>
+    <meta name="description" content="100个小孩手拉手围成一圈，从第1个小孩开始报数，数到3出列，下一个小孩继续从1开始报数，循环报数，求最后留在队列中的小孩的位置。  这是一道非常经典的算法题，我在面试的时候经常提到这道题。这道题是完全可以通过正向思维解答的，但遗憾的是，在所有面试的人中，几乎没有一个人可以正确地解答这道题。">
+<meta name="keywords" content="算法,约瑟夫环,队列">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="巧解约瑟夫环问题">
+<meta property="og:url" content="http://youngfeng.com/2019/11/17/巧解约瑟夫环问题/index.html">
+<meta property="og:site_name" content="欧阳锋工作室">
+<meta property="og:description" content="100个小孩手拉手围成一圈，从第1个小孩开始报数，数到3出列，下一个小孩继续从1开始报数，循环报数，求最后留在队列中的小孩的位置。  这是一道非常经典的算法题，我在面试的时候经常提到这道题。这道题是完全可以通过正向思维解答的，但遗憾的是，在所有面试的人中，几乎没有一个人可以正确地解答这道题。">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="http://youngfeng.com/2019/11/17/巧解约瑟夫环问题/transform.png">
+<meta property="og:image" content="http://youngfeng.com/assets/images/mpwexin.jpg">
+<meta property="og:updated_time" content="2022-09-08T08:13:27.733Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="巧解约瑟夫环问题">
+<meta name="twitter:description" content="100个小孩手拉手围成一圈，从第1个小孩开始报数，数到3出列，下一个小孩继续从1开始报数，循环报数，求最后留在队列中的小孩的位置。  这是一道非常经典的算法题，我在面试的时候经常提到这道题。这道题是完全可以通过正向思维解答的，但遗憾的是，在所有面试的人中，几乎没有一个人可以正确地解答这道题。">
+<meta name="twitter:image" content="http://youngfeng.com/2019/11/17/巧解约瑟夫环问题/transform.png">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="http://youngfeng.com/assets/images/avatar.jpeg"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    <link rel="stylesheet" href="/assets/css/all.css">
+    <link rel="stylesheet" href="/assets/css/jquery.fancybox.css">
+    <link rel="stylesheet" href="/assets/css/thumbs.css">
+    <link rel="stylesheet" href="/assets/css/tranquilpeak.css">
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            欧阳锋工作室
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/avatar.jpeg" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/avatar.jpeg" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">欧阳锋工作室</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>author.bio</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://github.com/yuanhoujun"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="GitHub"
+                        >
+                        <i class="sidebar-button-icon fab fa-github" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/assets/images/mpwexin.jpg"
+                            
+                            rel="noopener"
+                            title="微信公众号"
+                        >
+                        <i class="sidebar-button-icon fab fa-weixin" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">微信公众号</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://weibo.com/u/6140262139?is_all=1"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="微博"
+                        >
+                        <i class="sidebar-button-icon fab fa-weibo" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">微博</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="mailto:ouyangfeng2016@gmail.com"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="邮箱"
+                        >
+                        <i class="sidebar-button-icon fa fa-envelope" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">邮箱</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            巧解约瑟夫环问题
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2019-11-17T08:18:00+08:00">
+	
+		    11月 17, 2019
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/categories/数据结构与算法/">数据结构与算法</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <blockquote>
+<p>100个小孩手拉手围成一圈，从第1个小孩开始报数，数到3出列，下一个小孩继续从1开始报数，循环报数，求最后留在队列中的小孩的位置。</p>
+</blockquote>
+<p>这是一道非常经典的算法题，我在面试的时候经常提到这道题。这道题是完全可以通过正向思维解答的，但遗憾的是，在所有面试的人中，几乎没有一个人可以正确地解答这道题。</p>
+<a id="more"></a>
+<p>那么，到底要如何解答这道题呢，我们一起来试试看！</p>
+<h3 id="解法一：生死看淡，不服就干"><a href="#解法一：生死看淡，不服就干" class="headerlink" title="解法一：生死看淡，不服就干"></a>解法一：生死看淡，不服就干</h3><p>首先，我们尝试用正向思维解答，我们用一个集合模拟100个人，集合中的值记录的是原来队列中人物的索引（从0开始）。为了保证函数的通用性，我们用n表示队列中的人数，m表示出列的位置：</p>
+<p><strong>本篇文章我们使用Java语言进行讲解，如果你想看其它语言的实现，请在微信公众号”欧阳锋工作室“给我留言</strong></p>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> f(<span class="keyword">int</span> n, <span class="keyword">int</span> m) &#123;</span><br><span class="line">    <span class="comment">// 这里用一个集合模拟队列</span></span><br><span class="line">    List&lt;Integer&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i ++) &#123;</span><br><span class="line">        list.add(i);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 计数器，记录报数序号</span></span><br><span class="line">    <span class="keyword">int</span> <span class="keyword">count</span> = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 当前循环的队列位置索引</span></span><br><span class="line">    <span class="keyword">int</span> <span class="keyword">index</span> = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (list.size() &gt; <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">count</span> ++;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 这里还要注意一个问题，如果报数来到了队列尾部，我们需要从第一个人继续往下报数</span></span><br><span class="line">        <span class="comment">// 因此这里的索引计数器需要归0</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">index</span> &gt;= list.size()) &#123;</span><br><span class="line">            <span class="keyword">index</span> = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 接下来开始循环报数，将序号为m的人移出队列</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">count</span> &gt;= m) &#123;</span><br><span class="line">            <span class="comment">// 移出队列，同时计数器归0</span></span><br><span class="line">            list.remove(<span class="keyword">index</span>);</span><br><span class="line">            <span class="keyword">count</span> = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">index</span> ++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> list.get(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上这种解法是最容易被想到的方法，问题是：这样做正确吗？</p>
+<p>很显然不对！这里忽略了一个问题，一旦队列中有人被移出队列，队列的索引就会发生变化。举个例子，假设第3个人被移除，正常来说，下一个人的索引应该是4。而实际上，这个人的索引依然是3，因为索引计数是连续的。被移除的人索引也会消失，后面所有人的索引都会往前移动一位。</p>
+<p>这是上述解法最容易出现的问题，知道了问题的根源，我们将代码继续改进。</p>
+<p>我们在上述代码的第28行后面增加一行代码，人物出列后主动将索引值减一：</p>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 接下来开始循环报数，将序号为m的人移出队列</span></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">count</span> &gt;= m) &#123;</span><br><span class="line">    <span class="comment">// 移出队列，同时计数器归0</span></span><br><span class="line">    list.remove(<span class="keyword">index</span>);</span><br><span class="line">    <span class="keyword">count</span> = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 这里的索引要减1</span></span><br><span class="line">    <span class="keyword">index</span> --;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>修改后，我们尝试运行以上代码，将100与3的值传入到函数中，运行得到结果90，答案是正确的。</p>
+<h3 id="解法二：死生不惧，一往直前"><a href="#解法二：死生不惧，一往直前" class="headerlink" title="解法二：死生不惧，一往直前"></a>解法二：死生不惧，一往直前</h3><p>直给的解题方式，除了上述解法之外，还有一种常见的解法，就是不管三七二十一，一路循环，直至输出结果。</p>
+<p>这种解法同样需要构建用户队列，只是队列的形式发生了变化，我们使用一个长度为n的Boolean数组构建用户队列。</p>
+<p>这种解法的完整代码如下：</p>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> f(<span class="keyword">int</span> n, <span class="keyword">int</span> m) &#123;</span><br><span class="line">    Boolean[] arr = <span class="keyword">new</span> Boolean[n];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; arr.length; i ++) &#123;</span><br><span class="line">        arr[i] = <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 队列中还剩余的人数</span></span><br><span class="line">    <span class="keyword">int</span> leftCount = arr.length;</span><br><span class="line">    <span class="comment">// 计数器，记录报数序号</span></span><br><span class="line">    <span class="keyword">int</span> <span class="keyword">count</span> = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 当前循环的队列位置索引</span></span><br><span class="line">    <span class="keyword">int</span> <span class="keyword">index</span> = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (leftCount &gt; <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (arr[<span class="keyword">index</span>]) &#123;</span><br><span class="line">            <span class="keyword">count</span>++;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">count</span> == m) &#123;</span><br><span class="line">            arr[<span class="keyword">index</span>] = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">count</span> = <span class="number">0</span>;</span><br><span class="line">            leftCount --;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">index</span> ++;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 这里同样需要处理计数到达队列尾部的情况</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">index</span> &gt;= n) &#123;</span><br><span class="line">            <span class="keyword">index</span> = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> result = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; arr.length; i ++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (arr[i]) &#123;</span><br><span class="line">            result = i;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这种解法相对于第一种解法来说，时间复杂度更高，循环次数更多，循环次数差不多是第一种解法的3到5倍，甚至更多。但相对第一种解法，这种解法更容易被人接受，也无需考虑索引的变化。在面试中，如果你想不到任何一种解法，我推荐你使用这种解法。</p>
+<h3 id="解法三：巧用链表，场景还原"><a href="#解法三：巧用链表，场景还原" class="headerlink" title="解法三：巧用链表，场景还原"></a>解法三：巧用链表，场景还原</h3><p>分析考题，我们不难发现，这似乎是我们非常熟悉的链表结构。在第三种解法中，我们尝试使用链表模拟这个用户队列，看看能否带给我们一些惊喜。</p>
+<p>由于始终使用单向报数，我们就用一个单向链表来模拟这个数据结构：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这里用Child类来模拟每一个参与的小孩，其中的value值保存的是当前用户的索引</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Child</span> &#123;</span><br><span class="line">    <span class="comment">// 简单起见，这里我们全部使用public</span></span><br><span class="line">    <span class="keyword">public</span> Child next;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> <span class="keyword">value</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Child</span>(<span class="params"><span class="keyword">int</span> <span class="keyword">value</span></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.<span class="keyword">value</span> = <span class="keyword">value</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> f(<span class="keyword">int</span> n, <span class="keyword">int</span> m) &#123;</span><br><span class="line">    Child head = <span class="keyword">new</span> Child(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    Child current = head;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; n; i ++) &#123;</span><br><span class="line">        Child child = <span class="keyword">new</span> Child(i);</span><br><span class="line">        current.<span class="keyword">next</span> = child;</span><br><span class="line">        current = child;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 为了构建首尾相接的链表，这里我们主动将尾节点与头结点连接起来</span></span><br><span class="line">    <span class="comment">// 当前节点恰好指向尾节点</span></span><br><span class="line">    current.<span class="keyword">next</span> = head;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 接下来再移动一次指针，让current指向头节点</span></span><br><span class="line">    <span class="comment">// 为了方便获取前一个节点，这里我们用一个变量表示前一个节点</span></span><br><span class="line">    Child prev = current;</span><br><span class="line">    current = current.<span class="keyword">next</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义计数器</span></span><br><span class="line">    <span class="keyword">int</span> <span class="keyword">count</span> = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 一旦收尾相接，当前节点指向了自身，证明队列中只有一个用户了，跳出循环，游戏结束</span></span><br><span class="line">    <span class="keyword">while</span> (current.<span class="keyword">next</span> != current) &#123;</span><br><span class="line">        <span class="keyword">count</span> ++;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">count</span> == m) &#123;</span><br><span class="line">            prev.<span class="keyword">next</span> = current.<span class="keyword">next</span>;</span><br><span class="line">            <span class="keyword">count</span> = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        prev = current;</span><br><span class="line">        current = current.<span class="keyword">next</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> current.value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上就是这种解法的完整代码，代码中包含了每一行代码的详细解释。在这个解法中，我们利用链表模拟了人物队列，通过控制当前用户的指针移动来模拟报数。最终，当用户的下一个用户指针指向自己的时候跳出循环，游戏结束，当前用户就是队列中剩余的最后一个用户。</p>
+<p>这种解法相对于上面两种解法来说更容易理解，并且这种解法的时间复杂度不高，循环次数与第一个解法的循环次数一致。目前来说，他是在所有的解法中是最优的。</p>
+<p>那么，是否还有更好的解法呢？</p>
+<h3 id="解法四：数学大法，九九归一"><a href="#解法四：数学大法，九九归一" class="headerlink" title="解法四：数学大法，九九归一"></a>解法四：数学大法，九九归一</h3><p>计算机科学离不开数学！最后，我们一起来试试看，尝试利用数学的武器更加巧妙地解决这个问题。由于这是一个规律性的动作，我们可以肯定，这应该有一个固定的数学规律。</p>
+<p>但现在的问题是，如何找到这个规律呢？这似乎不太容易。</p>
+<p>这里我们先假设总人数为<code>n</code>，报数为<code>m</code>的人出列，用<code>f(n, m)</code>表示最终留在队列中的人的位置。</p>
+<p>为了便于大家理解，我们先来看一个实际的例子，假设n=5, m=3, 即队列中只有5个人，报数为3的人出列。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">第一轮报数，位置为<span class="number">3</span>的人出列</span><br><span class="line">[<span class="number">1</span>, <span class="number">2</span>, x, <span class="number">4</span>, <span class="number">5</span>]</span><br><span class="line">出列后，从<span class="number">4</span>开始报数，我们将开始报数的人挪到第一位，剩下的人按照报数的顺序往后排，得到一个新的队列：</span><br><span class="line">[<span class="number">4</span>, <span class="number">5</span>, <span class="number">1</span>, <span class="number">2</span>]</span><br><span class="line">从这里，我们开始第二轮报数，这一轮报数位置为<span class="number">1</span>的人出列</span><br><span class="line">[<span class="number">4</span>, <span class="number">5</span>, x, <span class="number">2</span>]</span><br><span class="line">我们继续按照上面的方式，转换队列，重新第三轮报数：</span><br><span class="line">[<span class="number">2</span>, <span class="number">4</span>, <span class="number">5</span>] =&gt; [<span class="number">2</span>, <span class="number">4</span>, x]</span><br><span class="line">第四轮：</span><br><span class="line">[<span class="number">2</span>, <span class="number">4</span>] =&gt; [x, <span class="number">4</span>]</span><br><span class="line">第五轮：</span><br><span class="line">[<span class="number">4</span>]</span><br></pre></td></tr></table></figure>
+<p>以上就是<code>n = 5, m = 3</code>的情况下完整的报数情况，接下来我们仅关注第一次报数发生的变化。</p>
+<p>第一轮报数完成后，队列由[1, 2, 3, 4, 5]转换成了[4, 5, 2, 1]。</p>
+<ul>
+<li>队列一：[1, 2, 3, 4, 5]</li>
+<li>队列二：[4, 5, 1, 2]</li>
+</ul>
+<p>注意看，如果我们不去关注队列中人物的位置，仅关注队列本身。这两个队列有什么关系？</p>
+<ul>
+<li>两个队列都是从1开始报数</li>
+<li>两个队列人数仅仅相差1</li>
+</ul>
+<p>这里很微妙，这其实可以看做数量为5的人物队列，与数量为4的人物队列。如果我们用<code>Q</code>表示队列的话，第一个队列可以用<code>Q(5)</code>表示，第二个队列可以用<code>Q(4)</code>来表示，<code>Q(4)</code>实际上是<code>Q(5)</code>的子队列。</p>
+<p>在这两个队列中，还有两个干扰项 [1, 2], 为了排除干扰，我们将他们改成 [6, 7], 即：</p>
+<ul>
+<li>队列一：[1, 2, 3, 4, 5]</li>
+<li>队列二：[4, 5, 6, 7]</li>
+</ul>
+<p>这个时候队列<code>Q(5)</code>与<code>Q(4)</code>产生了一定的关系，同等位置处的索引值恰好相差3（其实就是m的值，为什么是m呢？大家可以自行思考一下）。</p>
+<p>接下来，我们关注第二个队列的第一轮报数，报数为3的人出列，也就是队列二中的6。那么，TA在原来队列中的位置到底是什么呢？答案是1，实际就是将<code>6 % 5</code>进行取模得到的值。</p>
+<p>这里似乎有一个固定的规律，即：假设队列2第一轮报数出列的人在队列2中的位置是x2, 在队列1中的位置是x1, x2与x1应该存在下面这个关系：</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x<span class="number">1</span> = <span class="comment">(x2 + 3)</span> <span class="meta">%</span> <span class="number">5</span></span><br></pre></td></tr></table></figure>
+<p>第一轮报数等式成立，那么第二轮报数是否成立呢？一直到剩余最后一个人是否成立呢？答案是：当然成立。</p>
+<p>由此，我们可以猜测<code>f(n, m)</code>与<code>f(n, m - 1)</code>存在下面这样的关系：</p>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">f(<span class="built_in">n</span>, m) = (f(<span class="built_in">n</span> - <span class="number">1</span>, m) + m) % <span class="built_in">n</span></span><br></pre></td></tr></table></figure>
+<p>为了加深大家的理解，我们将转换过程用图片再一次展示给大家看：</p>
+<p><img src="/2019/11/17/巧解约瑟夫环问题/transform.png" alt=""></p>
+<p>以上就是队列长度为n，第一次报数为m的用户出列后将n-1的其他人转换到n-1的子队列的过程。</p>
+<p>由此可以得出结论，这里的转换是普适的，以上的公式适用于所有情况。</p>
+<p>上述公式中，我们没有考虑当前队列中只有一个人的情况，这里我们将其补全，得到下面的递推公式：</p>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">f(<span class="built_in">n</span>, m) = <span class="number">0</span> (<span class="built_in">n</span> = <span class="number">1</span>)</span><br><span class="line">f(<span class="built_in">n</span>, m) = (f(<span class="built_in">n</span> - <span class="number">1</span>, m) + m) % <span class="built_in">n</span> (<span class="built_in">n</span> &gt; <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p>得到上述递推公式之后，问题就变得简单了：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span> n, <span class="keyword">int</span> m)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (n == <span class="number">1</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> (f(n - <span class="number">1</span>, m) + m) % n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>换成三目运算符，我们甚至可以使用一行代码解答这个问题：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span> n, <span class="keyword">int</span> m)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> n == <span class="number">1</span> ? <span class="number">0</span> : (f3(n - <span class="number">1</span>, m) + m) % n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h3><p>以上就是”约瑟夫环问题“的常见几种解法，算法效率最高的解法是第四种，其次是第一种与第三种，第二种解法效率最差，但最容易想到。尽管通过数学归纳法可以最高效地解答这个问题，但我仍然推荐第三种解法，这种解法最符合计算机思维。同时，算法复杂度也不高。但如果在高度要求性能的程序中，当然毫无疑问，解法四是你的最优选择。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>在这个问题解答的过程中，我们用到了链表，链表是一种非常常见的数据结构。可能你经常在用，但并不了解。链表问题经常出现在算法中，如果你希望对链表进一步深入了解，请关注公众号”欧阳锋工作室“，下一篇文章我们讲一讲与链表相关的那些算法题。</p>
+<p><img src="http://youngfeng.com/assets/images/mpwexin.jpg" alt=""></p>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-link" href="/tags/算法/">算法</a> <a class="tag tag--primary tag--small t-link" href="/tags/约瑟夫环/">约瑟夫环</a> <a class="tag tag--primary tag--small t-link" href="/tags/队列/">队列</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2019/11/18/深入链表数据结构，助你搞定链表算法题/"
+                    data-tooltip="深入链表数据结构，助你搞定链表算法题"
+                    aria-label="上一篇: 深入链表数据结构，助你搞定链表算法题"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2019/11/15/理解Kotlin语言独有的位置注解，让注解控制更精准/"
+                    data-tooltip="理解Kotlin语言独有的位置注解，让注解控制更精准"
+                    aria-label="下一篇: 理解Kotlin语言独有的位置注解，让注解控制更精准"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://service.weibo.com/share/share.php?&amp;title=http://youngfeng.com/2019/11/17/巧解约瑟夫环问题/"
+                    title="分享到 Weibo"
+                    aria-label="分享到 Weibo"
+                >
+                    <i class="fab fa-weibo" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://connect.qq.com/widget/shareqq/index.html?url=http://youngfeng.com/2019/11/17/巧解约瑟夫环问题/&amp;title=巧解约瑟夫环问题"
+                    title="分享到 QQ"
+                    aria-label="分享到 QQ"
+                >
+                    <i class="fab fa-qq" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://youngfeng.com/2019/11/17/巧解约瑟夫环问题/"
+                    title="分享到 Qzone"
+                    aria-label="分享到 Qzone"
+                >
+                    <i class="fa fa-star" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <p>
+        <a href="https://beian.miit.gov.cn">粤ICP备2022110674号-1</a>
+    </p>
+    <p class="copyrights">
+        Copyrights &copy; 2022 欧阳锋工作室. All Rights Reserved.
+    </p>
+</footer>
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2019/11/18/深入链表数据结构，助你搞定链表算法题/"
+                    data-tooltip="深入链表数据结构，助你搞定链表算法题"
+                    aria-label="上一篇: 深入链表数据结构，助你搞定链表算法题"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2019/11/15/理解Kotlin语言独有的位置注解，让注解控制更精准/"
+                    data-tooltip="理解Kotlin语言独有的位置注解，让注解控制更精准"
+                    aria-label="下一篇: 理解Kotlin语言独有的位置注解，让注解控制更精准"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://service.weibo.com/share/share.php?&amp;title=http://youngfeng.com/2019/11/17/巧解约瑟夫环问题/"
+                    title="分享到 Weibo"
+                    aria-label="分享到 Weibo"
+                >
+                    <i class="fab fa-weibo" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://connect.qq.com/widget/shareqq/index.html?url=http://youngfeng.com/2019/11/17/巧解约瑟夫环问题/&amp;title=巧解约瑟夫环问题"
+                    title="分享到 QQ"
+                    aria-label="分享到 QQ"
+                >
+                    <i class="fab fa-qq" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://youngfeng.com/2019/11/17/巧解约瑟夫环问题/"
+                    title="分享到 Qzone"
+                    aria-label="分享到 Qzone"
+                >
+                    <i class="fa fa-star" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="http://service.weibo.com/share/share.php?&amp;title=http://youngfeng.com/2019/11/17/巧解约瑟夫环问题/"
+                        aria-label="分享到 Weibo"
+                    >
+                        <i class="fab fa-weibo" aria-hidden="true"></i><span>分享到 Weibo</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="http://connect.qq.com/widget/shareqq/index.html?url=http://youngfeng.com/2019/11/17/巧解约瑟夫环问题/&amp;title=巧解约瑟夫环问题"
+                        aria-label="分享到 QQ"
+                    >
+                        <i class="fab fa-qq" aria-hidden="true"></i><span>分享到 QQ</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://youngfeng.com/2019/11/17/巧解约瑟夫环问题/"
+                        aria-label="分享到 Qzone"
+                    >
+                        <i class="fa fa-star" aria-hidden="true"></i><span>分享到 Qzone</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/avatar.jpeg" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">欧阳锋工作室</h4>
+        
+            <div id="about-card-bio"><p>author.bio</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>author.job</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                广东深圳
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+<script src="/assets/js/jquery.js"></script>
+<script src="/assets/js/jquery.fancybox.js"></script>
+<script src="/assets/js/thumbs.js"></script>
+<script src="/assets/js/tranquilpeak.js"></script>
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>

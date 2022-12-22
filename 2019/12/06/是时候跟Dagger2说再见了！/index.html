@@ -1,0 +1,637 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="欧阳锋工作室">
+    <title>是时候跟Dagger2说再见了！ - 欧阳锋工作室</title>
+    <meta name="author" content="欧阳锋工作室">
+    
+    
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"欧阳锋工作室","sameAs":["https://github.com/yuanhoujun","assets/images/mpwexin.jpg","https://weibo.com/u/6140262139?is_all=1","mailto:ouyangfeng2016@gmail.com"],"image":"avatar.jpeg"},"articleBody":"\nDagger2是一个设计精良并且性能优越的DI（依赖注入）开源库，Google团队出品，其Fork自Square团队的Dagger库。自开源以来，基本已经成为了Android端依赖注入事实上的标准。但作为一个Java后端程序员出身的我，相对于Spring，Dagger2简直难用至极。为了实现相对较为复杂的依赖注入，你需要完成一堆配置。每一个技术都是为了解决一个问题，DI只不过是为了解决new的问题而已。很显然，使用Dagger，有点得不偿失。是否有一个更好的DI库可以替代Dagger呢，从Kotlin的DSL身上我们似乎看到了另外一种可能。今天，我给大家安利一个同样设计精良，使用Kotlin的DSL特性完成依赖注入的开源库，这个开源库目前正处于高速发展之中，强烈推荐大家使用。\n\n\n依赖注入基础知识上面说到，依赖注入解决的问题很简单，就是为了解决new的问题。我们知道，在Java语言中，为了创建一个对象，必须使用new关键字，如果这个对象不需要依赖任何其他对象，使用new类名就可以完成轻松创建了。而如果某个对象同时依赖多个对象，除了使用new完成目标对象创建之外，还要同时创建其他依赖对象，并且将这些依赖“注入”到目标对象中，这是一个繁琐且需要不断重复的过程，需要大量的样板代码。为了减少不断重复的样板式代码，有人提出了依赖注入的概念。\n事实上，关于依赖注入的问题，上面我们仅仅提到了最常见的部分。在实际开发场景中，一个完整的DI框架还需要解决以下几个问题：\n\n生成单例对象\n生成一定范围生效的对象\n可以自定义销毁对象…\n\n单例是我们开发中经常用到的一种对象类型，为了使对象复用，减少不必要的内存损耗，我们经常会使用单例创建对象。而在Java语言中，为了创建单例对象，不仅需要使用同步代码块，还需要DC（Double Check），这实在是一个繁琐的过程。作为DI框架，当然也要解决这个问题。\nScope关于Scope，我必须要重点提一下，这是一个相对比较难理解的概念。为了便于大家的理解，我们先来看一张图：\n","dateCreated":"2019-12-06T19:17:25+08:00","dateModified":"2022-09-08T16:13:27+08:00","datePublished":"2019-12-06T19:17:25+08:00","description":"\nDagger2是一个设计精良并且性能优越的DI（依赖注入）开源库，Google团队出品，其Fork自Square团队的Dagger库。自开源以来，基本已经成为了Android端依赖注入事实上的标准。但作为一个Java后端程序员出身的我，相对于Spring，Dagger2简直难用至极。为了实现相对较为复杂的依赖注入，你需要完成一堆配置。每一个技术都是为了解决一个问题，DI只不过是为了解决new的问题而已。很显然，使用Dagger，有点得不偿失。是否有一个更好的DI库可以替代Dagger呢，从Kotlin的DSL身上我们似乎看到了另外一种可能。今天，我给大家安利一个同样设计精良，使用Kotlin的DSL特性完成依赖注入的开源库，这个开源库目前正处于高速发展之中，强烈推荐大家使用。\n","headline":"是时候跟Dagger2说再见了！","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://youngfeng.com/2019/12/06/是时候跟Dagger2说再见了！/"},"publisher":{"@type":"Organization","name":"欧阳锋工作室","sameAs":["https://github.com/yuanhoujun","assets/images/mpwexin.jpg","https://weibo.com/u/6140262139?is_all=1","mailto:ouyangfeng2016@gmail.com"],"image":"avatar.jpeg","logo":{"@type":"ImageObject","url":"avatar.jpeg"}},"url":"http://youngfeng.com/2019/12/06/是时候跟Dagger2说再见了！/","keywords":"DI, 依赖注入"}</script>
+    <meta name="description" content="Dagger2是一个设计精良并且性能优越的DI（依赖注入）开源库，Google团队出品，其Fork自Square团队的Dagger库。自开源以来，基本已经成为了Android端依赖注入事实上的标准。但作为一个Java后端程序员出身的我，相对于Spring，Dagger2简直难用至极。为了实现相对较为复杂的依赖注入，你需要完成一堆配置。每一个技术都是为了解决一个问题，DI只不过是为了解决new的问">
+<meta name="keywords" content="DI,依赖注入">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="是时候跟Dagger2说再见了！">
+<meta property="og:url" content="http://youngfeng.com/2019/12/06/是时候跟Dagger2说再见了！/index.html">
+<meta property="og:site_name" content="欧阳锋工作室">
+<meta property="og:description" content="Dagger2是一个设计精良并且性能优越的DI（依赖注入）开源库，Google团队出品，其Fork自Square团队的Dagger库。自开源以来，基本已经成为了Android端依赖注入事实上的标准。但作为一个Java后端程序员出身的我，相对于Spring，Dagger2简直难用至极。为了实现相对较为复杂的依赖注入，你需要完成一堆配置。每一个技术都是为了解决一个问题，DI只不过是为了解决new的问">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2022-09-08T08:13:27.735Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="是时候跟Dagger2说再见了！">
+<meta name="twitter:description" content="Dagger2是一个设计精良并且性能优越的DI（依赖注入）开源库，Google团队出品，其Fork自Square团队的Dagger库。自开源以来，基本已经成为了Android端依赖注入事实上的标准。但作为一个Java后端程序员出身的我，相对于Spring，Dagger2简直难用至极。为了实现相对较为复杂的依赖注入，你需要完成一堆配置。每一个技术都是为了解决一个问题，DI只不过是为了解决new的问">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="http://youngfeng.com/assets/images/avatar.jpeg"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    <link rel="stylesheet" href="/assets/css/all.css">
+    <link rel="stylesheet" href="/assets/css/jquery.fancybox.css">
+    <link rel="stylesheet" href="/assets/css/thumbs.css">
+    <link rel="stylesheet" href="/assets/css/tranquilpeak.css">
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            欧阳锋工作室
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/avatar.jpeg" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/avatar.jpeg" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">欧阳锋工作室</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>author.bio</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://github.com/yuanhoujun"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="GitHub"
+                        >
+                        <i class="sidebar-button-icon fab fa-github" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/assets/images/mpwexin.jpg"
+                            
+                            rel="noopener"
+                            title="微信公众号"
+                        >
+                        <i class="sidebar-button-icon fab fa-weixin" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">微信公众号</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://weibo.com/u/6140262139?is_all=1"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="微博"
+                        >
+                        <i class="sidebar-button-icon fab fa-weibo" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">微博</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="mailto:ouyangfeng2016@gmail.com"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="邮箱"
+                        >
+                        <i class="sidebar-button-icon fa fa-envelope" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">邮箱</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            是时候跟Dagger2说再见了！
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2019-12-06T19:17:25+08:00">
+	
+		    12月 06, 2019
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/categories/Android/">Android</a>, <a class="category-link" href="/categories/Android/计算机基础/">计算机基础</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <blockquote>
+<p>Dagger2是一个设计精良并且性能优越的DI（依赖注入）开源库，Google团队出品，其Fork自Square团队的Dagger库。自开源以来，基本已经成为了Android端依赖注入事实上的标准。但作为一个Java后端程序员出身的我，相对于Spring，Dagger2简直难用至极。为了实现相对较为复杂的依赖注入，你需要完成一堆配置。每一个技术都是为了解决一个问题，DI只不过是为了解决new的问题而已。很显然，使用Dagger，有点得不偿失。是否有一个更好的DI库可以替代Dagger呢，从Kotlin的DSL身上我们似乎看到了另外一种可能。今天，我给大家安利一个同样设计精良，使用Kotlin的DSL特性完成依赖注入的开源库，这个开源库目前正处于高速发展之中，强烈推荐大家使用。</p>
+</blockquote>
+<a id="more"></a>
+<h3 id="依赖注入基础知识"><a href="#依赖注入基础知识" class="headerlink" title="依赖注入基础知识"></a>依赖注入基础知识</h3><p>上面说到，依赖注入解决的问题很简单，就是为了解决new的问题。我们知道，在Java语言中，为了创建一个对象，必须使用new关键字，如果这个对象不需要依赖任何其他对象，使用new类名就可以完成轻松创建了。而如果某个对象同时依赖多个对象，除了使用new完成目标对象创建之外，还要同时创建其他依赖对象，并且将这些依赖“注入”到目标对象中，这是一个繁琐且需要不断重复的过程，需要大量的样板代码。为了减少不断重复的样板式代码，有人提出了依赖注入的概念。</p>
+<p>事实上，关于依赖注入的问题，上面我们仅仅提到了最常见的部分。在实际开发场景中，一个完整的DI框架还需要解决以下几个问题：</p>
+<ul>
+<li>生成单例对象</li>
+<li>生成一定范围生效的对象</li>
+<li>可以自定义销毁对象<br>…</li>
+</ul>
+<p>单例是我们开发中经常用到的一种对象类型，为了使对象复用，减少不必要的内存损耗，我们经常会使用单例创建对象。而在Java语言中，为了创建单例对象，不仅需要使用同步代码块，还需要DC（Double Check），这实在是一个繁琐的过程。作为DI框架，当然也要解决这个问题。</p>
+<h3 id="Scope"><a href="#Scope" class="headerlink" title="Scope"></a>Scope</h3><p>关于Scope，我必须要重点提一下，这是一个相对比较难理解的概念。为了便于大家的理解，我们先来看一张图：</p>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-link" href="/tags/DI/">DI</a> <a class="tag tag--primary tag--small t-link" href="/tags/依赖注入/">依赖注入</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a
+                        class="post-action-btn btn btn--disabled"
+                        aria-hidden="true"
+                    >
+                        
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2019/11/29/10分钟看懂动态代理设计模式（升级篇）/"
+                    data-tooltip="10分钟看懂动态代理设计模式（升级篇）"
+                    aria-label="下一篇: 10分钟看懂动态代理设计模式（升级篇）"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://service.weibo.com/share/share.php?&amp;title=http://youngfeng.com/2019/12/06/是时候跟Dagger2说再见了！/"
+                    title="分享到 Weibo"
+                    aria-label="分享到 Weibo"
+                >
+                    <i class="fab fa-weibo" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://connect.qq.com/widget/shareqq/index.html?url=http://youngfeng.com/2019/12/06/是时候跟Dagger2说再见了！/&amp;title=是时候跟Dagger2说再见了！"
+                    title="分享到 QQ"
+                    aria-label="分享到 QQ"
+                >
+                    <i class="fab fa-qq" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://youngfeng.com/2019/12/06/是时候跟Dagger2说再见了！/"
+                    title="分享到 Qzone"
+                    aria-label="分享到 Qzone"
+                >
+                    <i class="fa fa-star" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <p>
+        <a href="https://beian.miit.gov.cn">粤ICP备2022110674号-1</a>
+    </p>
+    <p class="copyrights">
+        Copyrights &copy; 2022 欧阳锋工作室. All Rights Reserved.
+    </p>
+</footer>
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a
+                        class="post-action-btn btn btn--disabled"
+                        aria-hidden="true"
+                    >
+                        
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2019/11/29/10分钟看懂动态代理设计模式（升级篇）/"
+                    data-tooltip="10分钟看懂动态代理设计模式（升级篇）"
+                    aria-label="下一篇: 10分钟看懂动态代理设计模式（升级篇）"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://service.weibo.com/share/share.php?&amp;title=http://youngfeng.com/2019/12/06/是时候跟Dagger2说再见了！/"
+                    title="分享到 Weibo"
+                    aria-label="分享到 Weibo"
+                >
+                    <i class="fab fa-weibo" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://connect.qq.com/widget/shareqq/index.html?url=http://youngfeng.com/2019/12/06/是时候跟Dagger2说再见了！/&amp;title=是时候跟Dagger2说再见了！"
+                    title="分享到 QQ"
+                    aria-label="分享到 QQ"
+                >
+                    <i class="fab fa-qq" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://youngfeng.com/2019/12/06/是时候跟Dagger2说再见了！/"
+                    title="分享到 Qzone"
+                    aria-label="分享到 Qzone"
+                >
+                    <i class="fa fa-star" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="http://service.weibo.com/share/share.php?&amp;title=http://youngfeng.com/2019/12/06/是时候跟Dagger2说再见了！/"
+                        aria-label="分享到 Weibo"
+                    >
+                        <i class="fab fa-weibo" aria-hidden="true"></i><span>分享到 Weibo</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="http://connect.qq.com/widget/shareqq/index.html?url=http://youngfeng.com/2019/12/06/是时候跟Dagger2说再见了！/&amp;title=是时候跟Dagger2说再见了！"
+                        aria-label="分享到 QQ"
+                    >
+                        <i class="fab fa-qq" aria-hidden="true"></i><span>分享到 QQ</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://youngfeng.com/2019/12/06/是时候跟Dagger2说再见了！/"
+                        aria-label="分享到 Qzone"
+                    >
+                        <i class="fa fa-star" aria-hidden="true"></i><span>分享到 Qzone</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/avatar.jpeg" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">欧阳锋工作室</h4>
+        
+            <div id="about-card-bio"><p>author.bio</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>author.job</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                广东深圳
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+<script src="/assets/js/jquery.js"></script>
+<script src="/assets/js/jquery.fancybox.js"></script>
+<script src="/assets/js/thumbs.js"></script>
+<script src="/assets/js/tranquilpeak.js"></script>
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>

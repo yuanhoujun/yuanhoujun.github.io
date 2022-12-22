@@ -1,0 +1,731 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="欧阳锋工作室">
+    <title>深入链表数据结构，助你搞定链表算法题 - 欧阳锋工作室</title>
+    <meta name="author" content="欧阳锋工作室">
+    
+    
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"欧阳锋工作室","sameAs":["https://github.com/yuanhoujun","assets/images/mpwexin.jpg","https://weibo.com/u/6140262139?is_all=1","mailto:ouyangfeng2016@gmail.com"],"image":"avatar.jpeg"},"articleBody":"\n在上一篇文章《巧解约瑟夫环问题》中，我们提到了链表。部分同学可能对链表的数据结构还不太熟悉。今天，我们就一起来尝试手写一个链表类实现。然后，再一起来看一看与链表相关的那些算法题。\n\n\n本篇文章我们依然使用Java语言实现，如果你对其它语言的实现感兴趣，请在微信公众号”欧阳锋工作室“中给我留言\n常见的线性链表分为两种：单向链表与双向链表。所谓单向链表，即链表只能通过单向访问，从上一个节点可以访问到下一个节点，而下一个节点不能逆向访问到上一个节点。双向链表则没有这个限制，它既可以从上一个节点访问到下一个节点，也可以从下一个节点访问到上一个节点。\n单向链表我们先来尝试实现一个单向链表，一个完整的单向链表数据结构如下图所示：\n\n链表中的每一个元素称之为链表的节点，开始的节点叫做头节点，结束的节点叫做尾节点。\n在单向链表中，节点中应该至少包含两个元素：数据（value）以及指向下一个节点的指针（next）。\n参照上图，我们先构建节点数据结构：\n12345678910// 为了保证通用性，这里我们使用// 泛型参数表示节点数据的数据类型public class Node&lt;E&gt; &#123;    public E value;    public Node&lt;E&gt; next;        public Node(E value) &#123;        this.value = value;    &#125;&#125;\n接下来，我们创建链表集合类，新增主要的增删改查等相关方法：\n12345678910111213141516171819202122public class LinkedList&lt;E&gt; &#123;        public void add(E e) &#123;            &#125;        public void remove(E e) &#123;            &#125;        public void set(int index, E e) &#123;            &#125;        public E get(int index) &#123;            &#125;        public int size() &#123;            &#125;&#125;\n由于是单向链表，这里我们只保存头节点的引用：\n12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182838485868788899091// 单向链表public class LinkedList&lt;E&gt; &#123;    private Node&lt;E&gt; head;    // 始终指向最新添加的节点    private Node&lt;E&gt; current;    private int size;    public void add(E e) &#123;        Node&lt;E&gt; node = new Node&lt;&gt;(e);        // 第一次添加，将头节点指向该元素        if (null == head) &#123;            head = node;            current = head;        &#125; else &#123;            current.next = node;            current = node;        &#125;        size ++;    &#125;    public void remove(E e) &#123;        if (null == head) return;        // 如果当前元素恰好是头节点，直接将头节点置空        if (e == head.value) &#123;            head = null;            size --;            return;        &#125;\t\t  \t\t // 由于我们已知的信息只有头节点，我们必须通过\t\t // 遍历找到对应的节点，这就是为什么说List的查询\t\t // 效率比LinkedList效率高的原因        Node&lt;E&gt; prev = head;        Node&lt;E&gt; next = head.next;        while (next != null) &#123;            if (next.value == e) &#123;                prev.next = next.next;                size --;                // 这里要注意，如果当前节点恰好是被移除的节点                // 需要将当前节点的值指向上一个节点                if (current == next) &#123;                    current = prev;                &#125;                break;            &#125;            prev = next;            next = next.next;        &#125;    &#125;    public void set(int index, E e) &#123;        if (index &lt; 0 || index &gt; size - 1) &#123;            throw new IndexOutOfBoundsException(\"Valid index 0 ~ \" + (size - 1) + \", current: \" + index);        &#125;        Node&lt;E&gt; current = head;        for (int i = 0; i &lt; size; i ++) &#123;            if (index == i) &#123;                current.value = e;                break;            &#125;            current = current.next;        &#125;    &#125;    public E get(int index) &#123;        if (index &lt; 0 || index &gt; size - 1) &#123;            throw new IndexOutOfBoundsException(\"Valid index 0 ~ \" + (size - 1) + \", current: \" + index);        &#125;        Node&lt;E&gt; current = head;        for (int i = 0; i &lt; size; i ++) &#123;            if (index == i) &#123;                return current.value;            &#125;            current = current.next;        &#125;        return null;    &#125;    public int size() &#123;        return size;    &#125;&#125;\n以上就是单向链表的完整代码了，解题的关键在于你需要在脑海里构建链表的数据结构模型，需要弄清楚节点之间是如何连接在一起的，只要搞清楚了这些关系，问题也就引刃而解了。\n按照同样的思路，接下来我们开始尝试实现双向链表。\n双向链表与单向链表不一样的地方在于，节点还需要持有上一个节点的引用。对应的数据模型可以用下面的图形来表示:\n\n可以看到，在上面的图形中，我们使用last引用指向上一个节点。同时，增加了一个尾节点引用tail，方便逆向遍历。\n按照上面的数据模型，完整代码如下：\n12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182838485// 双向链表public class LinkedList&lt;E&gt; &#123;    private Node&lt;E&gt; head;    private Node&lt;E&gt; tail;    private int size;    public void add(E e) &#123;        Node&lt;E&gt; node = new Node&lt;&gt;(e);        if (null == head) &#123;            head = node;            tail = node;        &#125; else &#123;            tail.next = node;            tail = node;        &#125;        size ++;    &#125;    public void remove(E e) &#123;        if (null == head) return;        // 如果当前元素恰好是头节点，直接将头节点置空        if (e == head.value) &#123;            head = null;            size --;            return;        &#125;        Node&lt;E&gt; prev = head;        Node&lt;E&gt; next = head.next;        while (next != null) &#123;            if (next.value == e) &#123;                prev.next = next.next;                size --;                // 如果当前节点恰好是尾节点，需要将尾节点上移一位                if (next == tail) &#123;                    tail = prev;                &#125;                break;            &#125;            prev = next;            next = next.next;        &#125;    &#125;    public void set(int index, E e) &#123;        if (index &lt; 0 || index &gt; size - 1) &#123;            throw new IndexOutOfBoundsException(\"Valid index 0 ~ \" + (size - 1) + \", current: \" + index);        &#125;        Node&lt;E&gt; current = head;        for (int i = 0; i &lt; size; i ++) &#123;            if (index == i) &#123;                current.value = e;                break;            &#125;            current = current.next;        &#125;    &#125;    public E get(int index) &#123;        if (index &lt; 0 || index &gt; size - 1) &#123;            throw new IndexOutOfBoundsException(\"Valid index 0 ~ \" + (size - 1) + \", current: \" + index);        &#125;        Node&lt;E&gt; current = head;        for (int i = 0; i &lt; size; i ++) &#123;            if (index == i) &#123;                return current.value;            &#125;            current = current.next;        &#125;        return null;    &#125;    public int size() &#123;        return size;    &#125;&#125;\n在上面的文章中，我们动手编写了单向链表与双向链表的代码实现。接下来，我们一起来看一下与链接相关的那些算法题吧。\n问题一：有一个单向链表，如何快速获取链表中倒数第5个元素这个问题可以使用两个指针p1、p2，p2先走5步，指向第6个节点。然后两个指针开始同步出发，一直到p2指向尾节点，p1恰好指向倒数第5个元素。\n这个方法可以通过一次循环就获取到倒数第5个元素，时间复杂度最低，完整代码如下：\n1234567891011121314151617public void f(Node head) &#123;\tNode p1 = head;\tNode p2 = head;\t\tint i = 0;\twhile (i &lt; 5) &#123;\t\ti ++;\t\tp2 = p2.next;\t&#125;\t\twhile (p2 != null) &#123;\t\tp1 = p1.next;\t\tp2 = p2.next;\t&#125;\t\tSystem.out.println(p1.value);&#125;\n问题二：判断一个链表中有环，请给出判断方法这个问题可以使用一个经典的解法“快慢指针”的方式解决。\n所谓的“快慢指针”，即同时使用两个指针p1、p2同步前进，p2的速度比p1快。这样就形成了“一快一慢”的效果，因此，我们将其称之为“快慢指针”。“快慢指针”在链表的算法题中起着关键性的作用，常常能够让很多看似复杂的问题简单化。例如，这个问题我们就可以通过“快慢指针”的方式解决。\n具体要怎么做呢？我们一起来看一下。\n\n假设有一个如上图所示的单向链表，链表中仅有5个元素，3、4、5形成了一个环。\n想象一下，如果我们使用两个指针p1、p2，我们让p1、p2同时出发，但p1每次只向前移动一个节点，而p2每次向前移动两个节点，两者有可能相遇吗？\n在没有环的情况下，很显然一定不会相遇，但在有环的情况下，一定会相遇。因为当两者同时进入链表环中时，如果有一个指针快，一个指针慢，当两者的步数差恰好是一个环的大小时二者就相遇了，这跟时钟的时针和分针一定会相遇是一样的道理。\n按照这个思路，判断链表是否有环的完整代码如下：\n123456789101112131415public boolean hasRing(Node head) &#123;\tNode p1 = head;\tNode p2 = head;\t\twhile (p2 != null &amp;&amp; p2.next != null) &#123;\t\tp1 = p1.next;\t\tp2 = p2.next.next;\t\t\t\tif (p1 == p2) &#123;\t\t\treturn true;\t\t&#125;\t&#125;\t\treturn false;&#125;\n由此可见，“快慢指针”的确是一个非常有效的解决方案，在上述两个问题的解答中就起到了决定性的作用。大家一定要牢记这个解决方案，以便面试官问到相关的问题的时候能够迅速脱口而出。\n问题三：假设一个链表中存在环，请求出环的大小问题二中我们可以知道一个链表中是否存在环，但如何知道这个环的大小呢。\n我们继续回想时针与分针相遇的原理，分针比时针快，从第一次相遇开始，分针走的快，继续往前走，为了再次追上时针，分针应该至少多走一圈。因此，第二次相遇时分针和时针所在的距离差恰好就是环的大小。\n按照这个原理，获取链表环大小的完整代码如下：\n1234567891011121314151617181920212223242526272829public int getRingSize(Node head) &#123;\tNode p1 = head;\tNode p2 = head;\t\tint size = 0;\tint index = 0;\t// 标记是否已经出现第一次相遇\tint hasMeeted = false;\t\twhile (p2 != null &amp;&amp; p2.next != null) &#123;\t\tp1 = p1.next;\t\tp2 = p2.next.next;\t\t\t\tif (hasMeeted) &#123;\t\t\tsize += 1;\t\t&#125;\t\t\t\tif (p1 == p2) &#123;\t\t\t// 再次相遇发现hasMeeted为true\t\t\t// 表示已经是第二次相遇了，直接跳出循环\t\t\tif (hasMeeted) &#123;\t\t\t\tbreak;\t\t\t&#125;\t\t\thasMeeted = true;\t\t&#125;\t&#125;\t\treturn size;&#125;\n问题四：有一个单向链表，请从尾到头打印该链表数据从尾到头打印链表有点像栈的数据结构模型。因此，这里我们可以使用一个栈去保存链表中的所有节点，然后pop栈顶元素，打印即可。但这不仅增加了一定的空间复杂度，也增加了一定的时间复杂度。\n这个问题无非就是打印链表中的值而已，如果我们能够按照栈调用的方式对其进行调用，问题不就迎刃而解了吗。\n递归恰好就是一个栈调用的方式，因此，我们完全可以使用递归巧妙地解决这个问题。\n以下是使用递归调用反向打印链表数据的完整代码：\n12345678public void printReverse(Node node) &#123;\tif (node != null) &#123;\t\tprintReverse(node.next);\t\tSystem.out.println(node.value);\t&#125; else &#123;\t\treturn;\t&#125;&#125;\n问题五：有一个单向链表，求链表的中间节点这个问题初看起来似乎有点眼熟，是的，没错！它跟问题一比较像。在问题一中我们需要找到倒数第5个节点，而在这个问题中，我们需要找到链表的中间节点。\n但这个问题的难点在于如何保证其中较慢的指针恰好停留在中间节点的位置。\n其实，这很简单，我们依然可以使用“快慢指针”的方式进行处理。只要设置快指针每次走两步，而慢指针每次走一步即可。完整代码如下：\n123456789101112public void findMidNode(Node head) &#123;\tNode p1 = head;\tNode p2 = head;\t\twhile (p2 != null &amp;&amp; p2.next != null) &#123;\t\tp1 = p1.next;\t\tp2 = p2.next.next;\t&#125;\t\t// 这里的p1节点恰好就是中间节点\tSystem.out.println(p1.value);&#125;\n问题六：反转链表示例：\n121-&gt;2-&gt;3-&gt;4-&gt;5-&gt;NULL5-&gt;4-&gt;3-&gt;2-&gt;1-&gt;NULL\n按照正常思维，反转链表，我们需要将链表的值先保存起来，然后再构建新的链表，再逐一连接起来。\n但实际上，上面的动作其实我们可以同步进行，具体思路如下：\n1）声明变量prev、curr分别指向前一个节点、当前遍历节点。\n2）如果当前节点不为空，则先设置临时变量next指向curr的下一个节点。\n3）让curr的下一个节点指向pre，然后再让pre指向当前节点curr, 最后让当前节点curr指向next。\n4）重复以上过程，判断条件是当前节点curr不为空。\n完整代码如下：\n123456789101112public void reverseLink(Node head) &#123;\tNode prev = null;\tNode curr = head;\t\twhile (null != curr) &#123;\t\tNode next = curr.next;\t\tcurr.next = prev;\t\t\t\tprev = curr;\t\tcurr = next;\t&#125;&#125;\n问题七：如果链表中存在环，求环的入口节点这道题似乎依然可以用“快慢指针”的方式解决，但问题是：如何让指针相遇的点恰好落在环的入口处呢，这似乎是一个难题。\n我们继续沿用问题二中的图：\n\n在问题二中我们使用了两个指针p1、p2，p1每次前进一步，p2每次前进两步，如果两者相遇，则说明链表中有环。\n上图中整个链表只有5个元素，链表的入口节点是3，p1、p2指针第一次相遇的节点位置是4。在这个位置，p2所走的距离恰好比p1多出一个环的距离。\n这是按照问题二中的设计思路推算出来的相遇节点，接下来我们的难点是尝试找到一种方法让指针恰好在入口位置处相遇。\n\n这里我们假设：\n1）头节点距离入口节点的节点数是a\n2）指针第一次相遇的位置距离入口节点的节点数是b\n3）相遇位置节点走到入口节点的节点数是x\n4）环的节点数是r\n如果p1指针走过的距离是s，那么p2指针走过的距离应该是2s（p2指针的速度是p1的两倍）。观察上图，我们得到如下的等式：\n12s = a + b2s = a + b + r\n等式二减去等式一得到s = r。\n由此我们可以知道，第一次相遇的时候，指针p1恰好走过了一个环的距离。\n继续观察上图，可以得到r = b + x。\n由此我们得到几种非常重要的公式：\n123s = a + bs = rr = b + x\n结合上述三个等式，去掉b、s，最终得到：\n1x = a\n这说明一个问题：从相遇节点到入口节点的距离与开始节点到入口节点的距离是相等的。\n所以，如果我们在指针相遇后，让p2指针重新回到头节点，并且每次只前进一步。那么，当两个指针再次相遇的时候，其节点恰好就是入口节点。\n以上的推导可能有点绕，如果你还不能理解，请在微信公众号“欧阳锋工作室”给我留言。\n知道了原理之后，代码就简单了。以下是上述思路的完整代码实现：\n1234567891011121314151617181920212223242526272829public Node getRingEntryNode(Node head) &#123;\tNode p1 = head;\tNode p2 = head;\t\twhile (p2 != null &amp;&amp; p2.next != null) &#123;\t\tp1 = p1.next;\t\tp2 = p2.next.next;\t\t\t\tif (p1 == p2) &#123;\t\t\tbreak;\t\t&#125;\t&#125;\t\t// 第一相遇后，我们让p2节点重新指向头节点\tp2 = head;\t// 再次进入循环，直到二者再次相遇\twhile (p1 != null) &#123;\t\tp1 = p1.next;\t\tp2 = p2.next;\t\t\t\t// 两者再次相遇，相遇节点即是环\t\t// 的入口节点\t\tif (p1 == p2) &#123;\t\t\treturn p1;\t\t&#125;\t&#125;\t\treturn null;&#125;\n问题八：有两个有序链表，请将他们合并为一个链表，同时保证链表有序示例：\n12345输入：1-&gt;3-&gt;52-&gt;3-&gt;6输出：1-&gt;2-&gt;3-&gt;3-&gt;5-&gt;6\n这道题完全可以使用循环的方式处理，先取出两个链表中的第一个元素，取第一个元素较小的值放在表头，并且将该链表作为目标链表。逐一对比，拼接到链表指定位置，直到某个链表为空。如果被对比链表更长，则将剩余部分的元素直接连接到目标链表即可。\n这是一种常规的解法，事实上，这道题还可以使用递归的方式进行处理。实现的思路与循环类似，只是代码层面更容易理解，且代码量更少，其完整实现如下：\n12345678910111213141516171819public Node mergeOrderedLink(Node head1, Node head2) &#123;\t// 先判断存在空链表的情况\tif (null == head1) &#123;\t\treturn head2\t&#125; else if (null == head2) &#123;\t\treturn head1\t&#125; else &#123;\t\tNode newHead = null;\t\tif (head1.data &lt; head2.data) &#123;\t\t\tnewHead = head1;\t\t\tnewHead.next = mergeOrderedLink(head1.next, head2);\t\t&#125; else &#123;\t\t\tnewHead = head2;\t\t\tnewHead.next = \t\t\tnewHead.next = mergeOrderedLink(head1, head2.next);\t\t&#125;\t\t\t\treturn newHead;\t&#125;&#125;\n压轴题以上就是我们在面试中可能会遇到的常见的八道链表算法面试题。最后，我给大家准备了一道压轴题，大家尝试做一下。获取答案，可以在微信公众号“欧阳锋工作室”中回复“链表”获得。\n问题九：有一个单向链表，你无法获取到这个链表的头节点，在链表中存在四个连续节点A、B、C、D四个节点，已知B节点，如何将其从链表中删除掉阅读更多文章，请关注公众号“欧阳锋工作室”\n\n","dateCreated":"2019-11-18T12:02:25+08:00","dateModified":"2022-09-08T16:13:27+08:00","datePublished":"2019-11-18T12:02:25+08:00","description":"\n在上一篇文章《巧解约瑟夫环问题》中，我们提到了链表。部分同学可能对链表的数据结构还不太熟悉。今天，我们就一起来尝试手写一个链表类实现。然后，再一起来看一看与链表相关的那些算法题。\n","headline":"深入链表数据结构，助你搞定链表算法题","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"http://youngfeng.com/2019/11/18/深入链表数据结构，助你搞定链表算法题/"},"publisher":{"@type":"Organization","name":"欧阳锋工作室","sameAs":["https://github.com/yuanhoujun","assets/images/mpwexin.jpg","https://weibo.com/u/6140262139?is_all=1","mailto:ouyangfeng2016@gmail.com"],"image":"avatar.jpeg","logo":{"@type":"ImageObject","url":"avatar.jpeg"}},"url":"http://youngfeng.com/2019/11/18/深入链表数据结构，助你搞定链表算法题/","keywords":"链表, 数据结构与算法"}</script>
+    <meta name="description" content="在上一篇文章《巧解约瑟夫环问题》中，我们提到了链表。部分同学可能对链表的数据结构还不太熟悉。今天，我们就一起来尝试手写一个链表类实现。然后，再一起来看一看与链表相关的那些算法题。">
+<meta name="keywords" content="链表,数据结构与算法">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="深入链表数据结构，助你搞定链表算法题">
+<meta property="og:url" content="http://youngfeng.com/2019/11/18/深入链表数据结构，助你搞定链表算法题/index.html">
+<meta property="og:site_name" content="欧阳锋工作室">
+<meta property="og:description" content="在上一篇文章《巧解约瑟夫环问题》中，我们提到了链表。部分同学可能对链表的数据结构还不太熟悉。今天，我们就一起来尝试手写一个链表类实现。然后，再一起来看一看与链表相关的那些算法题。">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="http://youngfeng.com/2019/11/18/深入链表数据结构，助你搞定链表算法题/unidirectionLink.png">
+<meta property="og:image" content="http://youngfeng.com/2019/11/18/深入链表数据结构，助你搞定链表算法题/bidirectionLink.png">
+<meta property="og:image" content="http://youngfeng.com/2019/11/18/深入链表数据结构，助你搞定链表算法题/ringLink.png">
+<meta property="og:image" content="http://youngfeng.com/2019/11/18/深入链表数据结构，助你搞定链表算法题/ringLink2.png">
+<meta property="og:image" content="http://youngfeng.com/2019/11/18/深入链表数据结构，助你搞定链表算法题/ringLink3.png">
+<meta property="og:image" content="http://youngfeng.com/assets/images/mpwexin.jpg">
+<meta property="og:updated_time" content="2022-09-08T08:13:27.736Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入链表数据结构，助你搞定链表算法题">
+<meta name="twitter:description" content="在上一篇文章《巧解约瑟夫环问题》中，我们提到了链表。部分同学可能对链表的数据结构还不太熟悉。今天，我们就一起来尝试手写一个链表类实现。然后，再一起来看一看与链表相关的那些算法题。">
+<meta name="twitter:image" content="http://youngfeng.com/2019/11/18/深入链表数据结构，助你搞定链表算法题/unidirectionLink.png">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="http://youngfeng.com/assets/images/avatar.jpeg"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    <link rel="stylesheet" href="/assets/css/all.css">
+    <link rel="stylesheet" href="/assets/css/jquery.fancybox.css">
+    <link rel="stylesheet" href="/assets/css/thumbs.css">
+    <link rel="stylesheet" href="/assets/css/tranquilpeak.css">
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+            
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            欧阳锋工作室
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /#about"
+            >
+        
+        
+            <img class="header-picture" src="/assets/images/avatar.jpeg" alt="作者的图片"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a
+                    href="/#about"
+                    aria-label="阅读有关作者的更多信息"
+                >
+                    <img class="sidebar-profile-picture" src="/assets/images/avatar.jpeg" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">欧阳锋工作室</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>author.bio</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="分类"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://github.com/yuanhoujun"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="GitHub"
+                        >
+                        <i class="sidebar-button-icon fab fa-github" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/assets/images/mpwexin.jpg"
+                            
+                            rel="noopener"
+                            title="微信公众号"
+                        >
+                        <i class="sidebar-button-icon fab fa-weixin" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">微信公众号</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://weibo.com/u/6140262139?is_all=1"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="微博"
+                        >
+                        <i class="sidebar-button-icon fab fa-weibo" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">微博</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="mailto:ouyangfeng2016@gmail.com"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="邮箱"
+                        >
+                        <i class="sidebar-button-icon fa fa-envelope" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">邮箱</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            深入链表数据结构，助你搞定链表算法题
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2019-11-18T12:02:25+08:00">
+	
+		    11月 18, 2019
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/categories/数据结构与算法/">数据结构与算法</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <blockquote>
+<p>在上一篇文章<a href="http://youngfeng.com/2019/11/17/%E5%B7%A7%E8%A7%A3%E7%BA%A6%E7%91%9F%E5%A4%AB%E7%8E%AF%E9%97%AE%E9%A2%98/">《巧解约瑟夫环问题》</a>中，我们提到了<strong>链表</strong>。部分同学可能对链表的数据结构还不太熟悉。今天，我们就一起来尝试手写一个链表类实现。然后，再一起来看一看与链表相关的那些算法题。</p>
+</blockquote>
+<a id="more"></a>
+<p><strong>本篇文章我们依然使用Java语言实现，如果你对其它语言的实现感兴趣，请在微信公众号”欧阳锋工作室“中给我留言</strong></p>
+<p>常见的线性链表分为两种：<strong>单向链表</strong>与<strong>双向链表</strong>。所谓单向链表，即链表只能通过单向访问，从上一个节点可以访问到下一个节点，而下一个节点不能逆向访问到上一个节点。双向链表则没有这个限制，它既可以从上一个节点访问到下一个节点，也可以从下一个节点访问到上一个节点。</p>
+<h3 id="单向链表"><a href="#单向链表" class="headerlink" title="单向链表"></a>单向链表</h3><p>我们先来尝试实现一个单向链表，一个完整的单向链表数据结构如下图所示：</p>
+<p><img src="/2019/11/18/深入链表数据结构，助你搞定链表算法题/unidirectionLink.png" alt=""></p>
+<p>链表中的每一个元素称之为链表的<strong>节点</strong>，开始的<strong>节点</strong>叫做<strong>头节点</strong>，结束的<strong>节点</strong>叫做<strong>尾节点</strong>。</p>
+<p>在单向链表中，节点中应该至少包含两个元素：数据（value）以及指向下一个节点的指针（next）。</p>
+<p>参照上图，我们先构建节点数据结构：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// 为了保证通用性，这里我们使用</span><br><span class="line">// 泛型参数表示节点数据的数据类型</span><br><span class="line">public class <span class="keyword">Node</span><span class="title">&lt;E</span>&gt; &#123;</span><br><span class="line">    public E value;</span><br><span class="line">    public <span class="keyword">Node</span><span class="title">&lt;E</span>&gt; next;</span><br><span class="line">    </span><br><span class="line">    public <span class="keyword">Node</span><span class="title">(E</span> value) &#123;</span><br><span class="line">        this.value = value;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来，我们创建链表集合类，新增主要的增删改查等相关方法：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LinkedList</span>&lt;E&gt; &#123;</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(<span class="keyword">int</span> index, E e)</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> E <span class="title">get</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">size</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于是单向链表，这里我们只保存头节点的引用：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 单向链表</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> LinkedList&lt;E&gt; &#123;</span><br><span class="line">    <span class="keyword">private</span> Node&lt;E&gt; head;</span><br><span class="line">    <span class="comment">// 始终指向最新添加的节点</span></span><br><span class="line">    <span class="keyword">private</span> Node&lt;E&gt; current;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> <span class="keyword">size</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> add(E e) &#123;</span><br><span class="line">        Node&lt;E&gt; node = <span class="keyword">new</span> Node&lt;&gt;(e);</span><br><span class="line">        <span class="comment">// 第一次添加，将头节点指向该元素</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> == head) &#123;</span><br><span class="line">            head = node;</span><br><span class="line">            current = head;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            current.<span class="keyword">next</span> = node;</span><br><span class="line">            current = node;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">size</span> ++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> remove(E e) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> == head) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果当前元素恰好是头节点，直接将头节点置空</span></span><br><span class="line">        <span class="keyword">if</span> (e == head.value) &#123;</span><br><span class="line">            head = <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">size</span> --;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">		  </span><br><span class="line">		 <span class="comment">// 由于我们已知的信息只有头节点，我们必须通过</span></span><br><span class="line">		 <span class="comment">// 遍历找到对应的节点，这就是为什么说List的查询</span></span><br><span class="line">		 <span class="comment">// 效率比LinkedList效率高的原因</span></span><br><span class="line">        Node&lt;E&gt; prev = head;</span><br><span class="line">        Node&lt;E&gt; <span class="keyword">next</span> = head.<span class="keyword">next</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">next</span> != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">next</span>.value == e) &#123;</span><br><span class="line">                prev.<span class="keyword">next</span> = <span class="keyword">next</span>.<span class="keyword">next</span>;</span><br><span class="line">                <span class="keyword">size</span> --;</span><br><span class="line">                <span class="comment">// 这里要注意，如果当前节点恰好是被移除的节点</span></span><br><span class="line">                <span class="comment">// 需要将当前节点的值指向上一个节点</span></span><br><span class="line">                <span class="keyword">if</span> (current == <span class="keyword">next</span>) &#123;</span><br><span class="line">                    current = prev;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            prev = <span class="keyword">next</span>;</span><br><span class="line">            <span class="keyword">next</span> = <span class="keyword">next</span>.<span class="keyword">next</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> set(<span class="keyword">int</span> index, E e) &#123;</span><br><span class="line">        <span class="keyword">if</span> (index &lt; <span class="number">0</span> || index &gt; <span class="keyword">size</span> - <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfBoundsException(<span class="string">"Valid index 0 ~ "</span> + (<span class="keyword">size</span> - <span class="number">1</span>) + <span class="string">", current: "</span> + index);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Node&lt;E&gt; current = head;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="keyword">size</span>; i ++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (index == i) &#123;</span><br><span class="line">                current.value = e;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            current = current.<span class="keyword">next</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> E get(<span class="keyword">int</span> index) &#123;</span><br><span class="line">        <span class="keyword">if</span> (index &lt; <span class="number">0</span> || index &gt; <span class="keyword">size</span> - <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfBoundsException(<span class="string">"Valid index 0 ~ "</span> + (<span class="keyword">size</span> - <span class="number">1</span>) + <span class="string">", current: "</span> + index);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Node&lt;E&gt; current = head;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="keyword">size</span>; i ++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (index == i) &#123;</span><br><span class="line">                <span class="keyword">return</span> current.value;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            current = current.<span class="keyword">next</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> <span class="keyword">size</span>() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">size</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上就是单向链表的完整代码了，解题的关键在于你需要在脑海里构建链表的数据结构模型，需要弄清楚节点之间是如何连接在一起的，只要搞清楚了这些关系，问题也就引刃而解了。</p>
+<p>按照同样的思路，接下来我们开始尝试实现双向链表。</p>
+<p>双向链表与单向链表不一样的地方在于，节点还需要持有上一个节点的引用。对应的数据模型可以用下面的图形来表示:</p>
+<p><img src="/2019/11/18/深入链表数据结构，助你搞定链表算法题/bidirectionLink.png" alt=""></p>
+<p>可以看到，在上面的图形中，我们使用<code>last</code>引用指向上一个节点。同时，增加了一个尾节点引用<code>tail</code>，方便逆向遍历。</p>
+<p>按照上面的数据模型，完整代码如下：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 双向链表</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> LinkedList&lt;E&gt; &#123;</span><br><span class="line">    <span class="keyword">private</span> Node&lt;E&gt; head;</span><br><span class="line">    <span class="keyword">private</span> Node&lt;E&gt; tail;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> <span class="keyword">size</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> add(E e) &#123;</span><br><span class="line">        Node&lt;E&gt; node = <span class="keyword">new</span> Node&lt;&gt;(e);</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> == head) &#123;</span><br><span class="line">            head = node;</span><br><span class="line">            tail = node;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            tail.<span class="keyword">next</span> = node;</span><br><span class="line">            tail = node;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">size</span> ++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> remove(E e) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> == head) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果当前元素恰好是头节点，直接将头节点置空</span></span><br><span class="line">        <span class="keyword">if</span> (e == head.value) &#123;</span><br><span class="line">            head = <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">size</span> --;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Node&lt;E&gt; prev = head;</span><br><span class="line">        Node&lt;E&gt; <span class="keyword">next</span> = head.<span class="keyword">next</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">next</span> != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">next</span>.value == e) &#123;</span><br><span class="line">                prev.<span class="keyword">next</span> = <span class="keyword">next</span>.<span class="keyword">next</span>;</span><br><span class="line">                <span class="keyword">size</span> --;</span><br><span class="line">                <span class="comment">// 如果当前节点恰好是尾节点，需要将尾节点上移一位</span></span><br><span class="line">                <span class="keyword">if</span> (<span class="keyword">next</span> == tail) &#123;</span><br><span class="line">                    tail = prev;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            prev = <span class="keyword">next</span>;</span><br><span class="line">            <span class="keyword">next</span> = <span class="keyword">next</span>.<span class="keyword">next</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> set(<span class="keyword">int</span> index, E e) &#123;</span><br><span class="line">        <span class="keyword">if</span> (index &lt; <span class="number">0</span> || index &gt; <span class="keyword">size</span> - <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfBoundsException(<span class="string">"Valid index 0 ~ "</span> + (<span class="keyword">size</span> - <span class="number">1</span>) + <span class="string">", current: "</span> + index);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Node&lt;E&gt; current = head;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="keyword">size</span>; i ++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (index == i) &#123;</span><br><span class="line">                current.value = e;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            current = current.<span class="keyword">next</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> E get(<span class="keyword">int</span> index) &#123;</span><br><span class="line">        <span class="keyword">if</span> (index &lt; <span class="number">0</span> || index &gt; <span class="keyword">size</span> - <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfBoundsException(<span class="string">"Valid index 0 ~ "</span> + (<span class="keyword">size</span> - <span class="number">1</span>) + <span class="string">", current: "</span> + index);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Node&lt;E&gt; current = head;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="keyword">size</span>; i ++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (index == i) &#123;</span><br><span class="line">                <span class="keyword">return</span> current.value;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            current = current.<span class="keyword">next</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> <span class="keyword">size</span>() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">size</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上面的文章中，我们动手编写了单向链表与双向链表的代码实现。接下来，我们一起来看一下与链接相关的那些算法题吧。</p>
+<h3 id="问题一：有一个单向链表，如何快速获取链表中倒数第5个元素"><a href="#问题一：有一个单向链表，如何快速获取链表中倒数第5个元素" class="headerlink" title="问题一：有一个单向链表，如何快速获取链表中倒数第5个元素"></a>问题一：有一个单向链表，如何快速获取链表中倒数第5个元素</h3><p>这个问题可以使用两个指针p1、p2，p2先走5步，指向第6个节点。然后两个指针开始同步出发，一直到p2指向尾节点，p1恰好指向倒数第5个元素。</p>
+<p>这个方法可以通过一次循环就获取到倒数第5个元素，时间复杂度最低，完整代码如下：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">public</span> void f(Node head) &#123;</span><br><span class="line">	Node <span class="built_in">p1</span> = head<span class="comment">;</span></span><br><span class="line">	Node <span class="built_in">p2</span> = head<span class="comment">;</span></span><br><span class="line">	</span><br><span class="line">	int i = <span class="number">0</span><span class="comment">;</span></span><br><span class="line">	<span class="meta">while</span> (i &lt; <span class="number">5</span>) &#123;</span><br><span class="line">		i ++<span class="comment">;</span></span><br><span class="line">		<span class="built_in">p2</span> = <span class="built_in">p2</span>.next<span class="comment">;</span></span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">while</span> (<span class="built_in">p2</span> != null) &#123;</span><br><span class="line">		<span class="built_in">p1</span> = <span class="built_in">p1</span>.next<span class="comment">;</span></span><br><span class="line">		<span class="built_in">p2</span> = <span class="built_in">p2</span>.next<span class="comment">;</span></span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	System.out.println(<span class="built_in">p1</span>.value)<span class="comment">;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="问题二：判断一个链表中有环，请给出判断方法"><a href="#问题二：判断一个链表中有环，请给出判断方法" class="headerlink" title="问题二：判断一个链表中有环，请给出判断方法"></a>问题二：判断一个链表中有环，请给出判断方法</h3><p>这个问题可以使用一个经典的解法“快慢指针”的方式解决。</p>
+<p>所谓的“快慢指针”，即同时使用两个指针p1、p2同步前进，p2的速度比p1快。这样就形成了“一快一慢”的效果，因此，我们将其称之为“快慢指针”。“快慢指针”在链表的算法题中起着关键性的作用，常常能够让很多看似复杂的问题简单化。例如，这个问题我们就可以通过“快慢指针”的方式解决。</p>
+<p>具体要怎么做呢？我们一起来看一下。</p>
+<p><img src="/2019/11/18/深入链表数据结构，助你搞定链表算法题/ringLink.png" alt=""></p>
+<p>假设有一个如上图所示的单向链表，链表中仅有5个元素，3、4、5形成了一个环。</p>
+<p>想象一下，如果我们使用两个指针p1、p2，我们让p1、p2同时出发，但p1每次只向前移动一个节点，而p2每次向前移动两个节点，两者有可能相遇吗？</p>
+<p>在没有环的情况下，很显然一定不会相遇，但在有环的情况下，一定会相遇。因为当两者同时进入链表环中时，如果有一个指针快，一个指针慢，当两者的步数差恰好是一个环的大小时二者就相遇了，这跟时钟的时针和分针一定会相遇是一样的道理。</p>
+<p>按照这个思路，判断链表是否有环的完整代码如下：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public boolean hasRing(<span class="keyword">Node</span> <span class="title">head</span>) &#123;</span><br><span class="line">	<span class="keyword">Node</span> <span class="title">p1</span> = head;</span><br><span class="line">	<span class="keyword">Node</span> <span class="title">p2</span> = head;</span><br><span class="line">	</span><br><span class="line">	while (p2 != null &amp;&amp; p2.next != null) &#123;</span><br><span class="line">		p1 = p1.next;</span><br><span class="line">		p2 = p2.next.next;</span><br><span class="line">		</span><br><span class="line">		if (p1 == p2) &#123;</span><br><span class="line">			return <span class="literal">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	return <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由此可见，“快慢指针”的确是一个非常有效的解决方案，在上述两个问题的解答中就起到了决定性的作用。大家一定要牢记这个解决方案，以便面试官问到相关的问题的时候能够迅速脱口而出。</p>
+<h3 id="问题三：假设一个链表中存在环，请求出环的大小"><a href="#问题三：假设一个链表中存在环，请求出环的大小" class="headerlink" title="问题三：假设一个链表中存在环，请求出环的大小"></a>问题三：假设一个链表中存在环，请求出环的大小</h3><p>问题二中我们可以知道一个链表中是否存在环，但如何知道这个环的大小呢。</p>
+<p>我们继续回想时针与分针相遇的原理，分针比时针快，从第一次相遇开始，分针走的快，继续往前走，为了再次追上时针，分针应该至少多走一圈。因此，第二次相遇时分针和时针所在的距离差恰好就是环的大小。</p>
+<p>按照这个原理，获取链表环大小的完整代码如下：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">int</span> getRingSize(Node head) &#123;</span><br><span class="line">	Node p1 = head;</span><br><span class="line">	Node p2 = head;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">int</span> <span class="keyword">size</span> = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> index = <span class="number">0</span>;</span><br><span class="line">	<span class="comment">// 标记是否已经出现第一次相遇</span></span><br><span class="line">	<span class="keyword">int</span> hasMeeted = <span class="keyword">false</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">while</span> (p2 != <span class="keyword">null</span> &amp;&amp; p2.<span class="keyword">next</span> != <span class="keyword">null</span>) &#123;</span><br><span class="line">		p1 = p1.<span class="keyword">next</span>;</span><br><span class="line">		p2 = p2.<span class="keyword">next</span>.<span class="keyword">next</span>;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">if</span> (hasMeeted) &#123;</span><br><span class="line">			<span class="keyword">size</span> += <span class="number">1</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">if</span> (p1 == p2) &#123;</span><br><span class="line">			<span class="comment">// 再次相遇发现hasMeeted为true</span></span><br><span class="line">			<span class="comment">// 表示已经是第二次相遇了，直接跳出循环</span></span><br><span class="line">			<span class="keyword">if</span> (hasMeeted) &#123;</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			hasMeeted = <span class="keyword">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">size</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="问题四：有一个单向链表，请从尾到头打印该链表数据"><a href="#问题四：有一个单向链表，请从尾到头打印该链表数据" class="headerlink" title="问题四：有一个单向链表，请从尾到头打印该链表数据"></a>问题四：有一个单向链表，请从尾到头打印该链表数据</h3><p>从尾到头打印链表有点像栈的数据结构模型。因此，这里我们可以使用一个栈去保存链表中的所有节点，然后pop栈顶元素，打印即可。但这不仅增加了一定的空间复杂度，也增加了一定的时间复杂度。</p>
+<p>这个问题无非就是打印链表中的值而已，如果我们能够按照栈调用的方式对其进行调用，问题不就迎刃而解了吗。</p>
+<p>递归恰好就是一个栈调用的方式，因此，我们完全可以使用递归巧妙地解决这个问题。</p>
+<p>以下是使用递归调用反向打印链表数据的完整代码：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public void printReverse(<span class="keyword">Node</span> <span class="title">node</span>) &#123;</span><br><span class="line">	if (<span class="keyword">node</span> <span class="title">!= null</span>) &#123;</span><br><span class="line">		printReverse(<span class="keyword">node</span>.<span class="title">next</span>);</span><br><span class="line">		System.out.println(<span class="keyword">node</span>.<span class="title">value</span>);</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="问题五：有一个单向链表，求链表的中间节点"><a href="#问题五：有一个单向链表，求链表的中间节点" class="headerlink" title="问题五：有一个单向链表，求链表的中间节点"></a>问题五：有一个单向链表，求链表的中间节点</h3><p>这个问题初看起来似乎有点眼熟，是的，没错！它跟问题一比较像。在问题一中我们需要找到倒数第5个节点，而在这个问题中，我们需要找到链表的中间节点。</p>
+<p>但这个问题的难点在于如何保证其中较慢的指针恰好停留在中间节点的位置。</p>
+<p>其实，这很简单，我们依然可以使用“快慢指针”的方式进行处理。只要设置快指针每次走两步，而慢指针每次走一步即可。完整代码如下：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public void findMidNode(<span class="keyword">Node</span> <span class="title">head</span>) &#123;</span><br><span class="line">	<span class="keyword">Node</span> <span class="title">p1</span> = head;</span><br><span class="line">	<span class="keyword">Node</span> <span class="title">p2</span> = head;</span><br><span class="line">	</span><br><span class="line">	while (p2 != null &amp;&amp; p2.next != null) &#123;</span><br><span class="line">		p1 = p1.next;</span><br><span class="line">		p2 = p2.next.next;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	// 这里的p1节点恰好就是中间节点</span><br><span class="line">	System.out.println(p1.value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="问题六：反转链表"><a href="#问题六：反转链表" class="headerlink" title="问题六：反转链表"></a>问题六：反转链表</h3><p>示例：</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>-&gt;<span class="number">2</span>-&gt;<span class="number">3</span>-&gt;<span class="number">4</span>-&gt;<span class="number">5</span>-&gt;NULL</span><br><span class="line"><span class="number">5</span>-&gt;<span class="number">4</span>-&gt;<span class="number">3</span>-&gt;<span class="number">2</span>-&gt;<span class="number">1</span>-&gt;NULL</span><br></pre></td></tr></table></figure>
+<p>按照正常思维，反转链表，我们需要将链表的值先保存起来，然后再构建新的链表，再逐一连接起来。</p>
+<p>但实际上，上面的动作其实我们可以同步进行，具体思路如下：</p>
+<p>1）声明变量prev、curr分别指向前一个节点、当前遍历节点。</p>
+<p>2）如果当前节点不为空，则先设置临时变量next指向curr的下一个节点。</p>
+<p>3）让curr的下一个节点指向pre，然后再让pre指向当前节点curr, 最后让当前节点curr指向next。</p>
+<p>4）重复以上过程，判断条件是当前节点curr不为空。</p>
+<p>完整代码如下：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public void reverseLink(<span class="keyword">Node</span> <span class="title">head</span>) &#123;</span><br><span class="line">	<span class="keyword">Node</span> <span class="title">prev</span> = null;</span><br><span class="line">	<span class="keyword">Node</span> <span class="title">curr</span> = head;</span><br><span class="line">	</span><br><span class="line">	while (null != curr) &#123;</span><br><span class="line">		<span class="keyword">Node</span> <span class="title">next</span> = curr.next;</span><br><span class="line">		curr.next = prev;</span><br><span class="line">		</span><br><span class="line">		prev = curr;</span><br><span class="line">		curr = next;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="问题七：如果链表中存在环，求环的入口节点"><a href="#问题七：如果链表中存在环，求环的入口节点" class="headerlink" title="问题七：如果链表中存在环，求环的入口节点"></a>问题七：如果链表中存在环，求环的入口节点</h3><p>这道题似乎依然可以用“快慢指针”的方式解决，但问题是：如何让指针相遇的点恰好落在环的入口处呢，这似乎是一个难题。</p>
+<p>我们继续沿用问题二中的图：</p>
+<p><img src="/2019/11/18/深入链表数据结构，助你搞定链表算法题/ringLink2.png" alt=""></p>
+<p>在问题二中我们使用了两个指针p1、p2，p1每次前进一步，p2每次前进两步，如果两者相遇，则说明链表中有环。</p>
+<p>上图中整个链表只有5个元素，链表的入口节点是3，p1、p2指针第一次相遇的节点位置是4。在这个位置，p2所走的距离恰好比p1多出一个环的距离。</p>
+<p>这是按照问题二中的设计思路推算出来的相遇节点，接下来我们的难点是尝试找到一种方法让指针恰好在入口位置处相遇。</p>
+<p><img src="/2019/11/18/深入链表数据结构，助你搞定链表算法题/ringLink3.png" alt=""></p>
+<p>这里我们假设：</p>
+<p>1）头节点距离入口节点的节点数是<code>a</code></p>
+<p>2）指针第一次相遇的位置距离入口节点的节点数是<code>b</code></p>
+<p>3）相遇位置节点走到入口节点的节点数是<code>x</code></p>
+<p>4）环的节点数是<code>r</code></p>
+<p>如果p1指针走过的距离是<code>s</code>，那么p2指针走过的距离应该是<code>2s</code>（p2指针的速度是p1的两倍）。观察上图，我们得到如下的等式：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">s = <span class="selector-tag">a</span> + b</span><br><span class="line"><span class="number">2s</span> = <span class="selector-tag">a</span> + <span class="selector-tag">b</span> + r</span><br></pre></td></tr></table></figure>
+<p>等式二减去等式一得到<code>s = r</code>。</p>
+<p>由此我们可以知道，第一次相遇的时候，指针p1恰好走过了一个环的距离。</p>
+<p>继续观察上图，可以得到<code>r = b + x</code>。</p>
+<p>由此我们得到几种非常重要的公式：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">s</span> = a + b</span><br><span class="line"><span class="attr">s</span> = r</span><br><span class="line"><span class="attr">r</span> = b + x</span><br></pre></td></tr></table></figure>
+<p>结合上述三个等式，去掉b、s，最终得到：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">x</span> = a</span><br></pre></td></tr></table></figure>
+<p>这说明一个问题：<strong>从相遇节点到入口节点的距离与开始节点到入口节点的距离是相等的。</strong></p>
+<p>所以，如果我们在指针相遇后，让p2指针重新回到头节点，并且每次只前进一步。那么，当两个指针再次相遇的时候，其节点恰好就是入口节点。</p>
+<p>以上的推导可能有点绕，如果你还不能理解，请在微信公众号“欧阳锋工作室”给我留言。</p>
+<p>知道了原理之后，代码就简单了。以下是上述思路的完整代码实现：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">public</span> Node getRingEntryNode(Node head) &#123;</span><br><span class="line">	Node <span class="built_in">p1</span> = head<span class="comment">;</span></span><br><span class="line">	Node <span class="built_in">p2</span> = head<span class="comment">;</span></span><br><span class="line">	</span><br><span class="line">	<span class="meta">while</span> (<span class="built_in">p2</span> != null &amp;&amp; <span class="built_in">p2</span>.next != null) &#123;</span><br><span class="line">		<span class="built_in">p1</span> = <span class="built_in">p1</span>.next<span class="comment">;</span></span><br><span class="line">		<span class="built_in">p2</span> = <span class="built_in">p2</span>.next.next<span class="comment">;</span></span><br><span class="line">		</span><br><span class="line">		<span class="meta">if</span> (<span class="built_in">p1</span> == <span class="built_in">p2</span>) &#123;</span><br><span class="line">			<span class="keyword">break;</span></span><br><span class="line"><span class="keyword">	</span>	&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	// 第一相遇后，我们让<span class="built_in">p2</span>节点重新指向头节点</span><br><span class="line">	<span class="built_in">p2</span> = head<span class="comment">;</span></span><br><span class="line">	// 再次进入循环，直到二者再次相遇</span><br><span class="line">	<span class="meta">while</span> (<span class="built_in">p1</span> != null) &#123;</span><br><span class="line">		<span class="built_in">p1</span> = <span class="built_in">p1</span>.next<span class="comment">;</span></span><br><span class="line">		<span class="built_in">p2</span> = <span class="built_in">p2</span>.next<span class="comment">;</span></span><br><span class="line">		</span><br><span class="line">		// 两者再次相遇，相遇节点即是环</span><br><span class="line">		// 的入口节点</span><br><span class="line">		<span class="meta">if</span> (<span class="built_in">p1</span> == <span class="built_in">p2</span>) &#123;</span><br><span class="line">			return <span class="built_in">p1</span><span class="comment">;</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	return null<span class="comment">;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="问题八：有两个有序链表，请将他们合并为一个链表，同时保证链表有序"><a href="#问题八：有两个有序链表，请将他们合并为一个链表，同时保证链表有序" class="headerlink" title="问题八：有两个有序链表，请将他们合并为一个链表，同时保证链表有序"></a>问题八：有两个有序链表，请将他们合并为一个链表，同时保证链表有序</h3><p>示例：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">输入：</span><br><span class="line"><span class="number">1</span>-&gt;<span class="number">3</span>-&gt;<span class="number">5</span></span><br><span class="line"><span class="number">2</span>-&gt;<span class="number">3</span>-&gt;<span class="number">6</span></span><br><span class="line">输出：</span><br><span class="line"><span class="number">1</span>-&gt;<span class="number">2</span>-&gt;<span class="number">3</span>-&gt;<span class="number">3</span>-&gt;<span class="number">5</span>-&gt;<span class="number">6</span></span><br></pre></td></tr></table></figure>
+<p>这道题完全可以使用循环的方式处理，先取出两个链表中的第一个元素，取第一个元素较小的值放在表头，并且将该链表作为目标链表。逐一对比，拼接到链表指定位置，直到某个链表为空。如果被对比链表更长，则将剩余部分的元素直接连接到目标链表即可。</p>
+<p>这是一种常规的解法，事实上，这道题还可以使用递归的方式进行处理。实现的思路与循环类似，只是代码层面更容易理解，且代码量更少，其完整实现如下：</p>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Node mergeOrderedLink(Node head1, Node head2) &#123;</span><br><span class="line">	<span class="comment">// 先判断存在空链表的情况</span></span><br><span class="line">	<span class="keyword">if</span> (<span class="literal">null</span> == head1) &#123;</span><br><span class="line">		<span class="keyword">return</span> head2</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="literal">null</span> == head2) &#123;</span><br><span class="line">		<span class="keyword">return</span> head1</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		Node <span class="keyword">new</span><span class="type">Head</span> = <span class="literal">null</span>;</span><br><span class="line">		<span class="keyword">if</span> (head1.data &lt; head2.data) &#123;</span><br><span class="line">			<span class="keyword">new</span><span class="type">Head</span> = head1;</span><br><span class="line">			<span class="keyword">new</span><span class="type">Head</span>.next = mergeOrderedLink(head1.next, head2);</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">new</span><span class="type">Head</span> = head2;</span><br><span class="line">			<span class="keyword">new</span><span class="type">Head</span>.next = 			<span class="keyword">new</span><span class="type">Head</span>.next = mergeOrderedLink(head1, head2.next);</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span><span class="type">Head</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="压轴题"><a href="#压轴题" class="headerlink" title="压轴题"></a>压轴题</h3><p>以上就是我们在面试中可能会遇到的常见的八道链表算法面试题。最后，我给大家准备了一道压轴题，大家尝试做一下。获取答案，可以在微信公众号“欧阳锋工作室”中回复“链表”获得。</p>
+<h3 id="问题九：有一个单向链表，你无法获取到这个链表的头节点，在链表中存在四个连续节点A、B、C、D四个节点，已知B节点，如何将其从链表中删除掉"><a href="#问题九：有一个单向链表，你无法获取到这个链表的头节点，在链表中存在四个连续节点A、B、C、D四个节点，已知B节点，如何将其从链表中删除掉" class="headerlink" title="问题九：有一个单向链表，你无法获取到这个链表的头节点，在链表中存在四个连续节点A、B、C、D四个节点，已知B节点，如何将其从链表中删除掉"></a>问题九：有一个单向链表，你无法获取到这个链表的头节点，在链表中存在四个连续节点A、B、C、D四个节点，已知B节点，如何将其从链表中删除掉</h3><p>阅读更多文章，请关注公众号“欧阳锋工作室”</p>
+<p><img src="http://youngfeng.com/assets/images/mpwexin.jpg" alt=""></p>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-link" href="/tags/数据结构与算法/">数据结构与算法</a> <a class="tag tag--primary tag--small t-link" href="/tags/链表/">链表</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2019/11/29/10分钟看懂动态代理设计模式（升级篇）/"
+                    data-tooltip="10分钟看懂动态代理设计模式（升级篇）"
+                    aria-label="上一篇: 10分钟看懂动态代理设计模式（升级篇）"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2019/11/17/巧解约瑟夫环问题/"
+                    data-tooltip="巧解约瑟夫环问题"
+                    aria-label="下一篇: 巧解约瑟夫环问题"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://service.weibo.com/share/share.php?&amp;title=http://youngfeng.com/2019/11/18/深入链表数据结构，助你搞定链表算法题/"
+                    title="分享到 Weibo"
+                    aria-label="分享到 Weibo"
+                >
+                    <i class="fab fa-weibo" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://connect.qq.com/widget/shareqq/index.html?url=http://youngfeng.com/2019/11/18/深入链表数据结构，助你搞定链表算法题/&amp;title=深入链表数据结构，助你搞定链表算法题"
+                    title="分享到 QQ"
+                    aria-label="分享到 QQ"
+                >
+                    <i class="fab fa-qq" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://youngfeng.com/2019/11/18/深入链表数据结构，助你搞定链表算法题/"
+                    title="分享到 Qzone"
+                    aria-label="分享到 Qzone"
+                >
+                    <i class="fa fa-star" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <p>
+        <a href="https://beian.miit.gov.cn">粤ICP备2022110674号-1</a>
+    </p>
+    <p class="copyrights">
+        Copyrights &copy; 2022 欧阳锋工作室. All Rights Reserved.
+    </p>
+</footer>
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2019/11/29/10分钟看懂动态代理设计模式（升级篇）/"
+                    data-tooltip="10分钟看懂动态代理设计模式（升级篇）"
+                    aria-label="上一篇: 10分钟看懂动态代理设计模式（升级篇）"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2019/11/17/巧解约瑟夫环问题/"
+                    data-tooltip="巧解约瑟夫环问题"
+                    aria-label="下一篇: 巧解约瑟夫环问题"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://service.weibo.com/share/share.php?&amp;title=http://youngfeng.com/2019/11/18/深入链表数据结构，助你搞定链表算法题/"
+                    title="分享到 Weibo"
+                    aria-label="分享到 Weibo"
+                >
+                    <i class="fab fa-weibo" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://connect.qq.com/widget/shareqq/index.html?url=http://youngfeng.com/2019/11/18/深入链表数据结构，助你搞定链表算法题/&amp;title=深入链表数据结构，助你搞定链表算法题"
+                    title="分享到 QQ"
+                    aria-label="分享到 QQ"
+                >
+                    <i class="fab fa-qq" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://youngfeng.com/2019/11/18/深入链表数据结构，助你搞定链表算法题/"
+                    title="分享到 Qzone"
+                    aria-label="分享到 Qzone"
+                >
+                    <i class="fa fa-star" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="http://service.weibo.com/share/share.php?&amp;title=http://youngfeng.com/2019/11/18/深入链表数据结构，助你搞定链表算法题/"
+                        aria-label="分享到 Weibo"
+                    >
+                        <i class="fab fa-weibo" aria-hidden="true"></i><span>分享到 Weibo</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="http://connect.qq.com/widget/shareqq/index.html?url=http://youngfeng.com/2019/11/18/深入链表数据结构，助你搞定链表算法题/&amp;title=深入链表数据结构，助你搞定链表算法题"
+                        aria-label="分享到 QQ"
+                    >
+                        <i class="fab fa-qq" aria-hidden="true"></i><span>分享到 QQ</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://youngfeng.com/2019/11/18/深入链表数据结构，助你搞定链表算法题/"
+                        aria-label="分享到 Qzone"
+                    >
+                        <i class="fa fa-star" aria-hidden="true"></i><span>分享到 Qzone</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/avatar.jpeg" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">欧阳锋工作室</h4>
+        
+            <div id="about-card-bio"><p>author.bio</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>author.job</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker-alt"></i>
+                <br/>
+                广东深圳
+            </div>
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+<script src="/assets/js/jquery.js"></script>
+<script src="/assets/js/jquery.fancybox.js"></script>
+<script src="/assets/js/thumbs.js"></script>
+<script src="/assets/js/tranquilpeak.js"></script>
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>
