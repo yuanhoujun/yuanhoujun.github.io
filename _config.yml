@@ -96,3 +96,7 @@ deploy:
     github: git@github.com:yuanhoujun/yuanhoujun.github.io.git,master
     coding: git@git.coding.net:ouyangfeng2016/ouyangfeng2016.coding.me.git,master
 - type: baidu_url_submitter
+
+chanyan_enable: true
+chanyan_appid: cyudElu9x
+chanyan_appkey: prod_7c706c18e17b3672472c2f770b724efb
